@@ -1,0 +1,3 @@
+disable=fixme
+
+ignore-patterns=test_.*?py

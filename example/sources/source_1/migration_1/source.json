@@ -1,0 +1,84 @@
+{
+    "aliases": {
+    },
+    "realms": [
+        {
+            "uuid": "$r_1",
+            "route": "public",
+            "label": "Public realm",
+            "permissions": [
+                "public"
+            ]
+        }
+    ],
+    "themes": [
+        {
+            "uuid": "$t_2",
+            "realm_uuid": "$r_1",
+            "route": "farm",
+            "label": "Farm theme"
+        },
+        {
+            "uuid": "$t_3",
+            "realm_uuid": "$r_1",
+            "route": "gerbils",
+            "label": "Gerbils theme"
+        }
+    ],
+    "synonyms": [
+        {
+            "uuid": "$s_1",
+            "theme_uuid": "$t_3",
+            "description": "Various mouse names",
+            "values": [
+                "mouse",
+                "gerbil",
+                "mice"
+            ]
+        }
+    ],
+    "implicit_tags": [
+        {
+            "uuid": "$i_3",
+            "theme_uuid": "$t_3",
+            "description": "Do not show scary mouse",
+            "values": [
+                "scary"
+            ]
+        }
+    ],
+    "groups": [
+        {
+            "uuid": "$g_1",
+            "realm_uuid": "$r_1",
+            "theme_uuid": "$t_3",
+            "route": "browney",
+            "label": "Browney mouse",
+            "registered_on": "$today",
+            "registered_by": "Igor Zyktin",
+            "hierarchy": "gerbils",
+            "path": "./gerbils_browney"
+        },
+        {
+            "uuid": "$g_2",
+            "realm_uuid": "$r_1",
+            "theme_uuid": "$t_3",
+            "route": "whitey",
+            "label": "Whitey mouse",
+            "registered_on": "$today",
+            "registered_by": "Igor Zyktin",
+            "hierarchy": "gerbils",
+            "path": "./gerbils_whitey"
+        }
+    ],
+    "metas": [
+        {
+            "realm_uuid": "$r_1",
+            "theme_uuid": "$t_3",
+            "registered_on": "$today",
+            "registered_by": "Igor Zyktin",
+            "hierarchy": "gerbils",
+            "path": "./gerbils_all"
+        }
+    ]
+}
