@@ -1,8 +1,14 @@
+# -*- coding: utf-8 -*-
+
+"""Helper type for a single file relocation/conversion.
+"""
 from dataclasses import dataclass
 
 
 @dataclass
 class Relocation:
+    """Helper type for a single file relocation/conversion.
+    """
     uuid: str
     realm_uuid: str
     theme_uuid: str

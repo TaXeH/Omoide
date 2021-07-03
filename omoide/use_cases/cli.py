@@ -2,94 +2,55 @@
 
 """Command line utils.
 """
-from dataclasses import dataclass
-from typing import List, Type, TypeVar, Optional, Tuple
+from typing import List, Type, Optional, Tuple, TypeVar
 
-import omoide.use_cases.constants
+from omoide.use_cases import commands
 from omoide.use_cases import constants
 
-
-@dataclass(frozen=True)
-class BuildCommand:
-    """Create static database."""
-    sources_path: str
-    content_path: str
-
-
-@dataclass(frozen=True)
-class MakeMigrationCommand:
-    """Migration creation operation setup."""
-    trunk: str
-    leaf: str
-    sources_path: str
-    content_path: str
-
-
-@dataclass(frozen=True)
-class MigrateCommand:
-    """Migration operation setup."""
-    trunk: str
-    leaf: str
-    sources_path: str
-    content_path: str
-
-
-TMig = TypeVar('TMig', MakeMigrationCommand, MigrateCommand)
-
-
-@dataclass(frozen=True)
-class SyncCommand:
-    """Sync operation setup."""
-    trunk: str
-    leaf: str
-    sources_path: str
-    content_path: str
-    nocopy: bool
-
-
-@dataclass(frozen=True)
-class RunserverCommand:
-    """Server startup operation setup."""
-    host: str
-    port: int
-    content_path: str
+T = TypeVar('T')
 
 
 def parse_arguments(args: List[str],
-                    sources_path: Optional[str],
-                    content_path: Optional[str]):
+                    sources_folder: Optional[str],
+                    content_folder: Optional[str]):
     """Construct operation from arguments."""
-    sources_path, args = extract_parameter(
+    sources_folder, args = extract_parameter(
         name=constants.SOURCES_FOLDER_NAME,
         args=args,
-        variant=sources_path,
+        variant=sources_folder,
         default=constants.DEFAULT_SOURCES_FOLDER,
     )
 
-    content_path, args = extract_parameter(
+    content_folder, args = extract_parameter(
         name=constants.CONTENT_FOLDER_NAME,
         args=args,
-        variant=content_path,
+        variant=content_folder,
         default=constants.DEFAULT_CONTENT_FOLDER
     )
 
     args = [x.lower() for x in args]
     command, rest = args[0], args[1:]
 
-    if command == 'makemigrations':
-        operation = make_operation_migrations(rest, sources_path, content_path)
+    if command == 'make_migrations':
+        operation = make_operation_migrations(rest,
+                                              sources_folder, content_folder)
 
     elif command == 'migrate':
-        operation = make_operation_migrate(rest, sources_path, content_path)
+        operation = make_operation_migrate(rest,
+                                           sources_folder, content_folder)
 
     elif command == 'sync':
-        operation = make_operation_sync(rest, sources_path, content_path)
+        operation = make_operation_sync(rest,
+                                        sources_folder, content_folder)
+
+    elif command == 'freeze':
+        operation = make_operation_freeze(sources_folder, content_folder)
 
     elif command == 'runserver':
-        operation = make_operation_runserver(rest, content_path)
+        operation = make_operation_runserver(rest, content_folder)
 
     else:
-        raise ValueError(f'Unknown command {command}')
+        raise ValueError(f'Unknown command: {command}')
 
     return operation
 
@@ -133,24 +94,32 @@ def extract_flag(name: str, args: List[str],
     return result, resulting_args
 
 
-def make_operation_migrations(args: List[str], source_path: str,
-                              content_path: str) -> MakeMigrationCommand:
+def make_operation_migrations(args: List[str],
+                              source_folder: str,
+                              content_folder: str
+                              ) -> commands.MakeMigrationsCommand:
     """Make migration preparation operation."""
-    return _make_operation_base_migration(args, MakeMigrationCommand,
-                                          source_path, content_path)
+    return _make_operation_base_migration(args,
+                                          commands.MakeMigrationsCommand,
+                                          source_folder,
+                                          content_folder)
 
 
-def make_operation_migrate(args: List[str], source_path: str,
-                           content_path: str) -> MigrateCommand:
+def make_operation_migrate(args: List[str],
+                           source_folder: str,
+                           content_folder: str
+                           ) -> commands.MigrateCommand:
     """Make migration operation."""
-    return _make_operation_base_migration(args, MigrateCommand,
-                                          source_path, content_path)
+    return _make_operation_base_migration(args,
+                                          commands.MigrateCommand,
+                                          source_folder,
+                                          content_folder)
 
 
 def _make_operation_base_migration(args: List[str],
-                                   desired_type: Type[TMig],
-                                   source_path: str,
-                                   content_path: str) -> TMig:
+                                   desired_type: Type[T],
+                                   source_folder: str,
+                                   content_folder: str) -> T:
     """Common creation of migration operation."""
     trunk = 'all'
     leaf = 'all'
@@ -166,16 +135,14 @@ def _make_operation_base_migration(args: List[str],
             f'You cannot use all trunks with specific leaf (given {leaf})'
         )
 
-    return desired_type(
-        trunk=trunk,
-        leaf=leaf,
-        sources_path=source_path,
-        content_path=content_path,
-    )
+    return desired_type(trunk=trunk,
+                        leaf=leaf,
+                        sources_folder=source_folder,
+                        content_folder=content_folder)
 
 
-def make_operation_sync(args: List[str], source_path: str,
-                        content_path: str) -> SyncCommand:
+def make_operation_sync(args: List[str], source_folder: str,
+                        content_folder: str) -> commands.SyncCommand:
     """Make sync operation."""
     nocopy, args = extract_flag('nocopy', args, default=False)
     trunk = 'all'
@@ -203,20 +170,24 @@ def make_operation_sync(args: List[str], source_path: str,
         else:
             raise ValueError(f'Unknown sync target {target}')
 
-    return SyncCommand(
-        trunk=trunk,
-        leaf=leaf,
-        sources_path=source_path,
-        content_path=content_path,
-        nocopy=nocopy,
-    )
+    return commands.SyncCommand(trunk=trunk,
+                                leaf=leaf,
+                                sources_folder=source_folder,
+                                content_folder=content_folder)
+
+
+def make_operation_freeze(source_folder: str,
+                          content_folder: str) -> commands.FreezeCommand:
+    """Make freeze operation."""
+    return commands.FreezeCommand(sources_folder=source_folder,
+                                  content_folder=content_folder)
 
 
 def make_operation_runserver(args: List[str],
-                             content_path: str) -> RunserverCommand:
+                             content_folder: str) -> commands.RunserverCommand:
     """Make server running operation."""
-    host = omoide.use_cases.constants.DEFAULT_SERVER_HOST
-    port = omoide.use_cases.constants.DEFAULT_SERVER_PORT
+    host = constants.DEFAULT_SERVER_HOST
+    port = constants.DEFAULT_SERVER_PORT
 
     if args:
         command = args[0]
@@ -237,8 +208,6 @@ def make_operation_runserver(args: List[str],
 
         host = given_host or host
 
-    return RunserverCommand(
-        host=host,
-        port=port,
-        content_path=content_path,
-    )
+    return commands.RunserverCommand(host=host,
+                                     port=port,
+                                     content_folder=content_folder)

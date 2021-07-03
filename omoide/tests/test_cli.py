@@ -6,6 +6,7 @@ from functools import partial
 
 import pytest
 
+from omoide.use_cases import commands
 from omoide.use_cases import cli
 from omoide.use_cases import constants
 
@@ -13,52 +14,52 @@ parse = partial(cli.parse_arguments, sources_path=None, content_path=None)
 
 
 def test_makemigration_all():
-    op1 = parse(['makemigrations'])
-    op2 = parse(['makemigrations', 'all'])
-    op3 = parse(['makemigrations', 'all', 'all'])
+    op1 = parse(['make_migrations'])
+    op2 = parse(['make_migrations', 'all'])
+    op3 = parse(['make_migrations', 'all', 'all'])
 
     assert op1 == op2 == op3
 
-    assert isinstance(op1, cli.MakeMigrationCommand)
+    assert isinstance(op1, commands.MakeMigrationsCommand)
     assert op1.trunk == 'all'
     assert op1.leaf == 'all'
-    assert op1.sources_path == constants.DEFAULT_SOURCES_FOLDER
-    assert op1.content_path == constants.DEFAULT_CONTENT_FOLDER
+    assert op1.sources_folder == constants.DEFAULT_SOURCES_FOLDER
+    assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_makemigration_trunk():
-    op1 = parse(['makemigrations', 'folder'])
-    op2 = parse(['makemigrations', 'folder', 'all'])
+    op1 = parse(['make_migrations', 'folder'])
+    op2 = parse(['make_migrations', 'folder', 'all'])
 
     assert op1 == op2
 
-    assert isinstance(op1, cli.MakeMigrationCommand)
+    assert isinstance(op1, commands.MakeMigrationsCommand)
     assert op1.trunk == 'folder'
     assert op1.leaf == 'all'
-    assert op1.sources_path == constants.DEFAULT_SOURCES_FOLDER
-    assert op1.content_path == constants.DEFAULT_CONTENT_FOLDER
+    assert op1.sources_folder == constants.DEFAULT_SOURCES_FOLDER
+    assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_makemigration_leaf():
-    op = parse(['makemigrations', 'folder', 'some'])
+    op = parse(['make_migrations', 'folder', 'some'])
 
-    assert isinstance(op, cli.MakeMigrationCommand)
+    assert isinstance(op, commands.MakeMigrationsCommand)
     assert op.trunk == 'folder'
     assert op.leaf == 'some'
-    assert op.sources_path == constants.DEFAULT_SOURCES_FOLDER
-    assert op.content_path == constants.DEFAULT_CONTENT_FOLDER
+    assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
+    assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_makemigration_paths():
-    op = cli.parse_arguments(['makemigrations',
+    op = cli.parse_arguments(['make_migrations',
                               '--sources', 'test1',
                               '--content', 'test2'], None, None)
 
-    assert isinstance(op, cli.MakeMigrationCommand)
+    assert isinstance(op, commands.MakeMigrationsCommand)
     assert op.trunk == 'all'
     assert op.leaf == 'all'
-    assert op.sources_path == 'test1'
-    assert op.content_path == 'test2'
+    assert op.sources_folder == 'test1'
+    assert op.content_folder == 'test2'
 
 
 def test_migrate_all():
@@ -68,11 +69,11 @@ def test_migrate_all():
 
     assert op1 == op2 == op3
 
-    assert isinstance(op1, cli.MigrateCommand)
+    assert isinstance(op1, commands.MigrateCommand)
     assert op1.trunk == 'all'
     assert op1.leaf == 'all'
-    assert op1.sources_path == constants.DEFAULT_SOURCES_FOLDER
-    assert op1.content_path == constants.DEFAULT_CONTENT_FOLDER
+    assert op1.sources_folder == constants.DEFAULT_SOURCES_FOLDER
+    assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_migrate_trunk():
@@ -81,21 +82,21 @@ def test_migrate_trunk():
 
     assert op1 == op2
 
-    assert isinstance(op1, cli.MigrateCommand)
+    assert isinstance(op1, commands.MigrateCommand)
     assert op1.trunk == 'folder'
     assert op1.leaf == 'all'
-    assert op1.sources_path == constants.DEFAULT_SOURCES_FOLDER
-    assert op1.content_path == constants.DEFAULT_CONTENT_FOLDER
+    assert op1.sources_folder == constants.DEFAULT_SOURCES_FOLDER
+    assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_migrate_leaf():
     op = parse(['migrate', 'folder', 'some'])
 
-    assert isinstance(op, cli.MigrateCommand)
+    assert isinstance(op, commands.MigrateCommand)
     assert op.trunk == 'folder'
     assert op.leaf == 'some'
-    assert op.sources_path == constants.DEFAULT_SOURCES_FOLDER
-    assert op.content_path == constants.DEFAULT_CONTENT_FOLDER
+    assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
+    assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_migrate_all_leaves():
@@ -109,11 +110,11 @@ def test_migrate_paths():
                               '--sources', 'test1',
                               '--content', 'test2'], None, None)
 
-    assert isinstance(op, cli.MigrateCommand)
+    assert isinstance(op, commands.MigrateCommand)
     assert op.trunk == 'all'
     assert op.leaf == 'all'
-    assert op.sources_path == 'test1'
-    assert op.content_path == 'test2'
+    assert op.sources_folder == 'test1'
+    assert op.content_folder == 'test2'
 
 
 def test_migrate_not_enough_paths():
@@ -126,34 +127,31 @@ def test_migrate_not_enough_paths():
 def test_sync_all():
     op = cli.parse_arguments(['sync'], None, None)
 
-    assert isinstance(op, cli.SyncCommand)
+    assert isinstance(op, commands.SyncCommand)
     assert op.trunk == 'all'
     assert op.leaf == 'all'
-    assert op.sources_path == constants.DEFAULT_SOURCES_FOLDER
-    assert op.content_path == constants.DEFAULT_CONTENT_FOLDER
-    assert not op.nocopy
+    assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
+    assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_sync_trunk():
     op = cli.parse_arguments(['sync', 'trunk', 'test1'], None, None)
 
-    assert isinstance(op, cli.SyncCommand)
+    assert isinstance(op, commands.SyncCommand)
     assert op.trunk == 'test1'
     assert op.leaf == 'all'
-    assert op.sources_path == constants.DEFAULT_SOURCES_FOLDER
-    assert op.content_path == constants.DEFAULT_CONTENT_FOLDER
-    assert not op.nocopy
+    assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
+    assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_sync_leaf():
     op = cli.parse_arguments(['sync', 'leaf', 'test2'], None, None)
 
-    assert isinstance(op, cli.SyncCommand)
+    assert isinstance(op, commands.SyncCommand)
     assert op.trunk == 'find'
     assert op.leaf == 'test2'
-    assert op.sources_path == constants.DEFAULT_SOURCES_FOLDER
-    assert op.content_path == constants.DEFAULT_CONTENT_FOLDER
-    assert not op.nocopy
+    assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
+    assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_sync_bad_target():
@@ -169,38 +167,31 @@ def test_sync_not_enough_parameters():
         cli.parse_arguments(['sync', 'wtf'], None, None)
 
 
-def test_sync_no_copy():
-    op = cli.parse_arguments(['sync', '--nocopy'], None, None)
-
-    assert isinstance(op, cli.SyncCommand)
-    assert op.nocopy
-
-
 def test_runserver_bare():
     op = cli.parse_arguments(['runserver'], None, None)
 
-    assert isinstance(op, cli.RunserverCommand)
+    assert isinstance(op, commands.RunserverCommand)
     assert op.host == constants.DEFAULT_SERVER_HOST
     assert op.port == constants.DEFAULT_SERVER_PORT
-    assert op.content_path == constants.DEFAULT_CONTENT_FOLDER
+    assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_runserver_port():
     op = cli.parse_arguments(['runserver', '8888'], None, None)
 
-    assert isinstance(op, cli.RunserverCommand)
+    assert isinstance(op, commands.RunserverCommand)
     assert op.host == constants.DEFAULT_SERVER_HOST
     assert op.port == 8888
-    assert op.content_path == constants.DEFAULT_CONTENT_FOLDER
+    assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_runserver_full():
     op = cli.parse_arguments(['runserver', '192.168.1.67:8888'], None, None)
 
-    assert isinstance(op, cli.RunserverCommand)
+    assert isinstance(op, commands.RunserverCommand)
     assert op.host == '192.168.1.67'
     assert op.port == 8888
-    assert op.content_path == constants.DEFAULT_CONTENT_FOLDER
+    assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_runserver_wrong_port():
@@ -210,6 +201,6 @@ def test_runserver_wrong_port():
 
 
 def test_bad_command():
-    msg = 'Unknown command wtf'
+    msg = 'Unknown command: wtf'
     with pytest.raises(ValueError, match=msg):
         cli.parse_arguments(['wtf'], None, None)

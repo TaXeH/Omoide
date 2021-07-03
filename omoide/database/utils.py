@@ -8,37 +8,37 @@ from sqlalchemy import select, Column
 from sqlalchemy.engine import Engine
 
 from omoide import core
-from omoide.database.models import base, users
+from omoide.database.models import users
 
 
 def get_realms_uuids(database: Engine) -> Set[str]:
     """Get all used uuids for realms."""
-    return get_unique(database, base.realms.c.uuid)
+    return get_unique(database, core.realms.c.uuid)
 
 
 def get_themes_uuids(database: Engine) -> Set[str]:
     """Get all used uuids for themes."""
-    return get_unique(database, base.themes.c.uuid)
+    return get_unique(database, core.themes.c.uuid)
 
 
 def get_groups_uuids(database: Engine) -> Set[str]:
     """Get all used uuids for groups."""
-    return get_unique(database, base.groups.c.uuid)
+    return get_unique(database, core.groups.c.uuid)
 
 
 def get_metas_uuids(database: Engine) -> Set[str]:
     """Get all used uuids for metas."""
-    return get_unique(database, base.metas.c.uuid)
+    return get_unique(database, core.metas.c.uuid)
 
 
 def get_synonyms_uuids(database: Engine) -> Set[str]:
     """Get all used uuids for synonyms."""
-    return get_unique(database, base.synonyms.c.uuid)
+    return get_unique(database, core.synonyms.c.uuid)
 
 
 def get_implicit_tags_uuids(database: Engine) -> Set[str]:
     """Get all used uuids for implicit tags."""
-    return get_unique(database, base.implicit_tags.c.uuid)
+    return get_unique(database, core.implicit_tags.c.uuid)
 
 
 def get_users_uuids(database: Engine) -> Set[str]:

@@ -4,16 +4,13 @@
 
 Possible call variants:
 
-    To create migrations:
-        python manage.py makemigrations
-        python manage.py makemigrations all
-        python manage.py makemigrations all all
-        python manage.py makemigrations source_folder_1
-        python manage.py makemigrations source_folder_1 all
-        python manage.py makemigrations source_folder_1 leaf_folder_1
-
-        Can add --sources to specify sources dir.
-        Can add --content to specify content dir.
+    To make migrations:
+        python manage.py make_migrations
+        python manage.py make_migrations all
+        python manage.py make_migrations all all
+        python manage.py make_migrations source_folder_1
+        python manage.py make_migrations source_folder_1 all
+        python manage.py make_migrations source_folder_1 leaf_folder_1
 
     To perform migrations:
         python manage.py migrate
@@ -22,9 +19,6 @@ Possible call variants:
         python manage.py migrate source_folder_1
         python manage.py migrate source_folder_1 all
         python manage.py migrate source_folder_1 leaf_folder_1
-
-        Can add --sources to specify sources dir.
-        Can add --content to specify content dir.
 
     To synchronize databases:
         python manage.py sync - from all leaves to all trunks
@@ -35,12 +29,16 @@ Possible call variants:
         python manage.py sync leaf leaf_folder_1 - from specified leaf into
                                                    trunk and then to root
 
-        Can add --nocopy to avoid copying new root database to the content dir.
+    To create final static database:
+        python manage.py freeze
 
     To launch development server:
         python manage.py runserver
         python manage.py runserver 9000
         python manage.py runserver 127.0.0.1:9000
+
+    Use --sources to specify sources folder.
+    Use --content to specify content folder.
 """
 import os
 import sys
@@ -48,7 +46,8 @@ from typing import List
 
 from omoide import core
 from omoide.use_cases import cli
-from omoide.use_cases.makemigrations import makemigrations
+from omoide.use_cases import commands
+from omoide.use_cases.make_migrations import make_migrations
 
 
 def main(args: List[str], *,
@@ -56,6 +55,7 @@ def main(args: List[str], *,
          stdout: core.STDOut = core.STDOut()) -> None:
     """Entry point."""
     if not args:
+        stdout.yellow('No arguments to parse')
         return
 
     source_path = os.environ.get('OMOIDE_SOURCE')
@@ -63,53 +63,62 @@ def main(args: List[str], *,
 
     operation = cli.parse_arguments(args, source_path, content_path)
 
-    if isinstance(operation, cli.MakeMigrationCommand):
-        perform_makemigrations(operation, filesystem, stdout)
+    if isinstance(operation, commands.MakeMigrationsCommand):
+        perform_make_migrations(operation, filesystem, stdout)
 
-    elif isinstance(operation, cli.MigrateCommand):
+    elif isinstance(operation, commands.MigrateCommand):
         perform_migrate(operation, filesystem, stdout)
 
-    elif isinstance(operation, cli.SyncCommand):
+    elif isinstance(operation, commands.SyncCommand):
         perform_sync(operation, filesystem, stdout)
 
+    elif isinstance(operation, commands.FreezeCommand):
+        perform_freeze(operation, filesystem, stdout)
+
     else:
-        assert isinstance(operation, cli.RunserverCommand)
+        assert isinstance(operation, commands.RunserverCommand)
         perform_runserver(operation, filesystem, stdout)
 
 
-def perform_makemigrations(command: cli.MakeMigrationCommand,
-                           filesystem: core.Filesystem,
-                           stdout: core.STDOut) -> None:
-    """Perform command."""
-    if not filesystem.exists(command.sources_path):
+def perform_make_migrations(
+        command: commands.MakeMigrationsCommand,
+        filesystem: core.Filesystem,
+        stdout: core.STDOut) -> None:
+    """Perform make_migrations command."""
+    if not filesystem.exists(command.sources_folder):
         raise FileNotFoundError(
-            f'Sources folder {command.sources_path} does not exist'
+            f'Sources folder {command.sources_folder} does not exist'
         )
-
-    if command.trunk == 'all':
-        if command.leaf == 'all':
-            makemigrations.all_sources(command, filesystem, stdout)
-        else:
-            makemigrations.one_leaf(command, filesystem, stdout)
-    else:
-        makemigrations.one_one_trunk(command, filesystem, stdout)
+    stdout.print('Creating migrations')
+    total = make_migrations.act(command, filesystem, stdout)
+    stdout.print(f'Total {total} migrations created')
 
 
-def perform_migrate(command: cli.MigrateCommand, filesystem: core.Filesystem,
+def perform_migrate(command: commands.MigrateCommand,
+                    filesystem: core.Filesystem,
                     stdout: core.STDOut) -> None:
-    """Perform command."""
+    """Perform migration command."""
     stdout.print('Applying migrations')
     # TODO
 
 
-def perform_sync(command: cli.SyncCommand, filesystem: core.Filesystem,
+def perform_sync(command: commands.SyncCommand,
+                 filesystem: core.Filesystem,
                  stdout: core.STDOut) -> None:
-    """Perform command."""
+    """Perform sync command."""
     stdout.print('Synchronizing databases')
     # TODO
 
 
-def perform_runserver(command: cli.RunserverCommand,
+def perform_freeze(command: commands.FreezeCommand,
+                   filesystem: core.Filesystem,
+                   stdout: core.STDOut) -> None:
+    """Perform freeze command."""
+    stdout.print('Making static database')
+    # TODO
+
+
+def perform_runserver(command: commands.RunserverCommand,
                       filesystem: core.Filesystem,
                       stdout: core.STDOut) -> None:
     """Perform command."""

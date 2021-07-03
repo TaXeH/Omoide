@@ -4,23 +4,24 @@
 """
 import sys
 
+import omoide.use_cases.commands
 from omoide import core
 from omoide.core import extend
 from omoide.database import constants as db_constants
 from omoide.database import operations as db_operations
 from omoide.use_cases import cli
-from omoide.use_cases.bulld import database as db_build
+from omoide.use_cases.freeze import database as db_build
 from sqlalchemy.orm import sessionmaker
 from omoide.database import models
 from omoide.database import common
 
 
-def build(command: cli.BuildCommand, filesystem: core.Filesystem,
+def build(command: omoide.use_cases.commands.FreezeCommand, filesystem: core.Filesystem,
           stdout: core.STDOut) -> None:
     """Create static database."""
-    root_db_path = filesystem.join(command.sources_path,
+    root_db_path = filesystem.join(command.sources_folder,
                                    db_constants.ROOT_DB_FILENAME)
-    target_db_path = filesystem.join(command.content_path,
+    target_db_path = filesystem.join(command.content_folder,
                                      db_constants.STATIC_DB_FILENAME)
 
     if filesystem.not_exists(root_db_path):
@@ -46,7 +47,7 @@ def build(command: cli.BuildCommand, filesystem: core.Filesystem,
     #     print(each)
 
     target_database = db_operations.create_database(
-        folder=command.content_path,
+        folder=command.content_folder,
         filename=db_constants.STATIC_DB_FILENAME,
         filesystem=filesystem,
         stdout=stdout,
@@ -82,7 +83,7 @@ def build(command: cli.BuildCommand, filesystem: core.Filesystem,
 
 
 if __name__ == '__main__':
-    cmd = cli.BuildCommand(
+    cmd = omoide.use_cases.commands.FreezeCommand(
         sources_path='D:\\PycharmProjects\\Omoide\\example\\sources',
         content_path='D:\\PycharmProjects\\Omoide\\example\\content',
     )

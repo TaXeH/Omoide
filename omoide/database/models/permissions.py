@@ -22,10 +22,11 @@ class PermissionRealm(common.BaseModel):
     __tablename__ = 'permissions_realms'
 
     # primary and foreign keys
+    id = sa.Column(sa.Integer,
+                   primary_key=True, unique=True, autoincrement=True)
     realm_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                            sa.ForeignKey('realms.uuid'),
-                           primary_key=True, nullable=False,
-                           unique=False, index=True)
+                           nullable=False, unique=False, index=True)
     # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
@@ -38,10 +39,11 @@ class PermissionTheme(common.BaseModel):
     __tablename__ = 'permissions_themes'
 
     # primary and foreign keys
+    id = sa.Column(sa.Integer,
+                   primary_key=True, unique=True, autoincrement=True)
     theme_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                            sa.ForeignKey('themes.uuid'),
-                           primary_key=True, nullable=False,
-                           unique=False, index=True)
+                           nullable=False, unique=False, index=True)
     # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
@@ -54,9 +56,11 @@ class PermissionGroup(common.BaseModel):
     __tablename__ = 'permissions_groups'
 
     # primary and foreign keys
+    id = sa.Column(sa.Integer,
+                   primary_key=True, unique=True, autoincrement=True)
     group_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                            sa.ForeignKey('groups.uuid'),
-                           primary_key=True, nullable=False, unique=False)
+                           nullable=False, unique=False, index=True)
     # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
@@ -69,10 +73,11 @@ class PermissionMeta(common.BaseModel):
     __tablename__ = 'permissions_metas'
 
     # primary and foreign keys
+    id = sa.Column(sa.Integer,
+                   primary_key=True, unique=True, autoincrement=True)
     meta_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                           sa.ForeignKey('metas.uuid'),
-                          primary_key=True, nullable=False,
-                          unique=False, index=True)
+                          nullable=False, unique=False, index=True)
     # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
@@ -85,10 +90,11 @@ class PermissionUser(common.BaseModel):
     __tablename__ = 'permissions_users'
 
     # primary and foreign keys
+    id = sa.Column(sa.Integer,
+                   primary_key=True, unique=True, autoincrement=True)
     user_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                           sa.ForeignKey('users.uuid'),
-                          primary_key=True, nullable=False,
-                          unique=False, index=True)
+                          nullable=False, unique=False, index=True)
     # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
