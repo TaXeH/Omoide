@@ -20,6 +20,14 @@ Possible call variants:
         python manage.py migrate source_folder_1 all
         python manage.py migrate source_folder_1 leaf_folder_1
 
+    To relocate and resize media files:
+        python manage.py relocate
+        python manage.py relocate all
+        python manage.py relocate all all
+        python manage.py relocate source_folder_1
+        python manage.py relocate source_folder_1 all
+        python manage.py relocate source_folder_1 leaf_folder_1
+
     To synchronize databases:
         python manage.py sync - from all leaves to all trunks
                                 and then everything to root
@@ -69,6 +77,9 @@ def main(args: List[str], *,
     elif isinstance(operation, commands.MigrateCommand):
         perform_migrate(operation, filesystem, stdout)
 
+    elif isinstance(operation, commands.RelocateCommand):
+        perform_relocate(operation, filesystem, stdout)
+
     elif isinstance(operation, commands.SyncCommand):
         perform_sync(operation, filesystem, stdout)
 
@@ -104,6 +115,14 @@ def perform_migrate(command: commands.MigrateCommand,
                     stdout: core.STDOut) -> None:
     """Perform migration command."""
     stdout.print('Applying migrations')
+    # TODO
+
+
+def perform_relocate(command: commands.RelocateCommand,
+                     filesystem: core.Filesystem,
+                     stdout: core.STDOut) -> None:
+    """Perform relocation command."""
+    stdout.print('Applying relocations')
     # TODO
 
 

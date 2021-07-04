@@ -39,6 +39,10 @@ def parse_arguments(args: List[str],
         operation = make_operation_migrate(rest,
                                            sources_folder, content_folder)
 
+    elif command == 'relocate':
+        operation = make_operation_relocate(rest,
+                                            sources_folder, content_folder)
+
     elif command == 'sync':
         operation = make_operation_sync(rest,
                                         sources_folder, content_folder)
@@ -112,6 +116,17 @@ def make_operation_migrate(args: List[str],
     """Make migration operation."""
     return _make_operation_base_migration(args,
                                           commands.MigrateCommand,
+                                          source_folder,
+                                          content_folder)
+
+
+def make_operation_relocate(args: List[str],
+                            source_folder: str,
+                            content_folder: str
+                            ) -> commands.RelocateCommand:
+    """Make relocation operation."""
+    return _make_operation_base_migration(args,
+                                          commands.RelocateCommand,
                                           source_folder,
                                           content_folder)
 

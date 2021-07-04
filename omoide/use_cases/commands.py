@@ -24,6 +24,15 @@ class MigrateCommand:
 
 
 @dataclass(frozen=True)
+class RelocateCommand:
+    """Move and compress actual media content."""
+    trunk: str
+    leaf: str
+    sources_folder: str
+    content_folder: str
+
+
+@dataclass(frozen=True)
 class SyncCommand:
     """We have filled leaf databases, lets gather information into root."""
     trunk: str

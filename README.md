@@ -34,5 +34,4 @@
 1. [Архитектура](./documentation/russian/architecture.md)
 1. [Стоимость и расходы на содержание](./documentation/russian/expenses.md)
 1. [Сложности и потенциальные доработки](./documentation/russian/questions.md)
-1. [Поток исполнения](./documentation/russian/flow.md)
-1. [Схема базы данных](./documentation/russian/scheme.md)
+1. [Как загружать данные в систему](./documentation/russian/update.md)
