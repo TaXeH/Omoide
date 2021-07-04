@@ -61,6 +61,11 @@ class Renderer:
     """
 
     @staticmethod
+    def is_known_media(extension: str) -> bool:
+        """Return True if we can handle this file."""
+        return get_analyze_tool(extension) is not None
+
+    @staticmethod
     def analyze(path: str, extension: str) -> MediaInfo:
         """Gather media information about the file."""
         tool = get_analyze_tool(extension)

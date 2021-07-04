@@ -13,8 +13,8 @@ __all__ = [
     'ThemeTag',
     'GroupTag',
     'MetaTag',
-    'SynonymValue',
-    'ImplicitTagValue',
+    'ImplicitTag',
+    'Synonym',
 ]
 
 
@@ -86,37 +86,35 @@ class MetaTag(common.BaseModel):
     meta = relationship('Meta', back_populates='tags')
 
 
-class SynonymValue(common.BaseModel):
-    """Single synonym value model."""
-    __tablename__ = 'synonyms_values'
+class Synonym(common.BaseModel):
+    """Synonym model."""
+    __tablename__ = 'synonyms'
 
     # primary and foreign keys
     id = sa.Column(sa.Integer,
                    primary_key=True, unique=True, autoincrement=True)
-    implicit_tag_uuid = sa.Column('synonym_uuid',
-                                  sa.String(length=constants.UUID_LEN),
-                                  sa.ForeignKey('synonyms.uuid'),
-                                  nullable=False, unique=False, index=True)
+    theme_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
+                           sa.ForeignKey('themes.uuid'),
+                           nullable=False, unique=False, index=True)
     # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
     # relations
-    synonym = relationship('Synonym', back_populates='values')
+    theme = relationship('Theme', back_populates='synonyms')
 
 
-class ImplicitTagValue(common.BaseModel):
-    """Single implicit tag value model."""
-    __tablename__ = 'implicit_tags_values'
+class ImplicitTag(common.BaseModel):
+    """Implicit tag model."""
+    __tablename__ = 'implicit_tags'
 
     # primary and foreign keys
     id = sa.Column(sa.Integer,
                    primary_key=True, unique=True, autoincrement=True)
-    implicit_tag_uuid = sa.Column('implicit_tag_uuid',
-                                  sa.String(length=constants.UUID_LEN),
-                                  sa.ForeignKey('implicit_tags.uuid'),
-                                  nullable=False, unique=False, index=True)
+    theme_uuid = sa.Column('theme_uuid', sa.String(length=constants.UUID_LEN),
+                           sa.ForeignKey('themes.uuid'),
+                           nullable=False, unique=False, index=True)
     # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
     # relations
-    implicit_tag = relationship('ImplicitTag', back_populates='values')
+    theme = relationship('Theme', back_populates='implicit_tags')

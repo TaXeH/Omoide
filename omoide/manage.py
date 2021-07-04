@@ -85,11 +85,16 @@ def perform_make_migrations(
         filesystem: core.Filesystem,
         stdout: core.STDOut) -> None:
     """Perform make_migrations command."""
+    stdout.print('Creating migrations')
+
     if not filesystem.exists(command.sources_folder):
         raise FileNotFoundError(
             f'Sources folder {command.sources_folder} does not exist'
         )
-    stdout.print('Creating migrations')
+
+    if not filesystem.exists(command.content_folder):
+        filesystem.ensure_folder_exists(command.content_folder, stdout)
+
     total = make_migrations.act(command, filesystem, stdout)
     stdout.print(f'Total {total} migrations created')
 

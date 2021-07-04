@@ -1,6 +1,4 @@
 {
-    "aliases": {
-    },
     "realms": [
         {
             "uuid": "$r_1",
@@ -22,27 +20,13 @@
             "uuid": "$t_3",
             "realm_uuid": "$r_1",
             "route": "gerbils",
-            "label": "Gerbils theme"
-        }
-    ],
-    "synonyms": [
-        {
-            "uuid": "$s_1",
-            "theme_uuid": "$t_3",
-            "description": "Various mouse names",
-            "values": [
+            "label": "Gerbils theme",
+            "synonyms": [
                 "mouse",
                 "gerbil",
                 "mice"
-            ]
-        }
-    ],
-    "implicit_tags": [
-        {
-            "uuid": "$i_3",
-            "theme_uuid": "$t_3",
-            "description": "Do not show scary mouse",
-            "values": [
+            ],
+            "implicit_tags": [
                 "scary"
             ]
         }
@@ -50,35 +34,41 @@
     "groups": [
         {
             "uuid": "$g_1",
-            "realm_uuid": "$r_1",
             "theme_uuid": "$t_3",
             "route": "browney",
             "label": "Browney mouse",
             "registered_on": "$today",
             "registered_by": "Igor Zyktin",
             "hierarchy": "gerbils",
-            "path": "./gerbils_browney"
+            "tags": [
+                "browney"
+            ]
         },
         {
             "uuid": "$g_2",
-            "realm_uuid": "$r_1",
             "theme_uuid": "$t_3",
             "route": "whitey",
             "label": "Whitey mouse",
             "registered_on": "$today",
             "registered_by": "Igor Zyktin",
             "hierarchy": "gerbils",
-            "path": "./gerbils_whitey"
+            "tags": [
+                "whitey"
+            ]
+        },
+        {
+            "uuid": "$g_3",
+            "theme_uuid": "$t_3",
+            "route": "_",
+            "label": "No specific group"
         }
     ],
     "metas": [
         {
-            "realm_uuid": "$r_1",
-            "theme_uuid": "$t_3",
+            "group_uuid": "$g_3",
             "registered_on": "$today",
             "registered_by": "Igor Zyktin",
-            "hierarchy": "gerbils",
-            "path": "./gerbils_all"
+            "hierarchy": "gerbils"
         }
     ]
 }

@@ -68,8 +68,6 @@ class UUIDMaster:
             constants.PREFIX_THEME: self.uuids_themes,
             constants.PREFIX_GROUP: self.uuids_groups,
             constants.PREFIX_META: self.uuids_metas,
-            constants.PREFIX_SYNONYM: self.uuids_synonyms,
-            constants.PREFIX_IMPL_TAG: self.uuids_implicit_tags,
             constants.PREFIX_USER: self.uuids_users,
         }
 
@@ -78,8 +76,6 @@ class UUIDMaster:
             constants.PREFIX_THEME: self._cached_t_uuids,
             constants.PREFIX_GROUP: self._cached_g_uuids,
             constants.PREFIX_META: self._cached_m_uuids,
-            constants.PREFIX_SYNONYM: self._cached_s_uuids,
-            constants.PREFIX_IMPL_TAG: self._cached_i_uuids,
             constants.PREFIX_USER: self._cached_u_uuids,
         }
 
@@ -183,6 +179,21 @@ class UUIDMaster:
         new_uuid = self.generate_uuid(existing_uuids, prefix)
         existing_uuids.add(new_uuid)
         return UUID(new_uuid)
+
+    def generate_uuid_realm(self) -> UUID:
+        """Create and add new UUID for realm."""
+        return self.generate_and_add_uuid(existing_uuids=self.uuids_realms,
+                                          prefix=constants.PREFIX_REALM)
+
+    def generate_uuid_theme(self) -> UUID:
+        """Create and add new UUID for theme."""
+        return self.generate_and_add_uuid(existing_uuids=self.uuids_themes,
+                                          prefix=constants.PREFIX_THEME)
+
+    def generate_uuid_group(self) -> UUID:
+        """Create and add new UUID for group."""
+        return self.generate_and_add_uuid(existing_uuids=self.uuids_groups,
+                                          prefix=constants.PREFIX_GROUP)
 
     def generate_uuid_meta(self) -> UUID:
         """Create and add new UUID for meta."""

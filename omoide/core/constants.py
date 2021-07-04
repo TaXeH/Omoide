@@ -108,21 +108,24 @@ PREFIX_REALM = 'r'
 PREFIX_THEME = 't'
 PREFIX_GROUP = 'g'
 PREFIX_META = 'm'
-PREFIX_SYNONYM = 's'
-PREFIX_IMPL_TAG = 'i'
 PREFIX_USER = 'u'
+
 ALL_PREFIXES = ''.join([PREFIX_REALM,
                         PREFIX_THEME,
                         PREFIX_GROUP,
                         PREFIX_META,
-                        PREFIX_SYNONYM,
-                        PREFIX_IMPL_TAG,
                         PREFIX_USER])
 
-ALL_REALMS = 'all_realms'
-ALL_THEMES = 'all_themes'
-NEVER_FIND_THIS = 'ʕ•ᴥ•ʔ'
-UNKNOWN = 'UNKNOWN'
-UUID_PATTERN = re.compile(r'\$[' + ALL_PREFIXES + r']_\d+')
-COMMON_GROUP = 'other'
 VARIABLE_SIGN = '$'
+UUID_VARIABLE_PATTERN = re.compile(
+    r'\$[' + ALL_PREFIXES + r']_\d+'
+)
+
+UUID_LONG_VARIABLE_PATTERN = re.compile(
+    r'\$.+\..+\.[' + ALL_PREFIXES + r']_\d+'
+)
+
+# ALL_REALMS = 'all_realms'
+# ALL_THEMES = 'all_themes'
+# NEVER_FIND_THIS = 'ʕ•ᴥ•ʔ'
+# UNKNOWN = 'UNKNOWN'

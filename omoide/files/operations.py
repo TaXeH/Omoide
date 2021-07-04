@@ -7,8 +7,10 @@ from typing import Collection
 from omoide import core
 
 
-def drop_files(target_folder: str, filenames: Collection[str],
-               filesystem: core.Filesystem, stdout: core.STDOut) -> None:
+def drop_files_before_making_migrations(target_folder: str,
+                                        filenames: Collection[str],
+                                        filesystem: core.Filesystem,
+                                        stdout: core.STDOut) -> None:
     """Drop all given filenames."""
     filenames = set(filenames)
 

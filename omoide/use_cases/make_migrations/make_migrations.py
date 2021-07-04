@@ -2,13 +2,15 @@
 
 """Make migrations.
 """
+import json
 from typing import Any, Dict, Tuple, List
 
 import omoide.files.constants
 from omoide import core
-from omoide.files.operations import drop_files
+from omoide.files.operations import drop_files_before_making_migrations
 from omoide.use_cases import commands
-from omoide.use_cases.make_migrations import saving
+from omoide.use_cases.make_migrations import identity
+from omoide.use_cases.make_migrations import preprocessing
 from omoide.use_cases.make_migrations.class_relocation import Relocation
 from omoide.use_cases.make_migrations.class_sql import SQL
 
@@ -21,10 +23,19 @@ def act(command: commands.MakeMigrationsCommand, filesystem: core.Filesystem,
         omoide.files.constants.MIGRATION_FILENAME,
         omoide.files.constants.RELOCATION_FILENAME,
     }
-    drop_files(command.sources_folder, filenames_to_delete, filesystem, stdout)
+    drop_files_before_making_migrations(command.sources_folder,
+                                        filenames_to_delete,
+                                        filesystem,
+                                        stdout)
 
+    identity_master = core.IdentityMaster()
     uuid_master = core.UUIDMaster()
     renderer = core.Renderer()
+
+    identity.gather_existing_identities(command.sources_folder,
+                                        identity_master,
+                                        uuid_master,
+                                        filesystem)
 
     total_new_migrations = 0
     for trunk in filesystem.list_folders(command.sources_folder):
@@ -40,8 +51,11 @@ def act(command: commands.MakeMigrationsCommand, filesystem: core.Filesystem,
 
             leaf_folder = filesystem.join(trunk_folder, leaf)
             make_migrations_for_single_leaf(
+                trunk=trunk,
+                leaf=leaf,
                 leaf_folder=leaf_folder,
                 content_folder=command.content_folder,
+                identity_master=identity_master,
                 uuid_master=uuid_master,
                 renderer=renderer,
                 filesystem=filesystem,
@@ -52,8 +66,9 @@ def act(command: commands.MakeMigrationsCommand, filesystem: core.Filesystem,
     return total_new_migrations
 
 
-def make_migrations_for_single_leaf(leaf_folder: str,
+def make_migrations_for_single_leaf(trunk: str, leaf: str, leaf_folder: str,
                                     content_folder: str,
+                                    identity_master: core.IdentityMaster,
                                     uuid_master: core.UUIDMaster,
                                     renderer: core.Renderer,
                                     filesystem: core.Filesystem,
@@ -68,8 +83,8 @@ def make_migrations_for_single_leaf(leaf_folder: str,
         stdout.yellow(f'Source file does not exist: {source_file_path}')
         return
 
-    update_file = make_update_file(leaf_folder, uuid_master,
-                                   filesystem, stdout)
+    update_file = make_update_file(trunk, leaf, leaf_folder, identity_master,
+                                   uuid_master, filesystem, renderer)
 
     update_file_path = filesystem.join(leaf_folder,
                                        omoide.files.constants.UPDATE_FILENAME)
@@ -77,32 +92,77 @@ def make_migrations_for_single_leaf(leaf_folder: str,
     filesystem.write_json(update_file_path, update_file)
     stdout.yellow(f'Created update file: {update_file_path}')
 
-    migrations, relocations = make_migrations_from_update_file(update_file,
-                                                               content_folder,
-                                                               renderer,
-                                                               filesystem,
-                                                               stdout)
-    migrations_path = saving.save_migrations(
-        leaf_folder=leaf_folder,
-        migrations=migrations,
-        filesystem=filesystem,
-    )
-    stdout.yellow(f'Created migrations file: {migrations_path}')
+    # migrations, relocations = make_migrations_from_update_file(update_file,
+    #                                                            content_folder,
+    #                                                            renderer,
+    #                                                            filesystem,
+    #                                                            stdout)
+    # migrations_path = saving.save_migrations(
+    #     leaf_folder=leaf_folder,
+    #     migrations=migrations,
+    #     filesystem=filesystem,
+    # )
+    # stdout.yellow(f'Created migrations file: {migrations_path}')
+    #
+    # relocations_path = saving.save_relocations(
+    #     leaf_folder=leaf_folder,
+    #     relocations=relocations,
+    #     filesystem=filesystem,
+    # )
+    # stdout.yellow(f'Created relocations path: {relocations_path}')
 
-    relocations_path = saving.save_relocations(
-        leaf_folder=leaf_folder,
-        relocations=relocations,
-        filesystem=filesystem,
-    )
-    stdout.yellow(f'Created relocations path: {relocations_path}')
 
-
-def make_update_file(leaf_folder: str,
+def make_update_file(trunk: str, leaf: str, leaf_folder: str,
+                     identity_master: core.IdentityMaster,
                      uuid_master: core.UUIDMaster,
                      filesystem: core.Filesystem,
-                     stdout: core.STDOut) -> Dict[str, Any]:
+                     renderer: core.Renderer) -> Dict[str, Any]:
     """Combine all updates in big JSON file."""
-    return {}
+    source_file_path = filesystem.join(leaf_folder,
+                                       omoide.files.constants.SOURCE_FILENAME)
+    source_raw_text = filesystem.read_file(source_file_path)
+    source_text = preprocessing.preprocess_source(source_raw_text, trunk, leaf)
+    source = json.loads(source_text)
+
+    update = {
+        'variables': {},
+
+        'realms': [],
+        'themes': [],
+        'groups': [],
+        'metas': [],
+        'users': [],
+
+        'permissions_realm': [],
+        'permissions_themes': [],
+        'permissions_groups': [],
+        'permissions_metas': [],
+        'permissions_users': [],
+
+        'tags_realms': [],
+        'tags_themes': [],
+        'tags_groups': [],
+        'tags_metas': [],
+
+        'synonyms': [],
+        'implicit_tags': [],
+    }
+    preprocessing.preprocess_realms(source, update,
+                                    identity_master, uuid_master)
+    preprocessing.preprocess_themes(source, update,
+                                    identity_master, uuid_master)
+    preprocessing.preprocess_groups(source, update, identity_master,
+                                    uuid_master, filesystem, leaf_folder,
+                                    renderer)
+    preprocessing.preprocess_non_group_metas(source, update, identity_master,
+                                             uuid_master, filesystem,
+                                             leaf_folder, renderer)
+    preprocessing.preprocess_users(source, update,
+                                   identity_master, uuid_master)
+
+    update['variables'].update(identity_master.to_dict())
+
+    return update
 
 
 def make_migrations_from_update_file(update: Dict[str, Any],
@@ -113,47 +173,6 @@ def make_migrations_from_update_file(update: Dict[str, Any],
         -> Tuple[List[SQL], List[Relocation]]:
     """Create SQL migrations and relocations."""
     return [], []
-
-
-#     source_raw_text = filesystem.read_file(source_file_path)
-#     source_raw_dict = json.loads(source_raw_text)
-#     aliases = source_raw_dict.get('aliases', {})
-#     uuid_master.add_new_aliases(aliases)
-#     source_text = preprocessing.preprocess_source(source_raw_text, uuid_master)
-#     source_dict = json.loads(source_text)
-#
-#     all_objects = preprocessing.instantiate_from_source(
-#         current_source_folder=current_source_folder,
-#         content_path=content_path,
-#         source_dict=source_dict,
-#         uuid_master=uuid_master,
-#         filesystem=filesystem,
-#         renderer=renderer,
-#     )
-#
-#     all_commands = commands.instantiate_commands(
-#         all_objects=all_objects,
-#     )
-#
-#     all_relocations = relocations.instantiate_relocations(
-#         content_path=content_path,
-#         all_objects=all_objects,
-#         relocations=all_objects.relocations,
-#         filesystem=filesystem,
-#     )
-#
-#     return all_commands, all_relocations
-
-# for source in filesystem.list_folders(command.sources_path):
-#     all_commands, all_relocations = make_migrations_for_single_source(
-#         sources_path=command.sources_path,
-#         content_path=command.content_path,
-#         current_source=source,
-#         uuid_master=uuid_master,
-#         renderer=renderer,
-#         filesystem=filesystem,
-#         stdout=stdout,
-#     )
 
 
 if __name__ == '__main__':

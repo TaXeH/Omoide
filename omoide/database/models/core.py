@@ -13,8 +13,6 @@ __alL__ = [
     'Theme',
     'Group',
     'Meta',
-    'ImplicitTag',
-    'Synonym',
 ]
 
 
@@ -53,6 +51,8 @@ class Theme(common.BaseModel):
     realm = relationship('Realm', back_populates='themes')
     groups = relationship('Group', back_populates='theme')
     tags = relationship('ThemeTag', back_populates='theme')
+    synonyms = relationship('Synonym', back_populates='theme')
+    implicit_tags = relationship('ImplicitTag', back_populates='theme')
     permissions = relationship('PermissionTheme', back_populates='permissions')
 
 
@@ -78,22 +78,24 @@ class Group(common.BaseModel):
     # metarecord values are more important than these
     # date of registration in form '2021-01-01'
     registered_on = sa.Column(sa.String(length=constants.DATE_LEN),
-                              nullable=False)
+                              nullable=False, default='')
     # uuid of user or ''
     registered_by = sa.Column(sa.String(length=constants.MAX_LEN),
-                              nullable=False)
+                              nullable=False, default='')
     # name of the author
-    author = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
+    author = sa.Column(sa.String(length=constants.MAX_LEN),
+                       nullable=False, default='')
     # link to author's page or account
-    author_url = sa.Column(sa.Text, nullable=False)
+    author_url = sa.Column(sa.Text, nullable=False, default='')
     # link to the page where this content was seen
-    origin_url = sa.Column(sa.Text, nullable=False)
+    origin_url = sa.Column(sa.Text, nullable=False, default='')
     # optional description of the entity
-    comment = sa.Column(sa.Text, nullable=False)
+    comment = sa.Column(sa.Text, nullable=False, default='')
 
     # string with arbitrary names, that represent some logical structure
     # supposed to be used in ordering, like 'plants,flowers,daisy'
-    hierarchy = sa.Column(sa.Text, nullable=False)
+    hierarchy = sa.Column(sa.Text,
+                          nullable=False, default='')
 
     # relations
     theme = relationship('Theme', back_populates='groups')
@@ -131,88 +133,56 @@ class Meta(common.BaseModel):
                                    nullable=False)
     # specific content information
     # in pixels for images, 0 for everything else
-    width = sa.Column(sa.Integer, nullable=False)
+    width = sa.Column(sa.Integer, nullable=False, default=0)
     # in pixels for images, 0 for everything else
-    height = sa.Column(sa.Integer, nullable=False)
+    height = sa.Column(sa.Integer, nullable=False, default=0)
     # in megapixels for images, 0 for everything else
-    resolution = sa.Column(sa.Float, nullable=False)
+    resolution = sa.Column(sa.Float, nullable=False, default=0)
     # in bytes for any file
-    size = sa.Column(sa.Integer, nullable=False)
+    size = sa.Column(sa.Integer, nullable=False, default=0)
     # in seconds for video and audio, 0 for everything else
-    duration = sa.Column(sa.Integer, nullable=False)
+    duration = sa.Column(sa.Integer, nullable=False, default=0)
     # string like 'image', 'video', etc.
-    type = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
+    type = sa.Column(sa.String(length=constants.MAX_LEN),
+                     nullable=False, default='')
 
     # used in group handling, some arbitrary number, that helps in sorting
     ordering = sa.Column(sa.Integer, nullable=False)
 
     # information about origin
-    # overrides group information
+    # metarecord values are more important than these
     # date of registration in form '2021-01-01'
     registered_on = sa.Column(sa.String(length=constants.DATE_LEN),
-                              nullable=False)
+                              nullable=False, default='')
     # uuid of user or ''
-    registered_by = sa.Column(sa.String(length=constants.UUID_LEN),
-                              nullable=False)
+    registered_by = sa.Column(sa.String(length=constants.MAX_LEN),
+                              nullable=False, default='')
     # name of the author
-    author = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
+    author = sa.Column(sa.String(length=constants.MAX_LEN),
+                       nullable=False, default='')
     # link to author's page or account
-    author_url = sa.Column(sa.Text, nullable=False)
+    author_url = sa.Column(sa.Text, nullable=False, default='')
     # link to the page where this content was seen
-    origin_url = sa.Column(sa.Text, nullable=False)
+    origin_url = sa.Column(sa.Text, nullable=False, default='')
     # optional description of the entity
-    comment = sa.Column(sa.Text, nullable=False)
+    comment = sa.Column(sa.Text, nullable=False, default='')
 
     # identification info
     # encoded signature string
-    signature = sa.Column(sa.Text, nullable=False)
+    signature = sa.Column(sa.Text, nullable=False, default='')
     # human-readable type, like 'md5'
-    signature_type = sa.Column(sa.Text, nullable=False)
+    signature_type = sa.Column(sa.Text, nullable=False, default='')
 
     # uuid of the previous meta
-    previous = sa.Column(sa.Text, nullable=False)
+    previous = sa.Column(sa.Text, nullable=False, default='')
     # uuid of the next meta
-    next = sa.Column(sa.Text, nullable=False)
+    next = sa.Column(sa.Text, nullable=False, default='')
 
     # string with arbitrary names, that represent some logical structure
     # supposed to be used in ordering, like 'plants,flowers,daisy'
-    hierarchy = sa.Column(sa.Text, nullable=False)
+    hierarchy = sa.Column(sa.Text, nullable=False, default='')
 
     # relations
     group = relationship('Group', back_populates='metas')
     tags = relationship('MetaTag', back_populates='meta')
     permissions = relationship('PermissionMeta', back_populates='permissions')
-
-
-class Synonym(common.BaseModel):
-    """Synonym model."""
-    __tablename__ = 'synonyms'
-
-    # primary and foreign keys
-    uuid = sa.Column('uuid', sa.String(length=constants.UUID_LEN),
-                     primary_key=True, nullable=False, index=True)
-    theme_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
-                           sa.ForeignKey('themes.uuid'),
-                           nullable=False, unique=False, index=True)
-    # fields
-    description = sa.Column('description', sa.Text, nullable=False)
-
-    # relations
-    values = relationship('SynonymValue', back_populates='synonym')
-
-
-class ImplicitTag(common.BaseModel):
-    """Implicit tag model."""
-    __tablename__ = 'implicit_tags'
-
-    # primary and foreign keys
-    uuid = sa.Column('uuid', sa.String(length=constants.UUID_LEN),
-                     primary_key=True, nullable=False, index=True)
-    theme_uuid = sa.Column('theme_uuid', sa.String(length=constants.UUID_LEN),
-                           sa.ForeignKey('themes.uuid'),
-                           nullable=False, unique=False, index=True)
-    # fields
-    description = sa.Column('description', sa.Text, nullable=False)
-
-    # relations
-    values = relationship('ImplicitTagValue', back_populates='implicit_tag')

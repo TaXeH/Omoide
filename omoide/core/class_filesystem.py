@@ -107,7 +107,7 @@ class Filesystem:
         return os.path.abspath(path)
 
     @classmethod
-    def ensure_folder_exists(cls, directory: str) -> bool:
+    def ensure_folder_exists(cls, directory: str, stdout) -> bool:
         """Create all chain of folders at given path.
 
         Return True if creation is successful.
@@ -126,7 +126,7 @@ class Filesystem:
 
             if not os.path.exists(current_path):
                 os.mkdir(current_path)
-                print(f'New folder created: {current_path}')
+                stdout.green(f'New folder created: {current_path}')
                 actually_created = True
 
         return actually_created

@@ -1,0 +1,22 @@
+{
+    "themes": [
+        {
+            "uuid": "$t_1",
+            "realm_uuid": "$source_1.migration_1.r_1",
+            "route": "farm",
+            "label": "Farm theme"
+        }
+    ],
+    "groups": [
+        {
+            "uuid": "$g_1",
+            "theme_uuid": "$t_1",
+            "route": "farm",
+            "label": "Farm",
+            "registered_on": "$today",
+            "registered_by": "Igor Zyktin",
+            "hierarchy": "farm",
+            "path": "farm"
+        }
+    ]
+}
