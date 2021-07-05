@@ -6,8 +6,8 @@
 #
 # from omoide import core
 # from omoide.database import models
-# from omoide.use_cases.make_migrations.class_all_objects import AllObjects
-# from omoide.use_cases.make_migrations.class_sql import SQL
+# from omoide.use_cases.unite.class_all_objects import AllObjects
+# from omoide.use_cases.unite.class_sql import SQL
 #
 #
 # def make_commands_for_realms(realms: List[core.Realm]) -> List[SQL]:

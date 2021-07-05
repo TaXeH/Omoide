@@ -59,12 +59,26 @@
         {
             "uuid": "$g_3",
             "theme_uuid": "$t_3",
-            "route": "_",
+            "route": "no_group",
             "label": "No specific group"
         }
     ],
     "metas": [
         {
+            "filenames": [
+                "adorable-1239417.jpg",
+                "animal-1238374.jpg",
+                "animal-1238376.jpg",
+                "animal-1239221.jpg",
+                "domestic-animal-1584385.jpg",
+                "domestic-animal-1584388.jpg",
+                "gerbil-716586.jpg",
+                "gerbil-5195035.jpg",
+                "kulfoto_com.jpg",
+                "mouse-2204321.jpg"
+            ],
+            "_realm_uuid": "$r_1",
+            "_theme_uuid": "$t_3",
             "group_uuid": "$g_3",
             "registered_on": "$today",
             "registered_by": "Igor Zyktin",

@@ -31,7 +31,7 @@ def parse_arguments(args: List[str],
     args = [x.lower() for x in args]
     command, rest = args[0], args[1:]
 
-    if command == 'make_migrations':
+    if command == 'unite':
         operation = make_operation_migrations(rest,
                                               sources_folder, content_folder)
 
@@ -56,7 +56,7 @@ def parse_arguments(args: List[str],
     else:
         raise ValueError(f'Unknown command: {command}')
 
-    return operation
+    return command, operation
 
 
 def extract_parameter(name: str, args: List[str],

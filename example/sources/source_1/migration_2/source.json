@@ -15,8 +15,7 @@
             "label": "Farm",
             "registered_on": "$today",
             "registered_by": "Igor Zyktin",
-            "hierarchy": "farm",
-            "path": "farm"
+            "hierarchy": "farm"
         }
     ]
 }

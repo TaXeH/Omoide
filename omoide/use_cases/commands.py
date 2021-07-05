@@ -6,8 +6,8 @@ from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
-class MakeMigrationsCommand:
-    """We have nothing ready, lets create some migration files."""
+class BaseCommand:
+    """Knows only basic things."""
     trunk: str
     leaf: str
     sources_folder: str
@@ -15,30 +15,33 @@ class MakeMigrationsCommand:
 
 
 @dataclass(frozen=True)
-class MigrateCommand:
+class UniteCommand(BaseCommand):
+    """We have nothing ready, lets create base unit of source information."""
+
+
+@dataclass(frozen=True)
+class MakeRelocationsCommand(BaseCommand):
+    """We have parsed source file, lets create some relocation files."""
+
+
+@dataclass(frozen=True)
+class MakeMigrationsCommand(BaseCommand):
+    """We have parsed source file, lets create some migration files."""
+
+
+@dataclass(frozen=True)
+class MigrateCommand(BaseCommand):
     """We have migrations, lets apply them to leaf databases."""
-    trunk: str
-    leaf: str
-    sources_folder: str
-    content_folder: str
 
 
 @dataclass(frozen=True)
-class RelocateCommand:
+class RelocateCommand(BaseCommand):
     """Move and compress actual media content."""
-    trunk: str
-    leaf: str
-    sources_folder: str
-    content_folder: str
 
 
 @dataclass(frozen=True)
-class SyncCommand:
+class SyncCommand(BaseCommand):
     """We have filled leaf databases, lets gather information into root."""
-    trunk: str
-    leaf: str
-    sources_folder: str
-    content_folder: str
 
 
 @dataclass(frozen=True)

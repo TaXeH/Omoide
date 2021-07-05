@@ -14,9 +14,9 @@ parse = partial(cli.parse_arguments, sources_path=None, content_path=None)
 
 
 def test_makemigration_all():
-    op1 = parse(['make_migrations'])
-    op2 = parse(['make_migrations', 'all'])
-    op3 = parse(['make_migrations', 'all', 'all'])
+    op1 = parse(['unite'])
+    op2 = parse(['unite', 'all'])
+    op3 = parse(['unite', 'all', 'all'])
 
     assert op1 == op2 == op3
 
@@ -28,8 +28,8 @@ def test_makemigration_all():
 
 
 def test_makemigration_trunk():
-    op1 = parse(['make_migrations', 'folder'])
-    op2 = parse(['make_migrations', 'folder', 'all'])
+    op1 = parse(['unite', 'folder'])
+    op2 = parse(['unite', 'folder', 'all'])
 
     assert op1 == op2
 
@@ -41,7 +41,7 @@ def test_makemigration_trunk():
 
 
 def test_makemigration_leaf():
-    op = parse(['make_migrations', 'folder', 'some'])
+    op = parse(['unite', 'folder', 'some'])
 
     assert isinstance(op, commands.MakeMigrationsCommand)
     assert op.trunk == 'folder'
@@ -51,7 +51,7 @@ def test_makemigration_leaf():
 
 
 def test_makemigration_paths():
-    op = cli.parse_arguments(['make_migrations',
+    op = cli.parse_arguments(['unite',
                               '--sources', 'test1',
                               '--content', 'test2'], None, None)
 

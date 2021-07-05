@@ -3,10 +3,11 @@
 """Textual preprocessing components.
 """
 import re
+from typing import Tuple
 
 from omoide import core
 from omoide.core import constants
-from omoide.use_cases.make_migrations import identity
+from omoide.use_cases.unite import identity
 
 
 def preprocess_source(source: str, trunk: str, leaf: str) -> str:
@@ -42,7 +43,7 @@ def apply_global_variables(source: str) -> str:
     return source
 
 
-def preprocess_realms(source: dict, update: dict,
+def preprocess_realms(source: dict, update: dict, router: core.Router,
                       identity_master: core.IdentityMaster,
                       uuid_master: core.UUIDMaster) -> None:
     """Extend realms body."""
@@ -78,9 +79,10 @@ def preprocess_realms(source: dict, update: dict,
             'uuid': realm_uuid,
         }
         update['realms'].append(new_realm)
+        router.register_route(realm_uuid, new_realm['route'])
 
 
-def preprocess_themes(source: dict, update: dict,
+def preprocess_themes(source: dict, update: dict, router: core.Router,
                       identity_master: core.IdentityMaster,
                       uuid_master: core.UUIDMaster) -> None:
     """Extend themes body."""
@@ -137,10 +139,12 @@ def preprocess_themes(source: dict, update: dict,
             'realm_uuid': realm_uuid,
         }
         update['themes'].append(new_theme)
+        router.register_route(theme_uuid, new_theme['route'])
 
 
 def preprocess_groups(source: dict,
                       update: dict,
+                      router: core.Router,
                       identity_master: core.IdentityMaster,
                       uuid_master: core.UUIDMaster,
                       filesystem: core.Filesystem,
@@ -182,53 +186,82 @@ def preprocess_groups(source: dict,
             'theme_uuid': theme_uuid,
         }
         update['groups'].append(new_group)
+        router.register_route(group_uuid, new_group['route'])
 
-        if group['route'] != '_':
-            path = group.pop('route')
+        if group['route'] != 'no_group':
+            group_route = group.pop('route')
             group.pop('uuid', None)
             group.pop('label', None)
             group.pop('theme_uuid', None)
-            group['group_uuid'] = group_uuid
-            preprocess_single_meta_pack(update, leaf_folder, path,
-                                        group, identity_master, uuid_master,
-                                        filesystem, renderer)
+
+            realm_route, realm_uuid = _kostyl(theme_uuid, update, router)
+            group['_realm_uuid'] = realm_uuid
+            group['_theme_uuid'] = theme_uuid
+            theme_route = router.get_route(theme_uuid)
+            preprocess_group_meta_pack(
+                update,
+                leaf_folder,
+                realm_route,
+                theme_route,
+                group_route,
+                group_uuid,
+                group,
+                router,
+                identity_master,
+                uuid_master,
+                filesystem,
+                renderer,
+            )
 
 
-def preprocess_non_group_metas(source: dict,
-                               update: dict,
-                               identity_master: core.IdentityMaster,
-                               uuid_master: core.UUIDMaster,
-                               filesystem: core.Filesystem,
-                               leaf_folder: str,
-                               renderer: core.Renderer) -> None:
+def _kostyl(theme_uuid, update, router) -> Tuple[str, str]:
+    """Find realm route by theme uuid."""
+    # FIXME
+    for theme in update['themes']:
+        if theme['uuid'] == theme_uuid:
+            realm_uuid = theme['realm_uuid']
+            return router.get_route(realm_uuid), realm_uuid
+    raise ValueError
+
+
+def preprocess_no_group_metas(source: dict,
+                              update: dict,
+                              router: core.Router,
+                              identity_master: core.IdentityMaster,
+                              uuid_master: core.UUIDMaster,
+                              filesystem: core.Filesystem,
+                              leaf_folder: str,
+                              renderer: core.Renderer) -> None:
     """Extend metas body."""
     metas = source.pop('metas', [])
 
     for meta_pack in metas:
-        path = 'no_group'
-        preprocess_single_meta_pack(update, leaf_folder, path,
-                                    meta_pack, identity_master, uuid_master,
-                                    filesystem, renderer)
+        preprocess_no_group_meta_pack(update, leaf_folder, meta_pack,
+                                      router, identity_master, uuid_master,
+                                      filesystem, renderer)
 
 
-def preprocess_single_meta_pack(update: dict, leaf_folder: str,
-                                sub_folder: str, pack: dict,
-                                identity_master: core.IdentityMaster,
-                                uuid_master: core.UUIDMaster,
-                                filesystem: core.Filesystem,
-                                renderer: core.Renderer) -> None:
+def preprocess_group_meta_pack(update: dict,
+                               leaf_folder: str,
+                               realm_route: str,
+                               theme_route: str,
+                               group_route: str,
+                               group_uuid: str,
+                               pack: dict,
+                               router: core.Router,
+                               identity_master: core.IdentityMaster,
+                               uuid_master: core.UUIDMaster,
+                               filesystem: core.Filesystem,
+                               renderer: core.Renderer) -> None:
     """Gather basic info on a specific meta."""
     revision = identity.get_revision_number()
     now = identity.get_now()
 
-    group_uuid_variable = pack.pop('group_uuid')
-    group_uuid = identity_master.get_group_uuid(group_uuid_variable,
-                                                uuid_master)
-
     tags = pack.pop('tags', [])
     permissions = pack.pop('permissions', [])
 
-    full_path = filesystem.join(leaf_folder, sub_folder)
+    full_path = filesystem.join(leaf_folder, realm_route,
+                                theme_route, group_route)
 
     filenames = []
     for filename in filesystem.list_files(full_path):
@@ -254,6 +287,81 @@ def preprocess_single_meta_pack(update: dict, leaf_folder: str,
             'original_filename': name,
             'original_extension': ext,
             'ordering': i,
+            **pack,
+            **media_info,
+        }
+        update['metas'].append(new_meta)
+
+        for tag in tags:
+            new_tag = {
+                'revision': revision,
+                'last_update': now,
+                'meta_uuid': meta_uuid,
+                'value': tag,
+            }
+            update['tags_metas'].append(new_tag)
+
+        for permission in permissions:
+            new_permission = {
+                'revision': revision,
+                'last_update': now,
+                'meta_uuid': meta_uuid,
+                'value': permission,
+            }
+            update['permissions_metas'].append(new_permission)
+
+
+def preprocess_no_group_meta_pack(update: dict,
+                                  leaf_folder: str,
+                                  pack: dict,
+                                  router: core.Router,
+                                  identity_master: core.IdentityMaster,
+                                  uuid_master: core.UUIDMaster,
+                                  filesystem: core.Filesystem,
+                                  renderer: core.Renderer) -> None:
+    """Gather basic info on a specific meta."""
+    revision = identity.get_revision_number()
+    now = identity.get_now()
+
+    realm_uuid = identity_master.get_realm_uuid(pack.pop('_realm_uuid'),
+                                                uuid_master, strict=True)
+    theme_uuid = identity_master.get_theme_uuid(pack.pop('_theme_uuid'),
+                                                uuid_master, strict=True)
+    group_uuid = identity_master.get_group_uuid(pack['group_uuid'],
+                                                uuid_master, strict=True)
+    pack['group_uuid'] = group_uuid
+    pack['_realm_uuid'] = realm_uuid
+    pack['_theme_uuid'] = theme_uuid
+
+    realm_route = router.get_route(realm_uuid)
+    theme_route = router.get_route(theme_uuid)
+    group_route = router.get_route(group_uuid)
+
+    tags = pack.pop('tags', [])
+    permissions = pack.pop('permissions', [])
+    filenames = pack.pop('filenames', [])
+
+    full_path = filesystem.join(leaf_folder,
+                                realm_route,
+                                theme_route,
+                                group_route)
+    uuids = [uuid_master.generate_uuid_meta() for _ in range(len(filenames))]
+    uuids.sort()
+
+    for filename, uuid in zip(filenames, uuids):
+        name, ext = filesystem.split_extension(filename)
+        file_path = filesystem.join(full_path, filename)
+        media_info = renderer.analyze(file_path, ext)
+        meta_uuid = uuid_master.generate_uuid_meta()
+
+        new_meta = {
+            'revision': revision,
+            'last_update': now,
+            'uuid': meta_uuid,
+            'group_uuid': group_uuid,
+            'original_filename': name,
+            'original_extension': ext,
+            'ordering': 0,
             **pack,
             **media_info,
         }

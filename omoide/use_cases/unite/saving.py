@@ -6,7 +6,7 @@ from typing import List
 
 import omoide.files.constants
 from omoide import core
-from omoide.use_cases.make_migrations.class_relocation import Relocation
+from omoide.use_cases.make_relocations.class_relocation import Relocation
 from omoide.use_cases.make_migrations.class_sql import SQL
 
 
@@ -32,6 +32,6 @@ def save_relocations(leaf_folder: str,
         omoide.files.constants.RELOCATION_FILENAME,
     )
 
-    filesystem.write_json(file_path, relocations)
+    filesystem.write_json(file_path, [x.as_json() for x in relocations])
 
     return file_path

@@ -37,6 +37,7 @@ def get_revision_number(length: int = db_constants.REVISION_LEN) -> str:
 
 
 def gather_existing_identities(sources_folder: str,
+                               router: core.Router,
                                identity_master: core.IdentityMaster,
                                uuid_master: core.UUIDMaster,
                                filesystem: core.Filesystem) -> None:
@@ -46,18 +47,28 @@ def gather_existing_identities(sources_folder: str,
         for leaf in filesystem.list_folders(trunk_folder):
             leaf_folder = filesystem.join(trunk_folder, leaf)
             update_file_path = filesystem.join(leaf_folder,
-                                               fs_constants.UPDATE_FILENAME)
+                                               fs_constants.UNIT_FILENAME)
 
             if filesystem.not_exists(update_file_path):
                 continue
 
             content = filesystem.read_json(update_file_path)
+            gather_routes_from_processed_source(content, router)
             gather_uuids_from_processed_source(content, uuid_master)
             gather_variables_from_processed_source(content, identity_master)
 
 
+def gather_routes_from_processed_source(content: dict,
+                                        router: core.Router
+                                        ) -> None:
+    """Find all routes in given file and store them into router."""
+    # print('gather_routes_from_processed_source', content)
+    # FIXME
+
+
 def gather_uuids_from_processed_source(content: dict,
-                                       uuid_master: core.UUIDMaster) -> None:
+                                       uuid_master: core.UUIDMaster
+                                       ) -> None:
     """Find all UUIDs in given file and store them into UUID master."""
     # print('gather_uuids_from_processed_source', content)
     # FIXME

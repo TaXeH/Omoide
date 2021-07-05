@@ -4,6 +4,22 @@
 
 Possible call variants:
 
+    To analyze source files and create unit files:
+        python manage.py unite
+        python manage.py unite all
+        python manage.py unite all all
+        python manage.py unite source_folder_1
+        python manage.py unite source_folder_1 all
+        python manage.py unite source_folder_1 leaf_folder_1
+
+    To make relocations:
+        python manage.py make_relocations
+        python manage.py make_relocations all
+        python manage.py make_relocations all all
+        python manage.py make_relocations source_folder_1
+        python manage.py make_relocations source_folder_1 all
+        python manage.py make_relocations source_folder_1 leaf_folder_1
+
     To make migrations:
         python manage.py make_migrations
         python manage.py make_migrations all
@@ -12,14 +28,6 @@ Possible call variants:
         python manage.py make_migrations source_folder_1 all
         python manage.py make_migrations source_folder_1 leaf_folder_1
 
-    To perform migrations:
-        python manage.py migrate
-        python manage.py migrate all
-        python manage.py migrate all all
-        python manage.py migrate source_folder_1
-        python manage.py migrate source_folder_1 all
-        python manage.py migrate source_folder_1 leaf_folder_1
-
     To relocate and resize media files:
         python manage.py relocate
         python manage.py relocate all
@@ -27,6 +35,14 @@ Possible call variants:
         python manage.py relocate source_folder_1
         python manage.py relocate source_folder_1 all
         python manage.py relocate source_folder_1 leaf_folder_1
+
+    To perform migrations:
+        python manage.py migrate
+        python manage.py migrate all
+        python manage.py migrate all all
+        python manage.py migrate source_folder_1
+        python manage.py migrate source_folder_1 all
+        python manage.py migrate source_folder_1 leaf_folder_1
 
     To synchronize databases:
         python manage.py sync - from all leaves to all trunks
@@ -45,17 +61,18 @@ Possible call variants:
         python manage.py runserver 9000
         python manage.py runserver 127.0.0.1:9000
 
-    Use --sources to specify sources folder.
-    Use --content to specify content folder.
+    For all commands:
+        Use --sources to specify sources folder.
+        Use --content to specify content folder.
 """
 import os
 import sys
-from typing import List
+from typing import List, Callable
 
 from omoide import core
 from omoide.use_cases import cli
 from omoide.use_cases import commands
-from omoide.use_cases.make_migrations import make_migrations
+from omoide.use_cases.unite import unite
 
 
 def main(args: List[str], *,
@@ -63,40 +80,39 @@ def main(args: List[str], *,
          stdout: core.STDOut = core.STDOut()) -> None:
     """Entry point."""
     if not args:
-        stdout.yellow('No arguments to parse')
+        stdout.yellow('No arguments to unite')
         return
 
     source_path = os.environ.get('OMOIDE_SOURCE')
     content_path = os.environ.get('OMOIDE_CONTENT')
 
-    operation = cli.parse_arguments(args, source_path, content_path)
+    domain, operation = cli.parse_arguments(args, source_path, content_path)
 
-    if isinstance(operation, commands.MakeMigrationsCommand):
-        perform_make_migrations(operation, filesystem, stdout)
-
-    elif isinstance(operation, commands.MigrateCommand):
-        perform_migrate(operation, filesystem, stdout)
-
-    elif isinstance(operation, commands.RelocateCommand):
-        perform_relocate(operation, filesystem, stdout)
-
-    elif isinstance(operation, commands.SyncCommand):
-        perform_sync(operation, filesystem, stdout)
-
-    elif isinstance(operation, commands.FreezeCommand):
-        perform_freeze(operation, filesystem, stdout)
-
-    else:
-        assert isinstance(operation, commands.RunserverCommand)
-        perform_runserver(operation, filesystem, stdout)
+    target_func = get_target_func(domain)
+    target_func(operation, filesystem, stdout)
 
 
-def perform_make_migrations(
-        command: commands.MakeMigrationsCommand,
-        filesystem: core.Filesystem,
-        stdout: core.STDOut) -> None:
-    """Perform make_migrations command."""
-    stdout.print('Creating migrations')
+def get_target_func(domain: str) -> Callable:
+    """Return perform func based on domain."""
+    target_func = {
+        'unite': perform_unite,
+        'make_migrations': perform_make_migrations,
+        'make_relocations': perform_make_relocations,
+        'migrate': perform_migrate,
+        'relocate': perform_relocate,
+        'sync': perform_sync,
+        'freeze': perform_freeze,
+        'runserver': perform_runserver,
+    }[domain]
+
+    return target_func
+
+
+def perform_unite(command: commands.UniteCommand,
+                  filesystem: core.Filesystem,
+                  stdout: core.STDOut) -> None:
+    """Perform unite command."""
+    stdout.print('Parsing source files')
 
     if not filesystem.exists(command.sources_folder):
         raise FileNotFoundError(
@@ -106,8 +122,24 @@ def perform_make_migrations(
     if not filesystem.exists(command.content_folder):
         filesystem.ensure_folder_exists(command.content_folder, stdout)
 
-    total = make_migrations.act(command, filesystem, stdout)
-    stdout.print(f'Total {total} migrations created')
+    total = unite.act(command, filesystem, stdout)
+    stdout.print(f'Total {total} units created')
+
+
+def perform_make_migrations(command: commands.MakeMigrationsCommand,
+                            filesystem: core.Filesystem,
+                            stdout: core.STDOut) -> None:
+    """Perform unite command."""
+    stdout.print('Making migrations')
+    # TODO
+
+
+def perform_make_relocations(command: commands.MakeRelocationsCommand,
+                             filesystem: core.Filesystem,
+                             stdout: core.STDOut) -> None:
+    """Perform make_relocations command."""
+    stdout.print('Making relocations')
+    # TODO
 
 
 def perform_migrate(command: commands.MigrateCommand,

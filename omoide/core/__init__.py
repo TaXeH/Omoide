@@ -5,6 +5,7 @@ from omoide.core.class_identity_master import *
 from omoide.core.class_implicit_tag import *
 from omoide.core.class_realm import *
 from omoide.core.class_renderer import *
+from omoide.core.class_router import *
 from omoide.core.class_statistics import *
 from omoide.core.class_stdout import *
 from omoide.core.class_synonym import *
