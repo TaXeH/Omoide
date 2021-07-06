@@ -7,8 +7,9 @@ from typing import List, Collection, Tuple
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
+import omoide.constants
 from omoide import core
-from omoide.database import common, constants
+from omoide.database import common
 
 
 def drop_database(sources_folder: str, filename: str,
@@ -97,22 +98,26 @@ def find_all_databases(sources_folder: str,
     ignore = set(ignore)
     databases = []
 
-    root_file = filesystem.join(sources_folder, constants.ROOT_DB_FILENAME)
+    root_file = filesystem.join(sources_folder,
+                                omoide.constants.ROOT_DB_FILENAME)
     if filesystem.exists(root_file):
-        databases.append((sources_folder, constants.ROOT_DB_FILENAME))
+        databases.append((sources_folder, omoide.constants.ROOT_DB_FILENAME))
 
     for folder in filesystem.list_folders(sources_folder):
         trunk_path = filesystem.join(sources_folder, folder)
-        trunk_file = filesystem.join(trunk_path, constants.TRUNK_DB_FILENAME)
+        trunk_file = filesystem.join(trunk_path,
+                                     omoide.constants.TRUNK_DB_FILENAME)
 
         if filesystem.exists(trunk_file):
-            databases.append((trunk_path, constants.TRUNK_DB_FILENAME))
+            databases.append((trunk_path, omoide.constants.TRUNK_DB_FILENAME))
 
         for sub_folder in filesystem.list_folders(trunk_path):
             leaf_path = filesystem.join(trunk_path, sub_folder)
-            leaf_file = filesystem.join(leaf_path, constants.LEAF_DB_FILENAME)
+            leaf_file = filesystem.join(leaf_path,
+                                        omoide.constants.LEAF_DB_FILENAME)
 
             if filesystem.exists(leaf_file):
-                databases.append((leaf_path, constants.LEAF_DB_FILENAME))
+                databases.append((leaf_path,
+                                  omoide.constants.LEAF_DB_FILENAME))
 
     return [x for x in databases if x not in ignore]

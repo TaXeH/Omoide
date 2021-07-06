@@ -4,8 +4,8 @@
 """
 from typing import List, Type, Optional, Tuple, TypeVar
 
+from omoide import constants
 from omoide.use_cases import commands
-from omoide.use_cases import constants
 
 T = TypeVar('T')
 
@@ -32,6 +32,9 @@ def parse_arguments(args: List[str],
     command, rest = args[0], args[1:]
 
     if command == 'unite':
+        operation = make_operation_unite(rest, sources_folder, content_folder)
+
+    elif command == 'make_migrations':
         operation = make_operation_migrations(rest,
                                               sources_folder, content_folder)
 
@@ -44,8 +47,7 @@ def parse_arguments(args: List[str],
                                             sources_folder, content_folder)
 
     elif command == 'sync':
-        operation = make_operation_sync(rest,
-                                        sources_folder, content_folder)
+        operation = make_operation_sync(rest, sources_folder, content_folder)
 
     elif command == 'freeze':
         operation = make_operation_freeze(sources_folder, content_folder)
@@ -96,6 +98,17 @@ def extract_flag(name: str, args: List[str],
         resulting_args = args.copy()
 
     return result, resulting_args
+
+
+def make_operation_unite(args: List[str],
+                         source_folder: str,
+                         content_folder: str
+                         ) -> commands.UniteCommand:
+    """Make source processing operation."""
+    return _make_operation_base_migration(args,
+                                          commands.UniteCommand,
+                                          source_folder,
+                                          content_folder)
 
 
 def make_operation_migrations(args: List[str],

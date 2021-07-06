@@ -5,7 +5,7 @@
 from itertools import chain
 from typing import FrozenSet, NamedTuple, Dict, List
 
-from omoide.core import constants
+from omoide import constants
 
 
 class Query(NamedTuple):
@@ -45,7 +45,7 @@ class Query(NamedTuple):
 
         def _str(attribute: str, collection: frozenset) -> List[str]:
             """Shorthand construction."""
-            value = getattr(constants.Operators, attribute).value
+            value = getattr(constants, attribute)
             return [f'{value} {x}' for x in sorted(collection)]
 
         return {

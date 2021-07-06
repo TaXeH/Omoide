@@ -6,10 +6,10 @@ import random
 import string
 from datetime import datetime
 from functools import lru_cache
+from itertools import chain
 
+from omoide import constants
 from omoide import core
-from omoide.database import constants as db_constants
-from omoide.files import constants as fs_constants
 
 
 @lru_cache()
@@ -29,7 +29,7 @@ def get_now() -> str:
 
 
 @lru_cache()
-def get_revision_number(length: int = db_constants.REVISION_LEN) -> str:
+def get_revision_number(length: int = constants.REVISION_LEN) -> str:
     """Generate unique revision number from os random generator."""
     symbols = string.ascii_lowercase + string.digits
     tokens = [random.choice(symbols) for _ in range(length)]
@@ -47,7 +47,7 @@ def gather_existing_identities(sources_folder: str,
         for leaf in filesystem.list_folders(trunk_folder):
             leaf_folder = filesystem.join(trunk_folder, leaf)
             update_file_path = filesystem.join(leaf_folder,
-                                               fs_constants.UNIT_FILENAME)
+                                               constants.UNIT_FILENAME)
 
             if filesystem.not_exists(update_file_path):
                 continue
@@ -62,8 +62,14 @@ def gather_routes_from_processed_source(content: dict,
                                         router: core.Router
                                         ) -> None:
     """Find all routes in given file and store them into router."""
-    # print('gather_routes_from_processed_source', content)
-    # FIXME
+    objects = chain(
+        content.get('realms', []),
+        content.get('themes', []),
+        content.get('groups', []),
+    )
+
+    for each in objects:
+        router.register_route(each['uuid'], each['route'])
 
 
 def gather_uuids_from_processed_source(content: dict,

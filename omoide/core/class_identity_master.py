@@ -4,7 +4,7 @@
 from collections import ChainMap
 from typing import Dict
 
-from omoide.core import constants
+from omoide import constants
 from omoide.core.class_uuid_master import UUIDMaster
 from omoide.core.hints import UUID
 

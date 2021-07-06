@@ -4,7 +4,7 @@
 """
 import pytest
 
-from omoide.core import constants
+from omoide import constants
 from omoide.core.search.class_query import Query
 from omoide.core.search.class_query_builder import QueryBuilder
 
@@ -72,7 +72,7 @@ def test_query_builder_2(query_builder):
 
     query = query_builder.from_query(text)
     assert query.as_dict() == {
-        'and_': [constants.MediaType.TYPE_IMAGE.value, 'cats', 'turtle'],
+        'and_': [constants.MEDIA_TYPE_IMAGE, 'cats', 'turtle'],
         'or_': ['dogs'],
         'not_': ['frog'],
         'exclude_realms': [],
@@ -88,8 +88,8 @@ def test_query_builder_3(query_builder):
     text = '|fly +fish !spiders +HUGE +AUDIO'
     query = query_builder.from_query(text)
     assert query.as_dict() == {
-        'and_': [constants.MediaType.TYPE_AUDIO.value,
-                 constants.ImageResolutionMpx.RESOLUTION_HUGE.value,
+        'and_': [constants.MEDIA_TYPE_AUDIO,
+                 constants.RESOLUTION_HUGE,
                  'fish'],
         'or_': ['fly'],
         'not_': [],
@@ -125,8 +125,8 @@ def test_query_builder_flags(query_builder, empty_query_dict):
         'not_': [],
         'include_realms': [],
         'include_themes': [],
-        'flags': [constants.Flags.FLAG_DEMAND.value,
-                  constants.Flags.FLAG_DESC.value],
+        'flags': [constants.FLAG_DEMAND,
+                  constants.FLAG_DESC],
         'exclude_realms': [],
         'exclude_themes': [],
     }

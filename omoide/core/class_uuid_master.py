@@ -7,8 +7,7 @@ import uuid as uuid_module
 from collections import ChainMap
 from typing import Set, Dict, Collection, Optional
 
-from omoide.core import constants
-from omoide.core.constants import VARIABLE_SIGN
+from omoide import constants
 from omoide.core.hints import UUID
 
 __all__ = [
@@ -81,9 +80,10 @@ class UUIDMaster:
 
         # avoiding collisions on aliases
         for key, alias in self.aliases.items():
-            if key.startswith(VARIABLE_SIGN):
+            if key.startswith(constants.VARIABLE_SIGN):
                 raise NameError(
-                    f'You should use alias names without {VARIABLE_SIGN}'
+                    'You should use alias '
+                    f'names without {constants.VARIABLE_SIGN}'
                 )
 
             prefix = alias[0]

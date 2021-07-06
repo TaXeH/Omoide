@@ -9,7 +9,7 @@ from typing import (
     Set, Iterable, Any, Iterator,
 )
 
-from omoide.core import constants
+from omoide import constants
 
 QueryType = TypeVar('QueryType')
 
@@ -31,20 +31,19 @@ class QueryBuilder(Generic[QueryType]):
     """Helper class that makes query instances.
     """
     string = '|'.join(
-        r'(?<!\\)\{}'.format(x.value)
-        for x in constants.Operators.__members__.values()
+        r'(?<!\\)\{}'.format(x) for x in constants.OPERATORS
     )
     pattern = re.compile('(' + string + ')')
 
     search_map = {
-        constants.Operators.KW_AND.value: 'and_',
-        constants.Operators.KW_OR.value: 'or_',
-        constants.Operators.KW_NOT.value: 'not_',
-        constants.Operators.KW_FLAG.value: 'flags',
-        constants.Operators.KW_INCLUDE_R.value: 'include_realms',
-        constants.Operators.KW_EXCLUDE_R.value: 'exclude_realms',
-        constants.Operators.KW_INCLUDE_T.value: 'include_themes',
-        constants.Operators.KW_EXCLUDE_T.value: 'exclude_themes',
+        constants.KW_AND: 'and_',
+        constants.KW_OR: 'or_',
+        constants.KW_NOT: 'not_',
+        constants.KW_FLAG: 'flags',
+        constants.KW_INCLUDE_R: 'include_realms',
+        constants.KW_EXCLUDE_R: 'exclude_realms',
+        constants.KW_INCLUDE_T: 'include_themes',
+        constants.KW_EXCLUDE_T: 'exclude_themes',
     }
 
     def __init__(self, target_type: Type[QueryType]) -> None:
@@ -59,8 +58,8 @@ class QueryBuilder(Generic[QueryType]):
         if not parts:
             return []
 
-        if parts[0] not in constants.Operators.tokens():
-            parts.insert(0, constants.Operators.KW_OR.value)
+        if parts[0] not in constants.OPERATORS:
+            parts.insert(0, constants.KW_OR)
 
         return parts
 

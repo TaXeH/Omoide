@@ -6,17 +6,17 @@ from functools import partial
 
 import pytest
 
-from omoide.use_cases import commands
+from omoide import constants
 from omoide.use_cases import cli
-from omoide.use_cases import constants
+from omoide.use_cases import commands
 
-parse = partial(cli.parse_arguments, sources_path=None, content_path=None)
+parse = partial(cli.parse_arguments, sources_folder=None, content_folder=None)
 
 
-def test_makemigration_all():
-    op1 = parse(['unite'])
-    op2 = parse(['unite', 'all'])
-    op3 = parse(['unite', 'all', 'all'])
+def test_make_migrations_all():
+    _, op1 = parse(['make_migrations'])
+    _, op2 = parse(['make_migrations', 'all'])
+    _, op3 = parse(['make_migrations', 'all', 'all'])
 
     assert op1 == op2 == op3
 
@@ -27,9 +27,9 @@ def test_makemigration_all():
     assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
-def test_makemigration_trunk():
-    op1 = parse(['unite', 'folder'])
-    op2 = parse(['unite', 'folder', 'all'])
+def test_make_migrations_trunk():
+    _, op1 = parse(['make_migrations', 'folder'])
+    _, op2 = parse(['make_migrations', 'folder', 'all'])
 
     assert op1 == op2
 
@@ -40,9 +40,10 @@ def test_makemigration_trunk():
     assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
-def test_makemigration_leaf():
-    op = parse(['unite', 'folder', 'some'])
+def test_make_migrations_leaf():
+    cmd, op = parse(['make_migrations', 'folder', 'some'])
 
+    assert cmd == 'make_migrations'
     assert isinstance(op, commands.MakeMigrationsCommand)
     assert op.trunk == 'folder'
     assert op.leaf == 'some'
@@ -50,11 +51,12 @@ def test_makemigration_leaf():
     assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
-def test_makemigration_paths():
-    op = cli.parse_arguments(['unite',
-                              '--sources', 'test1',
-                              '--content', 'test2'], None, None)
+def test_make_migration_paths():
+    cmd, op = cli.parse_arguments(['make_migrations',
+                                   '--sources', 'test1',
+                                   '--content', 'test2'], None, None)
 
+    assert cmd == 'make_migrations'
     assert isinstance(op, commands.MakeMigrationsCommand)
     assert op.trunk == 'all'
     assert op.leaf == 'all'
@@ -63,9 +65,9 @@ def test_makemigration_paths():
 
 
 def test_migrate_all():
-    op1 = parse(['migrate'])
-    op2 = parse(['migrate', 'all'])
-    op3 = parse(['migrate', 'all', 'all'])
+    _, op1 = parse(['migrate'])
+    _, op2 = parse(['migrate', 'all'])
+    _, op3 = parse(['migrate', 'all', 'all'])
 
     assert op1 == op2 == op3
 
@@ -77,8 +79,8 @@ def test_migrate_all():
 
 
 def test_migrate_trunk():
-    op1 = parse(['migrate', 'folder'])
-    op2 = parse(['migrate', 'folder', 'all'])
+    _, op1 = parse(['migrate', 'folder'])
+    _, op2 = parse(['migrate', 'folder', 'all'])
 
     assert op1 == op2
 
@@ -90,7 +92,7 @@ def test_migrate_trunk():
 
 
 def test_migrate_leaf():
-    op = parse(['migrate', 'folder', 'some'])
+    _, op = parse(['migrate', 'folder', 'some'])
 
     assert isinstance(op, commands.MigrateCommand)
     assert op.trunk == 'folder'
@@ -106,10 +108,11 @@ def test_migrate_all_leaves():
 
 
 def test_migrate_paths():
-    op = cli.parse_arguments(['migrate',
-                              '--sources', 'test1',
-                              '--content', 'test2'], None, None)
+    cmd, op = cli.parse_arguments(['migrate',
+                                   '--sources', 'test1',
+                                   '--content', 'test2'], None, None)
 
+    assert cmd == 'migrate'
     assert isinstance(op, commands.MigrateCommand)
     assert op.trunk == 'all'
     assert op.leaf == 'all'
@@ -125,8 +128,9 @@ def test_migrate_not_enough_paths():
 
 
 def test_sync_all():
-    op = cli.parse_arguments(['sync'], None, None)
+    cmd, op = cli.parse_arguments(['sync'], None, None)
 
+    assert cmd == 'sync'
     assert isinstance(op, commands.SyncCommand)
     assert op.trunk == 'all'
     assert op.leaf == 'all'
@@ -135,8 +139,9 @@ def test_sync_all():
 
 
 def test_sync_trunk():
-    op = cli.parse_arguments(['sync', 'trunk', 'test1'], None, None)
+    cmd, op = cli.parse_arguments(['sync', 'trunk', 'test1'], None, None)
 
+    assert cmd == 'sync'
     assert isinstance(op, commands.SyncCommand)
     assert op.trunk == 'test1'
     assert op.leaf == 'all'
@@ -145,8 +150,9 @@ def test_sync_trunk():
 
 
 def test_sync_leaf():
-    op = cli.parse_arguments(['sync', 'leaf', 'test2'], None, None)
+    cmd, op = cli.parse_arguments(['sync', 'leaf', 'test2'], None, None)
 
+    assert cmd == 'sync'
     assert isinstance(op, commands.SyncCommand)
     assert op.trunk == 'find'
     assert op.leaf == 'test2'
@@ -168,8 +174,9 @@ def test_sync_not_enough_parameters():
 
 
 def test_runserver_bare():
-    op = cli.parse_arguments(['runserver'], None, None)
+    cmd, op = cli.parse_arguments(['runserver'], None, None)
 
+    assert cmd == 'runserver'
     assert isinstance(op, commands.RunserverCommand)
     assert op.host == constants.DEFAULT_SERVER_HOST
     assert op.port == constants.DEFAULT_SERVER_PORT
@@ -177,8 +184,9 @@ def test_runserver_bare():
 
 
 def test_runserver_port():
-    op = cli.parse_arguments(['runserver', '8888'], None, None)
+    cmd, op = cli.parse_arguments(['runserver', '8888'], None, None)
 
+    assert cmd == 'runserver'
     assert isinstance(op, commands.RunserverCommand)
     assert op.host == constants.DEFAULT_SERVER_HOST
     assert op.port == 8888
@@ -186,8 +194,10 @@ def test_runserver_port():
 
 
 def test_runserver_full():
-    op = cli.parse_arguments(['runserver', '192.168.1.67:8888'], None, None)
+    cmd, op = cli.parse_arguments(['runserver', '192.168.1.67:8888'],
+                                  None, None)
 
+    assert cmd == 'runserver'
     assert isinstance(op, commands.RunserverCommand)
     assert op.host == '192.168.1.67'
     assert op.port == 8888

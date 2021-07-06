@@ -12,14 +12,6 @@ Possible call variants:
         python manage.py unite source_folder_1 all
         python manage.py unite source_folder_1 leaf_folder_1
 
-    To make relocations:
-        python manage.py make_relocations
-        python manage.py make_relocations all
-        python manage.py make_relocations all all
-        python manage.py make_relocations source_folder_1
-        python manage.py make_relocations source_folder_1 all
-        python manage.py make_relocations source_folder_1 leaf_folder_1
-
     To make migrations:
         python manage.py make_migrations
         python manage.py make_migrations all
@@ -28,13 +20,13 @@ Possible call variants:
         python manage.py make_migrations source_folder_1 all
         python manage.py make_migrations source_folder_1 leaf_folder_1
 
-    To relocate and resize media files:
-        python manage.py relocate
-        python manage.py relocate all
-        python manage.py relocate all all
-        python manage.py relocate source_folder_1
-        python manage.py relocate source_folder_1 all
-        python manage.py relocate source_folder_1 leaf_folder_1
+    To make relocations:
+        python manage.py make_relocations
+        python manage.py make_relocations all
+        python manage.py make_relocations all all
+        python manage.py make_relocations source_folder_1
+        python manage.py make_relocations source_folder_1 all
+        python manage.py make_relocations source_folder_1 leaf_folder_1
 
     To perform migrations:
         python manage.py migrate
@@ -43,6 +35,14 @@ Possible call variants:
         python manage.py migrate source_folder_1
         python manage.py migrate source_folder_1 all
         python manage.py migrate source_folder_1 leaf_folder_1
+
+    To relocate and resize media files:
+        python manage.py relocate
+        python manage.py relocate all
+        python manage.py relocate all all
+        python manage.py relocate source_folder_1
+        python manage.py relocate source_folder_1 all
+        python manage.py relocate source_folder_1 leaf_folder_1
 
     To synchronize databases:
         python manage.py sync - from all leaves to all trunks
@@ -86,10 +86,18 @@ def main(args: List[str], *,
     source_path = os.environ.get('OMOIDE_SOURCE')
     content_path = os.environ.get('OMOIDE_CONTENT')
 
-    domain, operation = cli.parse_arguments(args, source_path, content_path)
+    domain, command = cli.parse_arguments(args, source_path, content_path)
+
+    if not filesystem.exists(command.sources_folder):
+        raise FileNotFoundError(
+            f'Sources folder {command.sources_folder} does not exist'
+        )
+
+    if not filesystem.exists(command.content_folder):
+        filesystem.ensure_folder_exists(command.content_folder, stdout)
 
     target_func = get_target_func(domain)
-    target_func(operation, filesystem, stdout)
+    target_func(command, filesystem, stdout)
 
 
 def get_target_func(domain: str) -> Callable:
@@ -113,15 +121,6 @@ def perform_unite(command: commands.UniteCommand,
                   stdout: core.STDOut) -> None:
     """Perform unite command."""
     stdout.print('Parsing source files')
-
-    if not filesystem.exists(command.sources_folder):
-        raise FileNotFoundError(
-            f'Sources folder {command.sources_folder} does not exist'
-        )
-
-    if not filesystem.exists(command.content_folder):
-        filesystem.ensure_folder_exists(command.content_folder, stdout)
-
     total = unite.act(command, filesystem, stdout)
     stdout.print(f'Total {total} units created')
 

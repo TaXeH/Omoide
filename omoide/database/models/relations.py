@@ -6,7 +6,7 @@ import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
 from omoide.database import common
-from omoide.database import constants
+from omoide import constants
 
 __all__ = [
     'RealmTag',

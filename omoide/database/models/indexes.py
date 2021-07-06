@@ -4,8 +4,8 @@
 """
 import sqlalchemy as sa
 
+from omoide import constants
 from omoide.database import common
-from omoide.database import constants
 
 __alL__ = [
     'IndexTags',

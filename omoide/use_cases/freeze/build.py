@@ -4,6 +4,7 @@
 """
 import sys
 
+import omoide.constants
 import omoide.use_cases.commands
 from omoide import core
 from omoide.core import extend
@@ -20,9 +21,9 @@ def build(command: omoide.use_cases.commands.FreezeCommand, filesystem: core.Fil
           stdout: core.STDOut) -> None:
     """Create static database."""
     root_db_path = filesystem.join(command.sources_folder,
-                                   db_constants.ROOT_DB_FILENAME)
+                                   omoide.constants.ROOT_DB_FILENAME)
     target_db_path = filesystem.join(command.content_folder,
-                                     db_constants.STATIC_DB_FILENAME)
+                                     omoide.constants.STATIC_DB_FILENAME)
 
     if filesystem.not_exists(root_db_path):
         stdout.red(f'Source root database does not exist: {root_db_path}')
@@ -48,7 +49,7 @@ def build(command: omoide.use_cases.commands.FreezeCommand, filesystem: core.Fil
 
     target_database = db_operations.create_database(
         folder=command.content_folder,
-        filename=db_constants.STATIC_DB_FILENAME,
+        filename=omoide.constants.STATIC_DB_FILENAME,
         filesystem=filesystem,
         stdout=stdout,
         echo=True,

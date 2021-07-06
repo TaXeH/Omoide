@@ -5,7 +5,7 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import declarative_base
 
-from omoide.database import constants
+from omoide import constants
 
 __all__ = [
     'metadata',

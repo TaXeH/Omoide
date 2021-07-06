@@ -13,3 +13,4 @@ from omoide.core.class_theme import *
 from omoide.core.class_user import *
 from omoide.core.class_uuid_master import *
 from omoide.core.hints import *
+from omoide.core.transfer_objects import *

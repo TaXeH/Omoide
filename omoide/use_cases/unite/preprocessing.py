@@ -6,8 +6,8 @@ import re
 from typing import Tuple
 
 from omoide import core
-from omoide.core import constants
-from omoide.use_cases.unite import identity
+from omoide import constants
+from omoide.use_cases import identity
 
 
 def preprocess_source(source: str, trunk: str, leaf: str) -> str:

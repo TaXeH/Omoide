@@ -8,10 +8,9 @@ from omoide import core
 from omoide.use_cases import commands
 
 
-def drop_files_before_making_migrations(
-        command: commands.UniteCommand,
-        filenames_to_delete: Collection[str],
-        filesystem: core.Filesystem, stdout: core.STDOut) -> None:
+def drop_files(command: commands.BaseCommand,
+               filenames_to_delete: Collection[str],
+               filesystem: core.Filesystem, stdout: core.STDOut) -> None:
     """Drop all given filenames."""
     filenames_to_delete = set(filenames_to_delete)
     files_to_delete = []

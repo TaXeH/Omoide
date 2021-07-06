@@ -7,6 +7,8 @@ from typing import Set, List
 
 from omoide.core.class_group import Group
 from omoide.core.class_meta import Meta
+
+import omoide.constants
 from omoide.core.class_synonym import Synonym
 from omoide.core import constants
 
@@ -64,7 +66,7 @@ def get_image_size_tag(resolution: float) -> str:
     if resolution >= cls_t.THRESHOLD_BIG.value:
         return cls_v.RESOLUTION_HUGE.value
 
-    return constants.UNKNOWN
+    return omoide.constants.UNKNOWN
 
 
 @lru_cache()
@@ -85,7 +87,7 @@ def get_duration_tag(seconds: int) -> str:
     if seconds >= cls_t.THRESHOLD_MEDIUM.value:
         return cls_v.DURATION_LONG.value
 
-    return constants.UNKNOWN
+    return omoide.constants.UNKNOWN
 
 
 @lru_cache()
@@ -96,4 +98,4 @@ def get_media_type_tag(media_type: str) -> str:
         'gif': constants.MediaType.TYPE_GIF,
         'video': constants.MediaType.TYPE_VIDEO,
         'audio': constants.MediaType.TYPE_AUDIO,
-    }.get(media_type, constants.UNKNOWN)
+    }.get(media_type, omoide.constants.UNKNOWN)

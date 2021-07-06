@@ -1,12 +1,26 @@
 # -*- coding: utf-8 -*-
 
-"""Helper type for a single SQL command representation.
+"""Primitive types used to transfer information between modules.
 """
+from dataclasses import dataclass
 from typing import Optional
 
 __all__ = [
+    'Relocation',
     'SQL',
 ]
+
+
+@dataclass
+class Relocation:
+    """Helper type for a single file relocation/conversion.
+    """
+    uuid: str
+    path_from: str
+    path_to: str
+    width: int
+    height: int
+    operation_type: str
 
 
 class SQL:
