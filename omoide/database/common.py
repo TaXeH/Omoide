@@ -9,6 +9,7 @@ from omoide import constants
 
 __all__ = [
     'metadata',
+    'Base',
     'BaseModel',
 ]
 

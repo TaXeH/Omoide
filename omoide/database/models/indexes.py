@@ -14,7 +14,7 @@ __alL__ = [
 ]
 
 
-class IndexTags(common.BaseModel):
+class IndexTags(common.Base):
     """Index for tags info.
 
     Used to perform fast search on tags. Note that we're not limiting tag
@@ -33,7 +33,7 @@ class IndexTags(common.BaseModel):
                      nullable=False, unique=False)
 
 
-class IndexPermissions(common.BaseModel):
+class IndexPermissions(common.Base):
     """Index for permissions info.
 
     Used to perform fast search on permissions. Note that we're not limiting
@@ -52,7 +52,7 @@ class IndexPermissions(common.BaseModel):
                      nullable=False, unique=False)
 
 
-class IndexThumbnails(common.BaseModel):
+class IndexThumbnails(common.Base):
     """Index for thumbnail info.
 
     Fast access to the thumbnail info without need to go to the database.

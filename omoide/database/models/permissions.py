@@ -48,7 +48,7 @@ class PermissionTheme(common.BaseModel):
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
     # relations
-    realm = relationship('Theme', back_populates='permissions')
+    theme = relationship('Theme', back_populates='permissions')
 
 
 class PermissionGroup(common.BaseModel):
@@ -82,7 +82,7 @@ class PermissionMeta(common.BaseModel):
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
     # relations
-    realm = relationship('Meta', back_populates='permissions')
+    meta = relationship('Meta', back_populates='permissions')
 
 
 class PermissionUser(common.BaseModel):
@@ -99,4 +99,4 @@ class PermissionUser(common.BaseModel):
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
     # relations
-    realm = relationship('User', back_populates='permissions')
+    user = relationship('User', back_populates='permissions')

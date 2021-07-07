@@ -15,24 +15,24 @@ def drop_files(command: commands.BaseCommand,
     filenames_to_delete = set(filenames_to_delete)
     files_to_delete = []
 
-    for trunk in filesystem.list_folders(command.sources_folder):
+    for branch in filesystem.list_folders(command.sources_folder):
 
-        if command.trunk != 'all' and command.trunk != trunk:
+        if command.branch != 'all' and command.branch != branch:
             continue
 
-        trunk_folder = filesystem.join(command.sources_folder, trunk)
+        branch_folder = filesystem.join(command.sources_folder, branch)
         files_to_delete.extend(
-            filesystem.join(trunk_folder, filename)
-            for filename in filesystem.list_files(trunk_folder)
+            filesystem.join(branch_folder, filename)
+            for filename in filesystem.list_files(branch_folder)
             if filename in filenames_to_delete
         )
 
-        for leaf in filesystem.list_folders(trunk_folder):
+        for leaf in filesystem.list_folders(branch_folder):
 
             if command.leaf != 'all' and command.leaf != leaf:
                 continue
 
-            leaf_folder = filesystem.join(trunk_folder, leaf)
+            leaf_folder = filesystem.join(branch_folder, leaf)
             files_to_delete.extend(
                 filesystem.join(leaf_folder, filename)
                 for filename in filesystem.list_files(leaf_folder)

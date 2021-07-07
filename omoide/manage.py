@@ -45,13 +45,13 @@ Possible call variants:
         python manage.py relocate source_folder_1 leaf_folder_1
 
     To synchronize databases:
-        python manage.py sync - from all leaves to all trunks
+        python manage.py sync - from all leaves to all branchs
                                 and then everything to root
-        python manage.py sync trunk source_folder_1 - from all leaves
-                                                      into trunk database
-                                                      and then trunk to root
+        python manage.py sync branch source_folder_1 - from all leaves
+                                                      into branch database
+                                                      and then branch to root
         python manage.py sync leaf leaf_folder_1 - from specified leaf into
-                                                   trunk and then to root
+                                                   branch and then to root
 
     To create final static database:
         python manage.py freeze

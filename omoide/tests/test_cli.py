@@ -21,20 +21,20 @@ def test_make_migrations_all():
     assert op1 == op2 == op3
 
     assert isinstance(op1, commands.MakeMigrationsCommand)
-    assert op1.trunk == 'all'
+    assert op1.branch == 'all'
     assert op1.leaf == 'all'
     assert op1.sources_folder == constants.DEFAULT_SOURCES_FOLDER
     assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
-def test_make_migrations_trunk():
+def test_make_migrations_branch():
     _, op1 = parse(['make_migrations', 'folder'])
     _, op2 = parse(['make_migrations', 'folder', 'all'])
 
     assert op1 == op2
 
     assert isinstance(op1, commands.MakeMigrationsCommand)
-    assert op1.trunk == 'folder'
+    assert op1.branch == 'folder'
     assert op1.leaf == 'all'
     assert op1.sources_folder == constants.DEFAULT_SOURCES_FOLDER
     assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
@@ -45,7 +45,7 @@ def test_make_migrations_leaf():
 
     assert cmd == 'make_migrations'
     assert isinstance(op, commands.MakeMigrationsCommand)
-    assert op.trunk == 'folder'
+    assert op.branch == 'folder'
     assert op.leaf == 'some'
     assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
     assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
@@ -58,7 +58,7 @@ def test_make_migration_paths():
 
     assert cmd == 'make_migrations'
     assert isinstance(op, commands.MakeMigrationsCommand)
-    assert op.trunk == 'all'
+    assert op.branch == 'all'
     assert op.leaf == 'all'
     assert op.sources_folder == 'test1'
     assert op.content_folder == 'test2'
@@ -72,20 +72,20 @@ def test_migrate_all():
     assert op1 == op2 == op3
 
     assert isinstance(op1, commands.MigrateCommand)
-    assert op1.trunk == 'all'
+    assert op1.branch == 'all'
     assert op1.leaf == 'all'
     assert op1.sources_folder == constants.DEFAULT_SOURCES_FOLDER
     assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
-def test_migrate_trunk():
+def test_migrate_branch():
     _, op1 = parse(['migrate', 'folder'])
     _, op2 = parse(['migrate', 'folder', 'all'])
 
     assert op1 == op2
 
     assert isinstance(op1, commands.MigrateCommand)
-    assert op1.trunk == 'folder'
+    assert op1.branch == 'folder'
     assert op1.leaf == 'all'
     assert op1.sources_folder == constants.DEFAULT_SOURCES_FOLDER
     assert op1.content_folder == constants.DEFAULT_CONTENT_FOLDER
@@ -95,14 +95,14 @@ def test_migrate_leaf():
     _, op = parse(['migrate', 'folder', 'some'])
 
     assert isinstance(op, commands.MigrateCommand)
-    assert op.trunk == 'folder'
+    assert op.branch == 'folder'
     assert op.leaf == 'some'
     assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
     assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
 def test_migrate_all_leaves():
-    msg = r'You cannot use all trunks with specific leaf \(given folder\)'
+    msg = r'You cannot use all branchs with specific leaf \(given folder\)'
     with pytest.raises(ValueError, match=msg):
         parse(['migrate', 'all', 'folder'])
 
@@ -114,7 +114,7 @@ def test_migrate_paths():
 
     assert cmd == 'migrate'
     assert isinstance(op, commands.MigrateCommand)
-    assert op.trunk == 'all'
+    assert op.branch == 'all'
     assert op.leaf == 'all'
     assert op.sources_folder == 'test1'
     assert op.content_folder == 'test2'
@@ -132,18 +132,18 @@ def test_sync_all():
 
     assert cmd == 'sync'
     assert isinstance(op, commands.SyncCommand)
-    assert op.trunk == 'all'
+    assert op.branch == 'all'
     assert op.leaf == 'all'
     assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
     assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
 
 
-def test_sync_trunk():
-    cmd, op = cli.parse_arguments(['sync', 'trunk', 'test1'], None, None)
+def test_sync_branch():
+    cmd, op = cli.parse_arguments(['sync', 'branch', 'test1'], None, None)
 
     assert cmd == 'sync'
     assert isinstance(op, commands.SyncCommand)
-    assert op.trunk == 'test1'
+    assert op.branch == 'test1'
     assert op.leaf == 'all'
     assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
     assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
@@ -154,7 +154,7 @@ def test_sync_leaf():
 
     assert cmd == 'sync'
     assert isinstance(op, commands.SyncCommand)
-    assert op.trunk == 'find'
+    assert op.branch == 'find'
     assert op.leaf == 'test2'
     assert op.sources_folder == constants.DEFAULT_SOURCES_FOLDER
     assert op.content_folder == constants.DEFAULT_CONTENT_FOLDER
@@ -168,7 +168,7 @@ def test_sync_bad_target():
 
 def test_sync_not_enough_parameters():
     msg = r'To perform sync you need to ' \
-          r'supply target \(trunk or leaf\) and a folder name'
+          r'supply target \(branch or leaf\) and a folder name'
     with pytest.raises(ValueError, match=msg):
         cli.parse_arguments(['sync', 'wtf'], None, None)
 

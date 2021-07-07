@@ -50,10 +50,10 @@ def instantiate_commands(content: dict):
     sql.extend(as_sql(_get('permissions_metas'), models.PermissionMeta))
     sql.extend(as_sql(_get('permissions_users'), models.PermissionUser))
 
-    sql.extend(as_sql(_get('tags_realms'), models.RealmTag))
-    sql.extend(as_sql(_get('tags_themes'), models.ThemeTag))
-    sql.extend(as_sql(_get('tags_groups'), models.GroupTag))
-    sql.extend(as_sql(_get('tags_metas'), models.MetaTag))
+    sql.extend(as_sql(_get('tags_realms'), models.TagRealm))
+    sql.extend(as_sql(_get('tags_themes'), models.TagTheme))
+    sql.extend(as_sql(_get('tags_groups'), models.TagGroup))
+    sql.extend(as_sql(_get('tags_metas'), models.TagMeta))
     sql.extend(as_sql(_get('synonyms'), models.Synonym))
     sql.extend(as_sql(_get('implicit_tags'), models.ImplicitTag))
 

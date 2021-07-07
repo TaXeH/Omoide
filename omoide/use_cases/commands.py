@@ -8,7 +8,7 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class BaseCommand:
     """Knows only basic things."""
-    trunk: str
+    branch: str
     leaf: str
     sources_folder: str
     content_folder: str

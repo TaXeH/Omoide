@@ -149,21 +149,21 @@ def _make_operation_base_migration(args: List[str],
                                    source_folder: str,
                                    content_folder: str) -> T:
     """Common creation of migration operation."""
-    trunk = 'all'
+    branch = 'all'
     leaf = 'all'
 
     if len(args) == 1:
-        trunk = args[0]
+        branch = args[0]
 
     elif len(args) >= 2:
-        trunk, leaf, *_ = args
+        branch, leaf, *_ = args
 
-    if trunk == 'all' and leaf != 'all':
+    if branch == 'all' and leaf != 'all':
         raise ValueError(
-            f'You cannot use all trunks with specific leaf (given {leaf})'
+            f'You cannot use all branchs with specific leaf (given {leaf})'
         )
 
-    return desired_type(trunk=trunk,
+    return desired_type(branch=branch,
                         leaf=leaf,
                         sources_folder=source_folder,
                         content_folder=content_folder)
@@ -173,7 +173,7 @@ def make_operation_sync(args: List[str], source_folder: str,
                         content_folder: str) -> commands.SyncCommand:
     """Make sync operation."""
     nocopy, args = extract_flag('nocopy', args, default=False)
-    trunk = 'all'
+    branch = 'all'
     leaf = 'all'
 
     if len(args) == 0:
@@ -182,23 +182,23 @@ def make_operation_sync(args: List[str], source_folder: str,
     elif len(args) == 1:
         raise ValueError(
             'To perform sync you need to supply '
-            'target (trunk or leaf) and a folder name'
+            'target (branch or leaf) and a folder name'
         )
 
     elif len(args) >= 2:
         target, folder, *_ = args
-        if target == 'trunk':
-            trunk = folder
+        if target == 'branch':
+            branch = folder
             leaf = 'all'
 
         elif target == 'leaf':
-            trunk = 'find'
+            branch = 'find'
             leaf = folder
 
         else:
             raise ValueError(f'Unknown sync target {target}')
 
-    return commands.SyncCommand(trunk=trunk,
+    return commands.SyncCommand(branch=branch,
                                 leaf=leaf,
                                 sources_folder=source_folder,
                                 content_folder=content_folder)

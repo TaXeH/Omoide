@@ -42,10 +42,10 @@ def gather_existing_identities(sources_folder: str,
                                uuid_master: core.UUIDMaster,
                                filesystem: core.Filesystem) -> None:
     """Get all variables and all UUID from existing files."""
-    for trunk in filesystem.list_folders(sources_folder):
-        trunk_folder = filesystem.join(sources_folder, trunk)
-        for leaf in filesystem.list_folders(trunk_folder):
-            leaf_folder = filesystem.join(trunk_folder, leaf)
+    for branch in filesystem.list_folders(sources_folder):
+        branch_folder = filesystem.join(sources_folder, branch)
+        for leaf in filesystem.list_folders(branch_folder):
+            leaf_folder = filesystem.join(branch_folder, leaf)
             update_file_path = filesystem.join(leaf_folder,
                                                constants.UNIT_FILENAME)
 

@@ -9,16 +9,16 @@ from omoide.database import common
 from omoide import constants
 
 __all__ = [
-    'RealmTag',
-    'ThemeTag',
-    'GroupTag',
-    'MetaTag',
+    'TagRealm',
+    'TagTheme',
+    'TagGroup',
+    'TagMeta',
     'ImplicitTag',
     'Synonym',
 ]
 
 
-class RealmTag(common.BaseModel):
+class TagRealm(common.BaseModel):
     """Realm tag model."""
     __tablename__ = 'tags_realms'
 
@@ -35,7 +35,7 @@ class RealmTag(common.BaseModel):
     realm = relationship('Realm', back_populates='tags')
 
 
-class ThemeTag(common.BaseModel):
+class TagTheme(common.BaseModel):
     """Theme tag model."""
     __tablename__ = 'tags_themes'
 
@@ -52,7 +52,7 @@ class ThemeTag(common.BaseModel):
     theme = relationship('Theme', back_populates='tags')
 
 
-class GroupTag(common.BaseModel):
+class TagGroup(common.BaseModel):
     """Group tag model."""
     __tablename__ = 'tags_groups'
 
@@ -69,7 +69,7 @@ class GroupTag(common.BaseModel):
     group = relationship('Group', back_populates='tags')
 
 
-class MetaTag(common.BaseModel):
+class TagMeta(common.BaseModel):
     """Meta tag model."""
     __tablename__ = 'tags_metas'
 

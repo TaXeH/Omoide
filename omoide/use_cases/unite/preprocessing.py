@@ -10,17 +10,17 @@ from omoide import constants
 from omoide.use_cases import identity
 
 
-def preprocess_source(source: str, trunk: str, leaf: str) -> str:
+def preprocess_source(source: str, branch: str, leaf: str) -> str:
     """Convert template of the sources file into renderable one.
 
     Here we're substituting variables and extending contents.
     """
     source = apply_global_variables(source)
-    source = extend_variable_names(source, trunk, leaf)
+    source = extend_variable_names(source, branch, leaf)
     return source
 
 
-def extend_variable_names(source: str, trunk: str, leaf: str) -> str:
+def extend_variable_names(source: str, branch: str, leaf: str) -> str:
     """Turn local variable names into global ones.
 
     >>> extend_variable_names('and $r_1 variable', 'X', 'Y')
@@ -30,7 +30,7 @@ def extend_variable_names(source: str, trunk: str, leaf: str) -> str:
 
     for variable in set(variables):
         without_sign = variable[1:]
-        extended = f'{constants.VARIABLE_SIGN}{trunk}.{leaf}.{without_sign}'
+        extended = f'{constants.VARIABLE_SIGN}{branch}.{leaf}.{without_sign}'
         source = source.replace(variable, extended)
 
     return source

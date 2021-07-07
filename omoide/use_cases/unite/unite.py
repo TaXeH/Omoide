@@ -34,22 +34,22 @@ def act(command: commands.UniteCommand, filesystem: core.Filesystem,
                                         filesystem)
 
     total_new_migrations = 0
-    for trunk in filesystem.list_folders(command.sources_folder):
+    for branch in filesystem.list_folders(command.sources_folder):
 
-        if command.trunk != 'all' and command.trunk != trunk:
+        if command.branch != 'all' and command.branch != branch:
             continue
 
-        trunk_folder = filesystem.join(command.sources_folder, trunk)
-        for leaf in filesystem.list_folders(trunk_folder):
+        branch_folder = filesystem.join(command.sources_folder, branch)
+        for leaf in filesystem.list_folders(branch_folder):
 
             if command.leaf != 'all' and command.leaf != leaf:
                 continue
 
-            leaf_folder = filesystem.join(trunk_folder, leaf)
+            leaf_folder = filesystem.join(branch_folder, leaf)
             unite_single_leaf(
                 source_folder=command.sources_folder,
                 content_folder=command.content_folder,
-                trunk=trunk,
+                branch=branch,
                 leaf=leaf,
                 leaf_folder=leaf_folder,
                 router=router,
@@ -66,7 +66,7 @@ def act(command: commands.UniteCommand, filesystem: core.Filesystem,
 
 def unite_single_leaf(
         source_folder: str, content_folder: str,
-        trunk: str, leaf: str, leaf_folder: str,
+        branch: str, leaf: str, leaf_folder: str,
         router: core.Router,
         identity_master: core.IdentityMaster,
         uuid_master: core.UUIDMaster,
@@ -84,7 +84,7 @@ def unite_single_leaf(
         return
 
     update_file = make_update_file(
-        trunk,
+        branch,
         leaf,
         leaf_folder,
         router,
@@ -101,7 +101,7 @@ def unite_single_leaf(
     stdout.yellow(f'Created update file: {update_file_path}')
 
 
-def make_update_file(trunk: str, leaf: str, leaf_folder: str,
+def make_update_file(branch: str, leaf: str, leaf_folder: str,
                      router: core.Router,
                      identity_master: core.IdentityMaster,
                      uuid_master: core.UUIDMaster,
@@ -111,7 +111,7 @@ def make_update_file(trunk: str, leaf: str, leaf_folder: str,
     source_file_path = filesystem.join(leaf_folder,
                                        constants.SOURCE_FILENAME)
     source_raw_text = filesystem.read_file(source_file_path)
-    source_text = preprocessing.preprocess_source(source_raw_text, trunk, leaf)
+    source_text = preprocessing.preprocess_source(source_raw_text, branch, leaf)
     source = json.loads(source_text)
 
     update = {
@@ -160,7 +160,7 @@ def make_update_file(trunk: str, leaf: str, leaf_folder: str,
 
 if __name__ == '__main__':
     _command = commands.UniteCommand(
-        trunk='all',
+        branch='all',
         leaf='all',
         sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
         content_folder='D:\\PycharmProjects\\Omoide\\example\\content',

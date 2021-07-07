@@ -18,7 +18,7 @@ MIGRATION_FILENAME = 'migration.sql'
 RELOCATION_FILENAME = 'relocation.json'
 
 ROOT_DB_FILENAME = 'root.db'
-TRUNK_DB_FILENAME = 'trunk.db'
+BRANCH_DB_FILENAME = 'branch.db'
 LEAF_DB_FILENAME = 'migration.db'
 STATIC_DB_FILENAME = 'database.db'
 

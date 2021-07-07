@@ -21,4 +21,4 @@ class User(common.BaseModel):
     uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                      primary_key=True, nullable=False, index=True)
     # relations
-    permissions = relationship('PermissionUser', back_populates='permissions')
+    permissions = relationship('PermissionUser', back_populates='user')

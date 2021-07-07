@@ -29,8 +29,8 @@ class Realm(common.BaseModel):
 
     # relations
     themes = relationship('Theme', back_populates='realm')
-    tags = relationship('RealmTag', back_populates='realm')
-    permissions = relationship('PermissionRealm', back_populates='permissions')
+    tags = relationship('TagRealm', back_populates='realm')
+    permissions = relationship('PermissionRealm', back_populates='realm')
 
 
 class Theme(common.BaseModel):
@@ -50,10 +50,10 @@ class Theme(common.BaseModel):
     # relations
     realm = relationship('Realm', back_populates='themes')
     groups = relationship('Group', back_populates='theme')
-    tags = relationship('ThemeTag', back_populates='theme')
+    tags = relationship('TagTheme', back_populates='theme')
     synonyms = relationship('Synonym', back_populates='theme')
     implicit_tags = relationship('ImplicitTag', back_populates='theme')
-    permissions = relationship('PermissionTheme', back_populates='permissions')
+    permissions = relationship('PermissionTheme', back_populates='theme')
 
 
 class Group(common.BaseModel):
@@ -100,8 +100,8 @@ class Group(common.BaseModel):
     # relations
     theme = relationship('Theme', back_populates='groups')
     metas = relationship('Meta', back_populates='group')
-    tags = relationship('GroupTag', back_populates='group')
-    permissions = relationship('PermissionGroup', back_populates='permissions')
+    tags = relationship('TagGroup', back_populates='group')
+    permissions = relationship('PermissionGroup', back_populates='group')
 
 
 class Meta(common.BaseModel):
@@ -121,16 +121,16 @@ class Meta(common.BaseModel):
                            nullable=False, unique=False)
     # fields
     # path to actual files, relative to theme directory
-    path_to_content = sa.Column(sa.Text, nullable=False, server_default='0')
-    path_to_preview = sa.Column(sa.Text, nullable=False, server_default='0')
-    path_to_thumbnail = sa.Column(sa.Text, nullable=False, server_default='0')
+    path_to_content = sa.Column(sa.Text, nullable=False, server_default='')
+    path_to_preview = sa.Column(sa.Text, nullable=False, server_default='')
+    path_to_thumbnail = sa.Column(sa.Text, nullable=False, server_default='')
 
     # original file parameters, can indirectly help in sorting
     # like 'somefile', without extension and dot
-    original_filename = sa.Column(sa.Text, nullable=False, server_default='0')
+    original_filename = sa.Column(sa.Text, nullable=False, server_default='')
     # like 'jpg', without dot
     original_extension = sa.Column(sa.String(length=constants.MAX_LEN),
-                                   nullable=False, server_default='0')
+                                   nullable=False, server_default='')
     # specific content information
     # in pixels for images, 0 for everything else
     width = sa.Column(sa.Integer, nullable=False, server_default='0')
@@ -184,5 +184,5 @@ class Meta(common.BaseModel):
 
     # relations
     group = relationship('Group', back_populates='metas')
-    tags = relationship('MetaTag', back_populates='meta')
-    permissions = relationship('PermissionMeta', back_populates='permissions')
+    tags = relationship('TagMeta', back_populates='meta')
+    permissions = relationship('PermissionMeta', back_populates='meta')

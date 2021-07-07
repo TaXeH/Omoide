@@ -29,18 +29,18 @@ def act(command: commands.MakeRelocationsCommand, filesystem: core.Filesystem,
                                         filesystem)
 
     total_relocations = 0
-    for trunk in filesystem.list_folders(command.sources_folder):
+    for branch in filesystem.list_folders(command.sources_folder):
 
-        if command.trunk != 'all' and command.trunk != trunk:
+        if command.branch != 'all' and command.branch != branch:
             continue
 
-        trunk_folder = filesystem.join(command.sources_folder, trunk)
-        for leaf in filesystem.list_folders(trunk_folder):
+        branch_folder = filesystem.join(command.sources_folder, branch)
+        for leaf in filesystem.list_folders(branch_folder):
 
             if command.leaf != 'all' and command.leaf != leaf:
                 continue
 
-            leaf_folder = filesystem.join(trunk_folder, leaf)
+            leaf_folder = filesystem.join(branch_folder, leaf)
             unit_file = filesystem.join(leaf_folder, constants.UNIT_FILENAME)
 
             if filesystem.not_exists(unit_file):
@@ -51,7 +51,7 @@ def act(command: commands.MakeRelocationsCommand, filesystem: core.Filesystem,
             for meta in content.get('metas', []):
                 new_relocations = make_relocations_for_one_meta(
                     meta=meta,
-                    trunk=trunk,
+                    branch=branch,
                     leaf=leaf,
                     sources_folder=command.sources_folder,
                     content_folder=command.content_folder,
@@ -69,7 +69,7 @@ def act(command: commands.MakeRelocationsCommand, filesystem: core.Filesystem,
 
 
 def make_relocations_for_one_meta(meta: dict,
-                                  trunk: str,
+                                  branch: str,
                                   leaf: str,
                                   sources_folder: str,
                                   content_folder: str,
@@ -85,7 +85,7 @@ def make_relocations_for_one_meta(meta: dict,
 
     path_from = filesystem.join(
         sources_folder,
-        trunk,
+        branch,
         leaf,
         router.get_route(realm_uuid),
         router.get_route(theme_uuid),
@@ -126,7 +126,7 @@ def make_relocations_for_one_meta(meta: dict,
 
 if __name__ == '__main__':
     _command = commands.MakeRelocationsCommand(
-        trunk='all',
+        branch='all',
         leaf='all',
         sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
         content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
