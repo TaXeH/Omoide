@@ -1,0 +1,21 @@
+{% extends "index.html" %}
+{#{% from "macros.html" import pagination %}#}
+
+{% block content %}
+
+{#    {{ pagination(paginator, rewrite_query_for_paging, directory, query) }}#}
+
+    <div class="content">
+{#        {% for record in paginator %}#}
+            <div class="envelope">
+{#                <a href="{{ url_for('preview', directory=directory, uuid=record.uuid) + '?q=' + query }}">#}
+{#                    <img src="/content/{{ record.directory }}/{{ record.path_to_thumbnail }}"#}
+{#                         alt="{{ record.original_name }}"/>#}
+{#                </a>#}
+            </div>
+{#        {% endfor %}#}
+    </div>
+
+{#    {{ pagination(paginator, rewrite_query_for_paging, directory, query) }}#}
+
+{% endblock %}

@@ -57,3 +57,5 @@ class RunserverCommand:
     host: str
     port: int
     content_folder: str
+    template_folder: str = 'templates'
+    static_folder: str = 'static'
