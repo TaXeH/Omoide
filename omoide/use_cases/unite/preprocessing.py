@@ -5,9 +5,10 @@
 import re
 from typing import Tuple
 
-from omoide import core
+import omoide.use_cases.persistent
 from omoide import constants
-from omoide.use_cases import identity
+from omoide import core
+from omoide import use_cases
 
 
 def preprocess_source(source: str, branch: str, leaf: str) -> str:
@@ -38,18 +39,18 @@ def extend_variable_names(source: str, branch: str, leaf: str) -> str:
 
 def apply_global_variables(source: str) -> str:
     """Substitute global variables in the sources text."""
-    source = source.replace('$today', identity.get_today())
-    source = source.replace('$now', identity.get_now())
+    source = source.replace('$today', omoide.use_cases.persistent.get_today())
+    source = source.replace('$now', omoide.use_cases.persistent.get_now())
     return source
 
 
-def preprocess_realms(source: dict, update: dict, router: core.Router,
-                      identity_master: core.IdentityMaster,
-                      uuid_master: core.UUIDMaster) -> None:
+def preprocess_realms(source: dict, update: dict, router: use_cases.Router,
+                      identity_master: use_cases.IdentityMaster,
+                      uuid_master: use_cases.UUIDMaster) -> None:
     """Extend realms body."""
     realms = source.pop('realms', [])
-    revision = identity.get_revision_number()
-    now = identity.get_now()
+    revision = omoide.use_cases.persistent.get_revision_number()
+    now = omoide.use_cases.persistent.get_now()
 
     for realm in realms:
         realm_uuid = identity_master.get_realm_uuid(realm['uuid'], uuid_master)
@@ -82,13 +83,13 @@ def preprocess_realms(source: dict, update: dict, router: core.Router,
         router.register_route(realm_uuid, new_realm['route'])
 
 
-def preprocess_themes(source: dict, update: dict, router: core.Router,
-                      identity_master: core.IdentityMaster,
-                      uuid_master: core.UUIDMaster) -> None:
+def preprocess_themes(source: dict, update: dict, router: use_cases.Router,
+                      identity_master: use_cases.IdentityMaster,
+                      uuid_master: use_cases.UUIDMaster) -> None:
     """Extend themes body."""
     themes = source.pop('themes', [])
-    revision = identity.get_revision_number()
-    now = identity.get_now()
+    revision = omoide.use_cases.persistent.get_revision_number()
+    now = omoide.use_cases.persistent.get_now()
 
     for theme in themes:
         realm_uuid = identity_master.get_realm_uuid(theme['realm_uuid'],
@@ -144,16 +145,16 @@ def preprocess_themes(source: dict, update: dict, router: core.Router,
 
 def preprocess_groups(source: dict,
                       update: dict,
-                      router: core.Router,
-                      identity_master: core.IdentityMaster,
-                      uuid_master: core.UUIDMaster,
+                      router: use_cases.Router,
+                      identity_master: use_cases.IdentityMaster,
+                      uuid_master: use_cases.UUIDMaster,
                       filesystem: core.Filesystem,
                       leaf_folder: str,
-                      renderer: core.Renderer) -> None:
+                      renderer: use_cases.Renderer) -> None:
     """Extend groups body."""
     groups = source.pop('groups', [])
-    revision = identity.get_revision_number()
-    now = identity.get_now()
+    revision = omoide.use_cases.persistent.get_revision_number()
+    now = omoide.use_cases.persistent.get_now()
 
     for group in groups:
         group_uuid = identity_master.get_group_uuid(group['uuid'], uuid_master)
@@ -226,12 +227,12 @@ def _kostyl(theme_uuid, update, router) -> Tuple[str, str]:
 
 def preprocess_no_group_metas(source: dict,
                               update: dict,
-                              router: core.Router,
-                              identity_master: core.IdentityMaster,
-                              uuid_master: core.UUIDMaster,
+                              router: use_cases.Router,
+                              identity_master: use_cases.IdentityMaster,
+                              uuid_master: use_cases.UUIDMaster,
                               filesystem: core.Filesystem,
                               leaf_folder: str,
-                              renderer: core.Renderer) -> None:
+                              renderer: use_cases.Renderer) -> None:
     """Extend metas body."""
     metas = source.pop('metas', [])
 
@@ -248,14 +249,14 @@ def preprocess_group_meta_pack(update: dict,
                                group_route: str,
                                group_uuid: str,
                                pack: dict,
-                               router: core.Router,
-                               identity_master: core.IdentityMaster,
-                               uuid_master: core.UUIDMaster,
+                               router: use_cases.Router,
+                               identity_master: use_cases.IdentityMaster,
+                               uuid_master: use_cases.UUIDMaster,
                                filesystem: core.Filesystem,
-                               renderer: core.Renderer) -> None:
+                               renderer: use_cases.Renderer) -> None:
     """Gather basic info on a specific meta."""
-    revision = identity.get_revision_number()
-    now = identity.get_now()
+    revision = omoide.use_cases.persistent.get_revision_number()
+    now = omoide.use_cases.persistent.get_now()
 
     tags = pack.pop('tags', [])
     permissions = pack.pop('permissions', [])
@@ -274,10 +275,37 @@ def preprocess_group_meta_pack(update: dict,
     uuids = [uuid_master.generate_uuid_meta() for _ in range(len(filenames))]
     uuids.sort()
 
+    total = len(uuids)
+
     for i, ((name, ext), uuid) in enumerate(zip(filenames, uuids), start=1):
         file_path = filesystem.join(full_path, f'{name}.{ext}')
         media_info = renderer.analyze(file_path, ext)
         meta_uuid = uuid_master.generate_uuid_meta()
+
+        meta_filename = f'{meta_uuid}.{ext}'
+
+        path_to_content = (f'/{realm_route}/{theme_route}'
+                           f'/{group_route}/{meta_filename}')
+        path_to_preview = (f'/{realm_route}/{theme_route}'
+                           f'/{group_route}/{meta_filename}')
+        path_to_thumbnail = (f'/{realm_route}/{theme_route}'
+                             f'/{group_route}/{meta_filename}')
+
+        if total == 1:
+            _previous = ''
+            _next = ''
+
+        elif i == 1 and i < total:
+            _previous = ''
+            _next = uuids[i]
+
+        elif i == total:
+            _previous = uuids[i - 2]
+            _next = ''
+
+        else:
+            _previous = uuids[i - 2]
+            _next = uuids[i]
 
         new_meta = {
             'revision': revision,
@@ -287,6 +315,11 @@ def preprocess_group_meta_pack(update: dict,
             'original_filename': name,
             'original_extension': ext,
             'ordering': i,
+            'path_to_content': path_to_content,
+            'path_to_preview': path_to_preview,
+            'path_to_thumbnail': path_to_thumbnail,
+            'previous': _previous,
+            'next': _next,
             **pack,
             **media_info,
         }
@@ -314,14 +347,14 @@ def preprocess_group_meta_pack(update: dict,
 def preprocess_no_group_meta_pack(update: dict,
                                   leaf_folder: str,
                                   pack: dict,
-                                  router: core.Router,
-                                  identity_master: core.IdentityMaster,
-                                  uuid_master: core.UUIDMaster,
+                                  router: use_cases.Router,
+                                  identity_master: use_cases.IdentityMaster,
+                                  uuid_master: use_cases.UUIDMaster,
                                   filesystem: core.Filesystem,
-                                  renderer: core.Renderer) -> None:
+                                  renderer: use_cases.Renderer) -> None:
     """Gather basic info on a specific meta."""
-    revision = identity.get_revision_number()
-    now = identity.get_now()
+    revision = omoide.use_cases.persistent.get_revision_number()
+    now = omoide.use_cases.persistent.get_now()
 
     realm_uuid = identity_master.get_realm_uuid(pack.pop('_realm_uuid'),
                                                 uuid_master, strict=True)
@@ -354,6 +387,15 @@ def preprocess_no_group_meta_pack(update: dict,
         media_info = renderer.analyze(file_path, ext)
         meta_uuid = uuid_master.generate_uuid_meta()
 
+        meta_filename = f'{meta_uuid}.{ext}'
+
+        path_to_content = (f'/{realm_route}/{theme_route}'
+                           f'/{group_route}/{meta_filename}')
+        path_to_preview = (f'/{realm_route}/{theme_route}'
+                           f'/{group_route}/{meta_filename}')
+        path_to_thumbnail = (f'/{realm_route}/{theme_route}'
+                             f'/{group_route}/{meta_filename}')
+
         new_meta = {
             'revision': revision,
             'last_update': now,
@@ -362,6 +404,11 @@ def preprocess_no_group_meta_pack(update: dict,
             'original_filename': name,
             'original_extension': ext,
             'ordering': 0,
+            'path_to_content': path_to_content,
+            'path_to_preview': path_to_preview,
+            'path_to_thumbnail': path_to_thumbnail,
+            'previous': '',
+            'next': '',
             **pack,
             **media_info,
         }
@@ -387,7 +434,7 @@ def preprocess_no_group_meta_pack(update: dict,
 
 
 def preprocess_users(source: dict, update: dict,
-                     identity_master: core.IdentityMaster,
-                     uuid_master: core.UUIDMaster) -> None:
+                     identity_master: use_cases.IdentityMaster,
+                     uuid_master: use_cases.UUIDMaster) -> None:
     """Extend users body."""
     # TODO

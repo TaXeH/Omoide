@@ -18,9 +18,9 @@ def act(command: commands.FreezeCommand,
         stdout: core.STDOut) -> None:
     """Create static database."""
     root_db_path = filesystem.join(command.sources_folder,
-                                   constants.ROOT_DB_FILENAME)
+                                   constants.ROOT_DB_FILE_NAME)
     static_db_path = filesystem.join(command.content_folder,
-                                     constants.STATIC_DB_FILENAME)
+                                     constants.STATIC_DB_FILE_NAME)
 
     if filesystem.not_exists(root_db_path):
         stdout.red(f'Source database does not exist: {root_db_path}')
@@ -32,7 +32,7 @@ def act(command: commands.FreezeCommand,
 
     root = operations.create_database(
         folder=command.sources_folder,
-        filename=constants.ROOT_DB_FILENAME,
+        filename=constants.ROOT_DB_FILE_NAME,
         filesystem=filesystem,
         stdout=stdout,
         echo=True,
@@ -41,7 +41,7 @@ def act(command: commands.FreezeCommand,
     needs_schema = filesystem.not_exists(static_db_path)
     static = operations.create_database(
         folder=command.content_folder,
-        filename=constants.STATIC_DB_FILENAME,
+        filename=constants.STATIC_DB_FILE_NAME,
         filesystem=filesystem,
         stdout=stdout,
         echo=True,

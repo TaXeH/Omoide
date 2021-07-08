@@ -107,27 +107,27 @@ def find_all_databases(sources_folder: str,
     databases = []
 
     root_file = filesystem.join(sources_folder,
-                                omoide.constants.ROOT_DB_FILENAME)
+                                omoide.constants.ROOT_DB_FILE_NAME)
     if filesystem.exists(root_file):
-        databases.append((sources_folder, omoide.constants.ROOT_DB_FILENAME))
+        databases.append((sources_folder, omoide.constants.ROOT_DB_FILE_NAME))
 
     for folder in filesystem.list_folders(sources_folder):
         branch_path = filesystem.join(sources_folder, folder)
         branch_file = filesystem.join(branch_path,
-                                      omoide.constants.BRANCH_DB_FILENAME)
+                                      omoide.constants.BRANCH_DB_FILE_NAME)
 
         if filesystem.exists(branch_file):
             databases.append(
-                (branch_path, omoide.constants.BRANCH_DB_FILENAME))
+                (branch_path, omoide.constants.BRANCH_DB_FILE_NAME))
 
         for sub_folder in filesystem.list_folders(branch_path):
             leaf_path = filesystem.join(branch_path, sub_folder)
             leaf_file = filesystem.join(leaf_path,
-                                        omoide.constants.LEAF_DB_FILENAME)
+                                        omoide.constants.LEAF_DB_FILE_NAME)
 
             if filesystem.exists(leaf_file):
                 databases.append((leaf_path,
-                                  omoide.constants.LEAF_DB_FILENAME))
+                                  omoide.constants.LEAF_DB_FILE_NAME))
 
     return [x for x in databases if x not in ignore]
 

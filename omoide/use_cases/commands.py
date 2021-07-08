@@ -4,58 +4,77 @@
 """
 from dataclasses import dataclass
 
+__all__ = [
+    'BaseCommand',
+    'UniteCommand',
+    'MakeRelocationsCommand',
+    'MakeMigrationsCommand',
+    'MigrateCommand',
+    'RelocateCommand',
+    'SyncCommand',
+    'FreezeCommand',
+    'RunserverCommand',
+]
+
 
 @dataclass(frozen=True)
 class BaseCommand:
     """Knows only basic things."""
+    sources_folder: str
+    storage_folder: str
+    content_folder: str
     branch: str
     leaf: str
-    sources_folder: str
-    content_folder: str
+    name: str
 
 
 @dataclass(frozen=True)
 class UniteCommand(BaseCommand):
     """We have nothing ready, lets create base unit of source information."""
+    name: str = 'unite'
 
 
 @dataclass(frozen=True)
 class MakeRelocationsCommand(BaseCommand):
     """We have parsed source file, lets create some relocation files."""
+    name: str = 'make_relocations'
 
 
 @dataclass(frozen=True)
 class MakeMigrationsCommand(BaseCommand):
     """We have parsed source file, lets create some migration files."""
+    name: str = 'make_migrations'
 
 
 @dataclass(frozen=True)
 class MigrateCommand(BaseCommand):
     """We have migrations, lets apply them to leaf databases."""
+    name: str = 'migrate'
 
 
 @dataclass(frozen=True)
 class RelocateCommand(BaseCommand):
     """Move and compress actual media content."""
+    name: str = 'relocate'
 
 
 @dataclass(frozen=True)
 class SyncCommand(BaseCommand):
     """We have filled leaf databases, lets gather information into root."""
+    name: str = 'sync'
 
 
 @dataclass(frozen=True)
-class FreezeCommand:
+class FreezeCommand(BaseCommand):
     """Create static database."""
-    sources_folder: str
-    content_folder: str
+    name: str = 'freeze'
 
 
 @dataclass(frozen=True)
-class RunserverCommand:
+class RunserverCommand(BaseCommand):
     """Start web application."""
-    host: str
-    port: int
-    content_folder: str
-    template_folder: str = 'templates'
-    static_folder: str = 'static'
+    host: str = ''
+    port: int = ''
+    template_folder: str = ''
+    static_folder: str = ''
+    name: str = 'runserver'

@@ -14,12 +14,12 @@ def act(command: commands.SyncCommand, filesystem: core.Filesystem,
         stdout: core.STDOut) -> int:
     """Sync."""
     root_db_file = filesystem.join(
-        command.sources_folder, constants.ROOT_DB_FILENAME
+        command.sources_folder, constants.ROOT_DB_FILE_NAME
     )
     needs_schema = filesystem.not_exists(root_db_file)
     root = operations.create_database(
         folder=command.sources_folder,
-        filename=constants.ROOT_DB_FILENAME,
+        filename=constants.ROOT_DB_FILE_NAME,
         filesystem=filesystem,
         stdout=stdout,
         echo=True,
@@ -38,11 +38,11 @@ def act(command: commands.SyncCommand, filesystem: core.Filesystem,
 
         branch_folder = filesystem.join(command.sources_folder, branch)
         branch_db_file = filesystem.join(branch_folder,
-                                         constants.BRANCH_DB_FILENAME)
+                                         constants.BRANCH_DB_FILE_NAME)
         needs_schema = filesystem.not_exists(branch_db_file)
         branch = operations.create_database(
             folder=branch_folder,
-            filename=constants.BRANCH_DB_FILENAME,
+            filename=constants.BRANCH_DB_FILE_NAME,
             filesystem=filesystem,
             stdout=stdout,
             echo=True,
@@ -60,7 +60,7 @@ def act(command: commands.SyncCommand, filesystem: core.Filesystem,
 
             leaf_folder = filesystem.join(branch_folder, leaf)
             leaf_db_file = filesystem.join(leaf_folder,
-                                           constants.LEAF_DB_FILENAME)
+                                           constants.LEAF_DB_FILE_NAME)
 
             if not filesystem.exists(leaf_db_file):
                 stdout.print(f'Nothing to migrate in {leaf_folder}')
@@ -68,7 +68,7 @@ def act(command: commands.SyncCommand, filesystem: core.Filesystem,
 
             leaf = operations.create_database(
                 folder=leaf_folder,
-                filename=constants.LEAF_DB_FILENAME,
+                filename=constants.LEAF_DB_FILE_NAME,
                 filesystem=filesystem,
                 stdout=stdout,
                 echo=True,

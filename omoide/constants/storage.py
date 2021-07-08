@@ -1,0 +1,66 @@
+# -*- coding: utf-8 -*-
+
+"""Constant values.
+"""
+import os
+
+__all__ = [
+    'SOURCES_FOLDER_NAME',
+    'STORAGE_FOLDER_NAME',
+    'CONTENT_FOLDER_NAME',
+    'DEFAULT_SOURCES_FOLDER',
+    'DEFAULT_STORAGE_FOLDER',
+    'DEFAULT_CONTENT_FOLDER',
+    'SOURCE_FILE_NAME',
+    'UNIT_FILE_NAME',
+    'UUIDS_FILE_NAME',
+    'MIGRATION_FILE_NAME',
+    'RELOCATION_FILE_NAME',
+    'ROOT_DB_FILE_NAME',
+    'BRANCH_DB_FILE_NAME',
+    'LEAF_DB_FILE_NAME',
+    'STATIC_DB_FILE_NAME',
+    'PREVIEW_SIZE',
+    'THUMBNAIL_SIZE',
+    'COMPRESS_TO',
+    'MAX_LEN',
+    'UUID_LEN',
+    'REVISION_LEN',
+    'DATE_LEN',
+    'TIMESTAMP_LEN',
+]
+
+# files and folders
+SOURCES_FOLDER_NAME = 'sources'
+STORAGE_FOLDER_NAME = 'storage'
+CONTENT_FOLDER_NAME = 'content'
+
+DEFAULT_SOURCES_FOLDER = os.path.join('.', SOURCES_FOLDER_NAME)
+DEFAULT_STORAGE_FOLDER = os.path.join('.', STORAGE_FOLDER_NAME)
+DEFAULT_CONTENT_FOLDER = os.path.join('.', CONTENT_FOLDER_NAME)
+
+SOURCE_FILE_NAME = 'source.json'
+UNIT_FILE_NAME = 'unit.json'
+UUIDS_FILE_NAME = 'uuids.json'
+MIGRATION_FILE_NAME = 'migration.sql'
+RELOCATION_FILE_NAME = 'relocation.json'
+
+ROOT_DB_FILE_NAME = 'root.db'
+BRANCH_DB_FILE_NAME = 'branch.db'
+LEAF_DB_FILE_NAME = 'migration.db'
+STATIC_DB_FILE_NAME = 'database.db'
+
+# media parameters
+PREVIEW_SIZE = (1024, 1024)
+THUMBNAIL_SIZE = (384, 384)
+COMPRESS_TO = [
+    PREVIEW_SIZE,
+    THUMBNAIL_SIZE,
+]
+
+# database constants
+MAX_LEN = 255
+UUID_LEN = 38
+REVISION_LEN = 40
+DATE_LEN = 10
+TIMESTAMP_LEN = 19

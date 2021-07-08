@@ -7,114 +7,113 @@ from typing import Any, Dict
 
 from omoide import constants
 from omoide import core
-from omoide.files.operations import drop_files
+from omoide import use_cases
 from omoide.use_cases import commands, identity
 from omoide.use_cases.unite import preprocessing
 
 
-def act(command: commands.UniteCommand, filesystem: core.Filesystem,
+def act(command: use_cases.UniteCommand,
+        filesystem: core.Filesystem,
         stdout: core.STDOut) -> int:
     """Process source files.
     """
-    filenames_to_delete = {
-        constants.UNIT_FILENAME,
-        constants.MIGRATION_FILENAME,
-    }
-    drop_files(command, filenames_to_delete, filesystem, stdout)
+    router = use_cases.Router()
+    identity_master = use_cases.IdentityMaster()
+    uuid_master = use_cases.UUIDMaster()
+    renderer = use_cases.Renderer()
 
-    router = core.Router()
-    identity_master = core.IdentityMaster()
-    uuid_master = core.UUIDMaster()
-    renderer = core.Renderer()
-
-    identity.gather_existing_identities(command.sources_folder,
-                                        router,
-                                        identity_master,
-                                        uuid_master,
-                                        filesystem)
-
-    total_new_migrations = 0
-    for branch in filesystem.list_folders(command.sources_folder):
-
-        if command.branch != 'all' and command.branch != branch:
-            continue
-
-        branch_folder = filesystem.join(command.sources_folder, branch)
-        for leaf in filesystem.list_folders(branch_folder):
-
-            if command.leaf != 'all' and command.leaf != leaf:
-                continue
-
-            leaf_folder = filesystem.join(branch_folder, leaf)
-            unite_single_leaf(
-                source_folder=command.sources_folder,
-                content_folder=command.content_folder,
-                branch=branch,
-                leaf=leaf,
-                leaf_folder=leaf_folder,
-                router=router,
-                identity_master=identity_master,
-                uuid_master=uuid_master,
-                renderer=renderer,
-                filesystem=filesystem,
-                stdout=stdout,
-            )
-            total_new_migrations += 1
-
-    return total_new_migrations
-
-
-def unite_single_leaf(
-        source_folder: str, content_folder: str,
-        branch: str, leaf: str, leaf_folder: str,
-        router: core.Router,
-        identity_master: core.IdentityMaster,
-        uuid_master: core.UUIDMaster,
-        renderer: core.Renderer,
-        filesystem: core.Filesystem,
-        stdout: core.STDOut) -> None:
-    """Create all migration resources for a single folder."""
-    stdout.print(f'Uniting {leaf_folder}')
-
-    source_file_path = filesystem.join(leaf_folder,
-                                       constants.SOURCE_FILENAME)
-
-    if filesystem.not_exists(source_file_path):
-        stdout.yellow(f'Source file does not exist: {source_file_path}')
-        return
-
-    update_file = make_update_file(
-        branch,
-        leaf,
-        leaf_folder,
-        router,
-        identity_master,
-        uuid_master,
-        filesystem,
-        renderer
+    identity.gather_existing_identities(
+        storage_folder=command.storage_folder,
+        router=router,
+        identity_master=identity_master,
+        uuid_master=uuid_master,
+        filesystem=filesystem,
     )
 
-    update_file_path = filesystem.join(leaf_folder,
-                                       constants.UNIT_FILENAME)
+    walk = use_cases.utils.walk_sources_from_command(command, filesystem)
 
-    filesystem.write_json(update_file_path, update_file)
-    stdout.yellow(f'Created update file: {update_file_path}')
+    total_new_units = 0
+    for branch, leaf, leaf_folder in walk:
+
+        source_file_path = filesystem.join(leaf_folder,
+                                           constants.SOURCE_FILE_NAME)
+
+        if filesystem.not_exists(source_file_path):
+            stdout.gray(f'Source file does not exist: {source_file_path}')
+            continue
+        else:
+            stdout.print(f'Uniting {leaf_folder}')
+
+        unit_path = make_unit_in_leaf(
+            command=command,
+            branch=branch,
+            leaf=leaf,
+            leaf_folder=leaf_folder,
+            router=router,
+            identity_master=identity_master,
+            uuid_master=uuid_master,
+            renderer=renderer,
+            filesystem=filesystem,
+            stdout=stdout,
+        )
+        stdout.green(f'Created unit file: {unit_path}')
+        total_new_units += 1
+
+    return total_new_units
 
 
-def make_update_file(branch: str, leaf: str, leaf_folder: str,
-                     router: core.Router,
-                     identity_master: core.IdentityMaster,
-                     uuid_master: core.UUIDMaster,
-                     filesystem: core.Filesystem,
-                     renderer: core.Renderer) -> Dict[str, Any]:
+def make_unit_in_leaf(command: use_cases.UniteCommand, branch: str, leaf: str,
+                      leaf_folder: str, router: use_cases.Router,
+                      identity_master: use_cases.IdentityMaster,
+                      uuid_master: use_cases.UUIDMaster,
+                      renderer: use_cases.Renderer,
+                      filesystem: core.Filesystem,
+                      stdout: core.STDOut) -> str:
+    """Create single unit file."""
+    unit = make_unit(
+        branch=branch,
+        leaf=leaf,
+        leaf_folder=leaf_folder,
+        router=router,
+        identity_master=identity_master,
+        uuid_master=uuid_master,
+        filesystem=filesystem,
+        renderer=renderer
+    )
+
+    used_variables = identity_master.extract()
+    unit['variables'].update(used_variables)
+    identity_master.freeze()
+
+    used_uuids = uuid_master.extract_queue()
+    uuid_master.clear_queue()
+
+    unit_folder = filesystem.join(command.storage_folder, branch, leaf)
+    unit_path = filesystem.join(unit_folder, constants.UNIT_FILE_NAME)
+    uuids_path = filesystem.join(unit_folder, constants.UUIDS_FILE_NAME)
+
+    filesystem.ensure_folder_exists(unit_folder, stdout)
+
+    filesystem.write_json(unit_path, unit)
+    filesystem.write_json(uuids_path, used_uuids)
+
+    return unit_path
+
+
+def make_unit(branch: str, leaf: str, leaf_folder: str,
+              router: use_cases.Router,
+              identity_master: use_cases.IdentityMaster,
+              uuid_master: use_cases.UUIDMaster,
+              filesystem: core.Filesystem,
+              renderer: use_cases.Renderer) -> Dict[str, Any]:
     """Combine all updates in big JSON file."""
-    source_file_path = filesystem.join(leaf_folder,
-                                       constants.SOURCE_FILENAME)
-    source_raw_text = filesystem.read_file(source_file_path)
-    source_text = preprocessing.preprocess_source(source_raw_text, branch, leaf)
+    source_path = filesystem.join(leaf_folder, constants.SOURCE_FILE_NAME)
+    source_raw_text = filesystem.read_file(source_path)
+    source_text = preprocessing.preprocess_source(source_raw_text, branch,
+                                                  leaf)
     source = json.loads(source_text)
 
-    update = {
+    unit = {
         'variables': {},
 
         'realms': [],
@@ -137,25 +136,21 @@ def make_update_file(branch: str, leaf: str, leaf_folder: str,
         'synonyms': [],
         'implicit_tags': [],
     }
-    preprocessing.preprocess_realms(source, update, router,
+    preprocessing.preprocess_realms(source, unit, router,
                                     identity_master, uuid_master)
-    preprocessing.preprocess_themes(source, update, router,
+    preprocessing.preprocess_themes(source, unit, router,
                                     identity_master, uuid_master)
-    preprocessing.preprocess_groups(source, update, router, identity_master,
+    preprocessing.preprocess_groups(source, unit, router, identity_master,
                                     uuid_master, filesystem, leaf_folder,
                                     renderer)
-    preprocessing.preprocess_no_group_metas(source, update, router,
+    preprocessing.preprocess_no_group_metas(source, unit, router,
                                             identity_master,
                                             uuid_master, filesystem,
                                             leaf_folder, renderer)
-    preprocessing.preprocess_users(source, update,
+    preprocessing.preprocess_users(source, unit,
                                    identity_master, uuid_master)
 
-    used_variables = identity_master.to_dict()
-    update['variables'].update(used_variables)
-    identity_master.freeze()
-
-    return update
+    return unit
 
 
 if __name__ == '__main__':
@@ -163,6 +158,7 @@ if __name__ == '__main__':
         branch='all',
         leaf='all',
         sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
+        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
         content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
     )
     _filesystem = core.Filesystem()

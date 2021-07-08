@@ -2,30 +2,6 @@
 
 """Constant values.
 """
-import os
-import re
-
-# files and folders
-SOURCES_FOLDER_NAME = 'sources'
-CONTENT_FOLDER_NAME = 'content'
-
-DEFAULT_SOURCES_FOLDER = os.path.join('.', SOURCES_FOLDER_NAME)
-DEFAULT_CONTENT_FOLDER = os.path.join('.', CONTENT_FOLDER_NAME)
-
-SOURCE_FILENAME = 'source.json'
-UNIT_FILENAME = 'unit.json'
-MIGRATION_FILENAME = 'migration.sql'
-RELOCATION_FILENAME = 'relocation.json'
-
-ROOT_DB_FILENAME = 'root.db'
-BRANCH_DB_FILENAME = 'branch.db'
-LEAF_DB_FILENAME = 'migration.db'
-STATIC_DB_FILENAME = 'database.db'
-
-# server
-DEFAULT_SERVER_HOST = '0.0.0.0'
-DEFAULT_SERVER_PORT = 8000
-
 # search engine
 NEVER_FIND_THIS = 'ʕ•ᴥ•ʔ'
 UNKNOWN = 'UNKNOWN'
@@ -48,14 +24,8 @@ ALL_PREFIXES = ''.join([
 ])
 
 VARIABLE_SIGN = '$'
-
-UUID_VARIABLE_PATTERN = re.compile(
-    r'\$[' + ALL_PREFIXES + r']_\d+'
-)
-
-UUID_LONG_VARIABLE_PATTERN = re.compile(
-    r'\$.+\..+\.[' + ALL_PREFIXES + r']_\d+'
-)
+UUID_VARIABLE_PATTERN = r'\$[' + ALL_PREFIXES + r']_\d+'
+UUID_LONG_VARIABLE_PATTERN = r'\$.+\..+\.[' + ALL_PREFIXES + r']_\d+'
 
 # search keywords
 RESOLUTION_TINY = 'TINY'
@@ -159,18 +129,3 @@ CASE_SENSITIVE = frozenset([
     *ALL_DURATIONS,
     *ALL_MEDIA_TYPES,
 ])
-
-# media parameters
-PREVIEW_SIZE = (1024, 1024)
-THUMBNAIL_SIZE = (384, 384)
-COMPRESS_TO = [
-    PREVIEW_SIZE,
-    THUMBNAIL_SIZE,
-]
-
-# database constants
-MAX_LEN = 255
-UUID_LEN = 38
-REVISION_LEN = 40
-DATE_LEN = 10
-TIMESTAMP_LEN = 19

@@ -18,19 +18,29 @@ class STDOut:
     @classmethod
     def print(cls, text: str, *args, **kwargs) -> None:
         """Print green."""
-        return print(text, *args, **kwargs)
+        return cls.prefix_print('', text, *args, **kwargs)
 
     @classmethod
     def green(cls, text: str, *args, **kwargs) -> None:
         """Print green."""
-        return print(Fore.GREEN + text, *args, **kwargs)
+        return cls.prefix_print(Fore.GREEN, text, *args, **kwargs)
 
     @classmethod
     def yellow(cls, text: str, *args, **kwargs) -> None:
         """Print yellow."""
-        return print(Fore.YELLOW + text, *args, **kwargs)
+        return cls.prefix_print(Fore.YELLOW, text, *args, **kwargs)
 
     @classmethod
     def red(cls, text: str, *args, **kwargs) -> None:
         """Print red."""
-        return print(Fore.RED + text, *args, **kwargs)
+        return cls.prefix_print(Fore.RED, text, *args, **kwargs)
+
+    @classmethod
+    def gray(cls, text: str, *args, **kwargs) -> None:
+        """Print gray."""
+        return cls.prefix_print(Fore.LIGHTBLACK_EX, text, *args, **kwargs)
+
+    @classmethod
+    def prefix_print(cls, prefix: str, text: str, *args, **kwargs) -> None:
+        """Print with prefix (usually color)."""
+        return print(prefix + text, *args, **kwargs)

@@ -5,53 +5,39 @@
 Possible call variants:
 
     To analyze source files and create unit files:
-        python manage.py unite
-        python manage.py unite all
         python manage.py unite all all
         python manage.py unite source_folder_1
         python manage.py unite source_folder_1 all
         python manage.py unite source_folder_1 leaf_folder_1
 
     To make migrations:
-        python manage.py make_migrations
-        python manage.py make_migrations all
         python manage.py make_migrations all all
         python manage.py make_migrations source_folder_1
         python manage.py make_migrations source_folder_1 all
         python manage.py make_migrations source_folder_1 leaf_folder_1
 
     To make relocations:
-        python manage.py make_relocations
-        python manage.py make_relocations all
         python manage.py make_relocations all all
         python manage.py make_relocations source_folder_1
         python manage.py make_relocations source_folder_1 all
         python manage.py make_relocations source_folder_1 leaf_folder_1
 
     To perform migrations:
-        python manage.py migrate
-        python manage.py migrate all
         python manage.py migrate all all
         python manage.py migrate source_folder_1
         python manage.py migrate source_folder_1 all
         python manage.py migrate source_folder_1 leaf_folder_1
 
     To relocate and resize media files:
-        python manage.py relocate
-        python manage.py relocate all
         python manage.py relocate all all
         python manage.py relocate source_folder_1
         python manage.py relocate source_folder_1 all
         python manage.py relocate source_folder_1 leaf_folder_1
 
     To synchronize databases:
-        python manage.py sync - from all leaves to all branchs
-                                and then everything to root
-        python manage.py sync branch source_folder_1 - from all leaves
-                                                      into branch database
-                                                      and then branch to root
-        python manage.py sync leaf leaf_folder_1 - from specified leaf into
-                                                   branch and then to root
+        python manage.py sync all all
+        python manage.py sync branch source_folder_1
+        python manage.py sync leaf leaf_folder_1
 
     To create final static database:
         python manage.py freeze
@@ -63,13 +49,14 @@ Possible call variants:
 
     For all commands:
         Use --sources to specify sources folder.
+        Use --storage to specify storage folder.
         Use --content to specify content folder.
 """
 import os
 import sys
 from typing import List, Callable
 
-from omoide import core
+from omoide import core, use_cases
 from omoide.use_cases import cli
 from omoide.use_cases import commands
 from omoide.use_cases.unite import unite
@@ -83,24 +70,31 @@ def main(args: List[str], *,
         stdout.yellow('No arguments to unite')
         return
 
-    source_path = os.environ.get('OMOIDE_SOURCE')
+    sources_path = os.environ.get('OMOIDE_SOURCE')
+    storage_path = os.environ.get('OMOIDE_STORAGE')
     content_path = os.environ.get('OMOIDE_CONTENT')
 
-    domain, command = cli.parse_arguments(args, source_path, content_path)
+    command = cli.parse_arguments(args, sources_path,
+                                  storage_path, content_path)
 
     if not filesystem.exists(command.sources_folder):
         raise FileNotFoundError(
             f'Sources folder {command.sources_folder} does not exist'
         )
 
-    if not filesystem.exists(command.content_folder):
+    if command.storage_folder \
+            and filesystem.not_exists(command.storage_folder):
         filesystem.ensure_folder_exists(command.content_folder, stdout)
 
-    target_func = get_target_func(domain)
+    if command.content_folder \
+            and filesystem.not_exists(command.content_folder):
+        filesystem.ensure_folder_exists(command.content_folder, stdout)
+
+    target_func = get_target_func(command)
     target_func(command, filesystem, stdout)
 
 
-def get_target_func(domain: str) -> Callable:
+def get_target_func(command: use_cases.BaseCommand) -> Callable:
     """Return perform func based on domain."""
     target_func = {
         'unite': perform_unite,
@@ -111,7 +105,7 @@ def get_target_func(domain: str) -> Callable:
         'sync': perform_sync,
         'freeze': perform_freeze,
         'runserver': perform_runserver,
-    }[domain]
+    }[command.name]
 
     return target_func
 

@@ -2,87 +2,61 @@
 
 """Tools required to generate unique identifiers.
 """
-import random
-import string
-from datetime import datetime
-from functools import lru_cache
 from itertools import chain
 
 from omoide import constants
 from omoide import core
+from omoide import use_cases
 
 
-@lru_cache()
-def get_today() -> str:
-    """Get today date as a string."""
-    return str(datetime.now().date())
-
-
-@lru_cache()
-def get_now() -> str:
-    """Get current moment as a string.
-
-    Note that we're using only one moment
-    for all operations through all migration creation.
-    """
-    return str(datetime.now().replace(microsecond=0))
-
-
-@lru_cache()
-def get_revision_number(length: int = constants.REVISION_LEN) -> str:
-    """Generate unique revision number from os random generator."""
-    symbols = string.ascii_lowercase + string.digits
-    tokens = [random.choice(symbols) for _ in range(length)]
-    return ''.join(tokens)
-
-
-def gather_existing_identities(sources_folder: str,
-                               router: core.Router,
-                               identity_master: core.IdentityMaster,
-                               uuid_master: core.UUIDMaster,
+def gather_existing_identities(storage_folder: str,
+                               router: use_cases.Router,
+                               identity_master: use_cases.IdentityMaster,
+                               uuid_master: use_cases.UUIDMaster,
                                filesystem: core.Filesystem) -> None:
     """Get all variables and all UUID from existing files."""
-    for branch in filesystem.list_folders(sources_folder):
-        branch_folder = filesystem.join(sources_folder, branch)
-        for leaf in filesystem.list_folders(branch_folder):
-            leaf_folder = filesystem.join(branch_folder, leaf)
-            update_file_path = filesystem.join(leaf_folder,
-                                               constants.UNIT_FILENAME)
+    walk = use_cases.utils.walk(storage_folder, filesystem)
 
-            if filesystem.not_exists(update_file_path):
-                continue
+    for branch, leaf, leaf_folder in walk:
+        unit_file_path = filesystem.join(leaf_folder, constants.UNIT_FILE_NAME)
 
-            content = filesystem.read_json(update_file_path)
-            gather_routes_from_processed_source(content, router)
-            gather_uuids_from_processed_source(content, uuid_master)
-            gather_variables_from_processed_source(content, identity_master)
+        if filesystem.not_exists(unit_file_path):
+            continue
+
+        unit = filesystem.read_json(unit_file_path)
+
+        gather_routes_from_unit(unit, router)
+        gather_variables_from_unit(unit, identity_master)
+
+        uuids_file_path = filesystem.join(leaf_folder,
+                                          constants.UUIDS_FILE_NAME)
+        if filesystem.exists(uuids_file_path):
+            uuids = filesystem.read_json(uuids_file_path)
+            uuid_master.insert_queue(uuids)
 
 
-def gather_routes_from_processed_source(content: dict,
-                                        router: core.Router
-                                        ) -> None:
-    """Find all routes in given file and store them into router."""
+def gather_routes_from_unit(unit: dict, router: use_cases.Router) -> None:
+    """Find all routes in given unit and store them into router."""
     objects = chain(
-        content.get('realms', []),
-        content.get('themes', []),
-        content.get('groups', []),
+        unit.get('realms', []),
+        unit.get('themes', []),
+        unit.get('groups', []),
     )
 
     for each in objects:
         router.register_route(each['uuid'], each['route'])
 
 
-def gather_uuids_from_processed_source(content: dict,
-                                       uuid_master: core.UUIDMaster
-                                       ) -> None:
-    """Find all UUIDs in given file and store them into UUID master."""
+def gather_uuids_from_unit(unit: dict,
+                           uuid_master: use_cases.UUIDMaster) -> None:
+    """Find all UUIDs in given unit and store them into UUID master."""
     # print('gather_uuids_from_processed_source', content)
     # FIXME
 
 
-def gather_variables_from_processed_source(content: dict,
-                                           identity_master: core.IdentityMaster
-                                           ) -> None:
-    """Find all variables in given file and store them into Identity master."""
+def gather_variables_from_unit(unit: dict,
+                               identity_master: use_cases.IdentityMaster
+                               ) -> None:
+    """Find all variables in given unit and store them into Identity master."""
     # print('gather_variables_from_processed_source', content)
     # FIXME

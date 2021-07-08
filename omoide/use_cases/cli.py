@@ -5,20 +5,28 @@
 from typing import List, Type, Optional, Tuple, TypeVar
 
 from omoide import constants
-from omoide.use_cases import commands
+from omoide import use_cases
 
 T = TypeVar('T')
 
 
 def parse_arguments(args: List[str],
                     sources_folder: Optional[str],
-                    content_folder: Optional[str]):
+                    storage_folder: Optional[str],
+                    content_folder: Optional[str]) -> use_cases.BaseCommand:
     """Construct operation from arguments."""
     sources_folder, args = extract_parameter(
         name=constants.SOURCES_FOLDER_NAME,
         args=args,
         variant=sources_folder,
         default=constants.DEFAULT_SOURCES_FOLDER,
+    )
+
+    storage_folder, args = extract_parameter(
+        name=constants.STORAGE_FOLDER_NAME,
+        args=args,
+        variant=storage_folder,
+        default=constants.DEFAULT_STORAGE_FOLDER,
     )
 
     content_folder, args = extract_parameter(
@@ -32,33 +40,35 @@ def parse_arguments(args: List[str],
     command, rest = args[0], args[1:]
 
     if command == 'unite':
-        operation = make_operation_unite(rest, sources_folder, content_folder)
-
+        instance = make_operation_unite(rest,
+                                        sources_folder,
+                                        storage_folder,
+                                        content_folder)
     elif command == 'make_migrations':
-        operation = make_operation_migrations(rest,
-                                              sources_folder, content_folder)
-
+        instance = make_operation_migrations(rest,
+                                             storage_folder,
+                                             content_folder)
     elif command == 'migrate':
-        operation = make_operation_migrate(rest,
-                                           sources_folder, content_folder)
-
+        instance = make_operation_migrate(rest,
+                                          storage_folder,
+                                          content_folder)
     elif command == 'relocate':
-        operation = make_operation_relocate(rest,
-                                            sources_folder, content_folder)
-
+        instance = make_operation_relocate(rest,
+                                           storage_folder,
+                                           content_folder)
     elif command == 'sync':
-        operation = make_operation_sync(rest, sources_folder, content_folder)
+        instance = make_operation_sync(rest, storage_folder, content_folder)
 
     elif command == 'freeze':
-        operation = make_operation_freeze(sources_folder, content_folder)
+        instance = make_operation_freeze(storage_folder, content_folder)
 
     elif command == 'runserver':
-        operation = make_operation_runserver(rest, content_folder)
+        instance = make_operation_runserver(rest, content_folder)
 
     else:
         raise ValueError(f'Unknown command: {command}')
 
-    return command, operation
+    return instance
 
 
 def extract_parameter(name: str, args: List[str],
@@ -83,136 +93,86 @@ def extract_parameter(name: str, args: List[str],
     return result, resulting_args
 
 
-def extract_flag(name: str, args: List[str],
-                 default: bool) -> Tuple[bool, List[str]]:
-    """Try extracting flag from arguments."""
-    key = f'--{name}'
-    for i, value in enumerate(args):
-        if value == key:
-            result = True
-            resulting_args = args[:i] + args[i + 1:]
-            break
-
-    else:
-        result = default
-        resulting_args = args.copy()
-
-    return result, resulting_args
-
-
 def make_operation_unite(args: List[str],
                          source_folder: str,
+                         storage_folder: str,
                          content_folder: str
-                         ) -> commands.UniteCommand:
+                         ) -> use_cases.UniteCommand:
     """Make source processing operation."""
-    return _make_operation_base_migration(args,
-                                          commands.UniteCommand,
-                                          source_folder,
-                                          content_folder)
+    return _make_common(args,
+                        use_cases.UniteCommand,
+                        source_folder,
+                        storage_folder,
+                        content_folder)
 
 
 def make_operation_migrations(args: List[str],
-                              source_folder: str,
+                              storage_folder: str,
                               content_folder: str
-                              ) -> commands.MakeMigrationsCommand:
+                              ) -> use_cases.MakeMigrationsCommand:
     """Make migration preparation operation."""
-    return _make_operation_base_migration(args,
-                                          commands.MakeMigrationsCommand,
-                                          source_folder,
-                                          content_folder)
+    return _make_common(args, use_cases.MakeMigrationsCommand,
+                        '', storage_folder, content_folder)
 
 
 def make_operation_migrate(args: List[str],
-                           source_folder: str,
+                           storage_folder: str,
                            content_folder: str
-                           ) -> commands.MigrateCommand:
+                           ) -> use_cases.MigrateCommand:
     """Make migration operation."""
-    return _make_operation_base_migration(args,
-                                          commands.MigrateCommand,
-                                          source_folder,
-                                          content_folder)
+    return _make_common(args, use_cases.MigrateCommand,
+                        '', storage_folder, content_folder)
 
 
 def make_operation_relocate(args: List[str],
-                            source_folder: str,
+                            storage_folder: str,
                             content_folder: str
-                            ) -> commands.RelocateCommand:
+                            ) -> use_cases.RelocateCommand:
     """Make relocation operation."""
-    return _make_operation_base_migration(args,
-                                          commands.RelocateCommand,
-                                          source_folder,
-                                          content_folder)
+    return _make_common(args, use_cases.RelocateCommand,
+                        '', storage_folder, content_folder)
 
 
-def _make_operation_base_migration(args: List[str],
-                                   desired_type: Type[T],
-                                   source_folder: str,
-                                   content_folder: str) -> T:
-    """Common creation of migration operation."""
-    branch = 'all'
-    leaf = 'all'
+def make_operation_sync(args: List[str],
+                        storage_folder: str,
+                        content_folder: str) -> use_cases.SyncCommand:
+    """Make sync operation."""
+    return _make_common(args, use_cases.SyncCommand,
+                        '', storage_folder, content_folder)
 
-    if len(args) == 1:
-        branch = args[0]
 
-    elif len(args) >= 2:
-        branch, leaf, *_ = args
-
-    if branch == 'all' and leaf != 'all':
+def _make_common(args: List[str],
+                 desired_type: Type[T],
+                 source_folder: str,
+                 storage_folder: str,
+                 content_folder: str) -> T:
+    """Common creation of operation."""
+    if len(args) != 2:
         raise ValueError(
-            f'You cannot use all branchs with specific leaf (given {leaf})'
+            f'You must specify branch and leaf for operation'
         )
+
+    branch, leaf = args
 
     return desired_type(branch=branch,
                         leaf=leaf,
                         sources_folder=source_folder,
+                        storage_folder=storage_folder,
                         content_folder=content_folder)
 
 
-def make_operation_sync(args: List[str], source_folder: str,
-                        content_folder: str) -> commands.SyncCommand:
-    """Make sync operation."""
-    nocopy, args = extract_flag('nocopy', args, default=False)
-    branch = 'all'
-    leaf = 'all'
-
-    if len(args) == 0:
-        pass
-
-    elif len(args) == 1:
-        raise ValueError(
-            'To perform sync you need to supply '
-            'target (branch or leaf) and a folder name'
-        )
-
-    elif len(args) >= 2:
-        target, folder, *_ = args
-        if target == 'branch':
-            branch = folder
-            leaf = 'all'
-
-        elif target == 'leaf':
-            branch = 'find'
-            leaf = folder
-
-        else:
-            raise ValueError(f'Unknown sync target {target}')
-
-    return commands.SyncCommand(branch=branch,
-                                leaf=leaf,
-                                sources_folder=source_folder,
-                                content_folder=content_folder)
-
-
-def make_operation_freeze(source_folder: str,
-                          content_folder: str) -> commands.FreezeCommand:
+def make_operation_freeze(storage_folder: str,
+                          content_folder: str) -> use_cases.FreezeCommand:
     """Make freeze operation."""
-    return commands.FreezeCommand(sources_folder=source_folder,
-                                  content_folder=content_folder)
+    return use_cases.FreezeCommand(sources_folder='',
+                                   storage_folder=storage_folder,
+                                   content_folder=content_folder,
+                                   branch='',
+                                   leaf='')
 
 
 def make_operation_runserver(args: List[str],
-                             content_folder: str) -> commands.RunserverCommand:
+                             content_folder: str) -> use_cases.RunserverCommand:
     """Make server running operation."""
     host = constants.DEFAULT_SERVER_HOST
     port = constants.DEFAULT_SERVER_PORT
@@ -236,6 +196,14 @@ def make_operation_runserver(args: List[str],
 
         host = given_host or host
 
-    return commands.RunserverCommand(host=host,
-                                     port=port,
-                                     content_folder=content_folder)
+    return use_cases.RunserverCommand(
+        host=host,
+        port=port,
+        sources_folder='',
+        storage_folder='',
+        content_folder=content_folder,
+        branch='',
+        leaf='',
+        template_folder=constants.DEFAULT_TEMPLATE_FOLDER,
+        static_folder=constants.DEFAULT_STATIC_FOLDER,
+    )

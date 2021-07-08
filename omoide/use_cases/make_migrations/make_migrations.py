@@ -15,7 +15,7 @@ def act(command: commands.MakeRelocationsCommand, filesystem: core.Filesystem,
         stdout: core.STDOut) -> int:
     """Make migrations."""
     filenames_to_delete = {
-        constants.MIGRATION_FILENAME,
+        constants.MIGRATION_FILE_NAME,
     }
     drop_files(command, filenames_to_delete, filesystem, stdout)
 
@@ -42,7 +42,7 @@ def act(command: commands.MakeRelocationsCommand, filesystem: core.Filesystem,
                 continue
 
             leaf_folder = filesystem.join(branch_folder, leaf)
-            unit_file = filesystem.join(leaf_folder, constants.UNIT_FILENAME)
+            unit_file = filesystem.join(leaf_folder, constants.UNIT_FILE_NAME)
 
             if filesystem.not_exists(unit_file):
                 continue

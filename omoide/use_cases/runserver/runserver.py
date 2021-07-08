@@ -15,7 +15,7 @@ def act(command: commands.RunserverCommand,
         filesystem: core.Filesystem, stdout: core.STDOut) -> None:
     """Run dev server."""
     static_db_path = filesystem.join(command.content_folder,
-                                     constants.STATIC_DB_FILENAME)
+                                     constants.STATIC_DB_FILE_NAME)
 
     if filesystem.not_exists(static_db_path):
         stdout.red(f'Source database does not exist: {static_db_path}')
@@ -23,7 +23,7 @@ def act(command: commands.RunserverCommand,
 
     engine = operations.create_database(
         folder=command.content_folder,
-        filename=constants.STATIC_DB_FILENAME,
+        filename=constants.STATIC_DB_FILE_NAME,
         filesystem=filesystem,
         stdout=stdout,
         echo=True,

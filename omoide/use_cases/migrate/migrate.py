@@ -29,14 +29,14 @@ def act(command: commands.MigrateCommand, filesystem: core.Filesystem,
 
             leaf_folder = filesystem.join(branch_folder, leaf)
             migration_file = filesystem.join(leaf_folder,
-                                             constants.MIGRATION_FILENAME)
+                                             constants.MIGRATION_FILE_NAME)
 
             if not filesystem.exists(migration_file):
                 stdout.print(f'Nothing to migrate in {leaf_folder}')
                 continue
 
             local_db_file = filesystem.join(leaf_folder,
-                                            constants.LEAF_DB_FILENAME)
+                                            constants.LEAF_DB_FILE_NAME)
 
             if filesystem.exists(local_db_file):
                 filesystem.delete_file(local_db_file)
@@ -44,7 +44,7 @@ def act(command: commands.MigrateCommand, filesystem: core.Filesystem,
 
             engine = operations.restore_database_from_scratch(
                 folder=leaf_folder,
-                filename=constants.LEAF_DB_FILENAME,
+                filename=constants.LEAF_DB_FILE_NAME,
                 filesystem=filesystem,
                 stdout=stdout,
                 echo=True
