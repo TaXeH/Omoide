@@ -2,13 +2,11 @@
 
 """Basic database operations.
 """
-from typing import List, Collection, Tuple
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-import omoide.constants
 from omoide import core
 from omoide.database import common, models
 
@@ -42,6 +40,20 @@ def create_database(folder: str, filename: str,
     """Create database file."""
     path = filesystem.absolute(filesystem.join(folder, filename))
     engine = create_engine(f'sqlite+pysqlite:///{path}',
+                           echo=echo,
+                           future=True)
+    stdout.green(f'Created database {engine}')
+    return engine
+
+
+def create_read_only_database(folder: str, filename: str,
+                              filesystem: core.Filesystem,
+                              stdout: core.STDOut,
+                              echo: bool) -> Engine:
+    """Create database file."""
+    path = filesystem.absolute(filesystem.join(folder, filename))
+    engine = create_engine(f'sqlite+pysqlite:///{path}?uri=true',
+                           connect_args={'check_same_thread': False},
                            echo=echo,
                            future=True)
     stdout.green(f'Created database {engine}')
@@ -82,54 +94,6 @@ def restore_database_from_scratch(folder: str,
     )
 
     return database
-
-
-def find_all_databases(sources_folder: str,
-                       filesystem: core.Filesystem,
-                       ignore: Collection[Tuple[str, str]]
-                       ) -> List[Tuple[str, str]]:
-    """Find paths to all databases, root, branch and leaves.
-
-    Folder structure is supposed to look like:
-    root_folder
-        ├── root.db
-        ├── source_1
-        │   ├── migration_1
-        │   │   └── migration.db
-        │   ├── migration_2
-        │   │   └── migration.db
-        │   └── branch.db
-        └── source_2
-            └── migration_3
-                └── migration.db
-    """
-    ignore = set(ignore)
-    databases = []
-
-    root_file = filesystem.join(sources_folder,
-                                omoide.constants.ROOT_DB_FILE_NAME)
-    if filesystem.exists(root_file):
-        databases.append((sources_folder, omoide.constants.ROOT_DB_FILE_NAME))
-
-    for folder in filesystem.list_folders(sources_folder):
-        branch_path = filesystem.join(sources_folder, folder)
-        branch_file = filesystem.join(branch_path,
-                                      omoide.constants.BRANCH_DB_FILE_NAME)
-
-        if filesystem.exists(branch_file):
-            databases.append(
-                (branch_path, omoide.constants.BRANCH_DB_FILE_NAME))
-
-        for sub_folder in filesystem.list_folders(branch_path):
-            leaf_path = filesystem.join(branch_path, sub_folder)
-            leaf_file = filesystem.join(leaf_path,
-                                        omoide.constants.LEAF_DB_FILE_NAME)
-
-            if filesystem.exists(leaf_file):
-                databases.append((leaf_path,
-                                  omoide.constants.LEAF_DB_FILE_NAME))
-
-    return [x for x in databases if x not in ignore]
 
 
 def synchronize(session_from: Session, session_to: Session) -> None:

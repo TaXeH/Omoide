@@ -1,13 +1,28 @@
 import flask
 from sqlalchemy.engine import Engine
+from sqlalchemy.orm import sessionmaker
+
+from omoide import use_cases
+from omoide.database import models
 
 
-def create_app(templates: str, static: str, engine: Engine) -> flask.Flask:
+def create_app(command: use_cases.RunserverCommand,
+               engine: Engine) -> flask.Flask:
     app = flask.Flask(
         import_name='omoide',
-        template_folder=templates,
-        static_folder=static,
+        template_folder=command.template_folder,
+        static_folder=command.static_folder,
     )
+    Session = sessionmaker(bind=engine)
+
+    @app.route('/content/<path:filename>')
+    def serve_content(filename: str):
+        """Serve files from main storage.
+        Contents of the main storage are served through this function.
+        It's not about static css or js files.
+        """
+        return flask.send_from_directory(command.content_folder,
+                                         filename, conditional=True)
 
     @app.route('/')
     def index():
@@ -15,7 +30,20 @@ def create_app(templates: str, static: str, engine: Engine) -> flask.Flask:
 
         Redirects user to path with default directory.
         """
-        return 'ok'
+        session = Session()
+        meta = session.query(models.Meta).all()
+        lines = []
+
+        for each in meta:
+            lines.append(
+                f'<img src="/content{each.path_to_thumbnail}">test</img>'
+            )
+            if len(lines) > 10:
+                break
+        text = '\n'.join(lines)
+        return f"""
+        <html><body>{text}</body></html>
+        """
         # return flask.redirect(
         #     url_for('index_all', directory=constants.ALL_THEMES)
         # )

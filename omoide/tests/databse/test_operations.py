@@ -3,9 +3,6 @@
 """Tests.
 """
 
-from omoide import core
-from omoide.database.operations import find_all_databases
-
 
 # def test_find_all_databases():
 #     filesystem = core.Filesystem()
