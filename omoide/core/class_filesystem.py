@@ -77,8 +77,8 @@ class Filesystem:
     @staticmethod
     def cut_tail(path: str) -> str:
         """Return path without last element."""
-        parts = path.split(os.sep)
-        return os.path.join(*parts[:-1])
+        result, _ = path.rsplit(os.sep, maxsplit=1)
+        return result
 
     @staticmethod
     def listdir(path: str) -> List[str]:

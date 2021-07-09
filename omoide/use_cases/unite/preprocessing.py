@@ -5,7 +5,6 @@
 import re
 from typing import Tuple
 
-import omoide.use_cases.persistent
 from omoide import constants
 from omoide import core
 from omoide import use_cases
@@ -39,18 +38,18 @@ def extend_variable_names(source: str, branch: str, leaf: str) -> str:
 
 def apply_global_variables(source: str) -> str:
     """Substitute global variables in the sources text."""
-    source = source.replace('$today', omoide.use_cases.persistent.get_today())
-    source = source.replace('$now', omoide.use_cases.persistent.get_now())
+    source = source.replace('$today', use_cases.get_today())
+    source = source.replace('$now', use_cases.get_now())
     return source
 
 
-def preprocess_realms(source: dict, update: dict, router: use_cases.Router,
+def preprocess_realms(source: dict, unit: dict, router: use_cases.Router,
                       identity_master: use_cases.IdentityMaster,
                       uuid_master: use_cases.UUIDMaster) -> None:
     """Extend realms body."""
     realms = source.pop('realms', [])
-    revision = omoide.use_cases.persistent.get_revision_number()
-    now = omoide.use_cases.persistent.get_now()
+    revision = use_cases.get_revision_number()
+    now = use_cases.get_now()
 
     for realm in realms:
         realm_uuid = identity_master.get_realm_uuid(realm['uuid'], uuid_master)
@@ -62,7 +61,7 @@ def preprocess_realms(source: dict, update: dict, router: use_cases.Router,
                 'realm_uuid': realm_uuid,
                 'value': tag,
             }
-            update['tags_realms'].append(new_tag)
+            unit['tags_realms'].append(new_tag)
 
         for permission in realm.pop('permissions', []):
             new_permission = {
@@ -71,7 +70,7 @@ def preprocess_realms(source: dict, update: dict, router: use_cases.Router,
                 'realm_uuid': realm_uuid,
                 'value': permission,
             }
-            update['permissions_realm'].append(new_permission)
+            unit['permissions_realm'].append(new_permission)
 
         new_realm = {
             'revision': revision,
@@ -79,17 +78,17 @@ def preprocess_realms(source: dict, update: dict, router: use_cases.Router,
             **realm,
             'uuid': realm_uuid,
         }
-        update['realms'].append(new_realm)
+        unit['realms'].append(new_realm)
         router.register_route(realm_uuid, new_realm['route'])
 
 
-def preprocess_themes(source: dict, update: dict, router: use_cases.Router,
+def preprocess_themes(source: dict, unit: dict, router: use_cases.Router,
                       identity_master: use_cases.IdentityMaster,
                       uuid_master: use_cases.UUIDMaster) -> None:
     """Extend themes body."""
     themes = source.pop('themes', [])
-    revision = omoide.use_cases.persistent.get_revision_number()
-    now = omoide.use_cases.persistent.get_now()
+    revision = use_cases.get_revision_number()
+    now = use_cases.get_now()
 
     for theme in themes:
         realm_uuid = identity_master.get_realm_uuid(theme['realm_uuid'],
@@ -103,7 +102,7 @@ def preprocess_themes(source: dict, update: dict, router: use_cases.Router,
                 'theme_uuid': theme_uuid,
                 'value': synonym,
             }
-            update['synonyms'].append(new_synonym)
+            unit['synonyms'].append(new_synonym)
 
         for implicit_tag in theme.pop('implicit_tags', []):
             new_implicit_tag = {
@@ -112,7 +111,7 @@ def preprocess_themes(source: dict, update: dict, router: use_cases.Router,
                 'theme_uuid': theme_uuid,
                 'value': implicit_tag,
             }
-            update['implicit_tags'].append(new_implicit_tag)
+            unit['implicit_tags'].append(new_implicit_tag)
 
         for tag in theme.pop('tags', []):
             new_tag = {
@@ -121,7 +120,7 @@ def preprocess_themes(source: dict, update: dict, router: use_cases.Router,
                 'theme_uuid': theme_uuid,
                 'value': tag,
             }
-            update['tags_themes'].append(new_tag)
+            unit['tags_themes'].append(new_tag)
 
         for permission in theme.pop('permissions', []):
             new_permission = {
@@ -130,7 +129,7 @@ def preprocess_themes(source: dict, update: dict, router: use_cases.Router,
                 'theme_uuid': theme_uuid,
                 'value': permission,
             }
-            update['permissions_themes'].append(new_permission)
+            unit['permissions_themes'].append(new_permission)
 
         new_theme = {
             'revision': revision,
@@ -139,12 +138,12 @@ def preprocess_themes(source: dict, update: dict, router: use_cases.Router,
             'uuid': theme_uuid,
             'realm_uuid': realm_uuid,
         }
-        update['themes'].append(new_theme)
+        unit['themes'].append(new_theme)
         router.register_route(theme_uuid, new_theme['route'])
 
 
 def preprocess_groups(source: dict,
-                      update: dict,
+                      unit: dict,
                       router: use_cases.Router,
                       identity_master: use_cases.IdentityMaster,
                       uuid_master: use_cases.UUIDMaster,
@@ -153,8 +152,8 @@ def preprocess_groups(source: dict,
                       renderer: use_cases.Renderer) -> None:
     """Extend groups body."""
     groups = source.pop('groups', [])
-    revision = omoide.use_cases.persistent.get_revision_number()
-    now = omoide.use_cases.persistent.get_now()
+    revision = use_cases.get_revision_number()
+    now = use_cases.get_now()
 
     for group in groups:
         group_uuid = identity_master.get_group_uuid(group['uuid'], uuid_master)
@@ -168,7 +167,7 @@ def preprocess_groups(source: dict,
                 'group_uuid': group_uuid,
                 'value': tag,
             }
-            update['tags_groups'].append(new_tag)
+            unit['tags_groups'].append(new_tag)
 
         for permission in group.pop('permissions', []):
             new_permission = {
@@ -177,7 +176,7 @@ def preprocess_groups(source: dict,
                 'group_uuid': group_uuid,
                 'value': permission,
             }
-            update['permissions_groups'].append(new_permission)
+            unit['permissions_groups'].append(new_permission)
 
         new_group = {
             'revision': revision,
@@ -186,7 +185,7 @@ def preprocess_groups(source: dict,
             'uuid': group_uuid,
             'theme_uuid': theme_uuid,
         }
-        update['groups'].append(new_group)
+        unit['groups'].append(new_group)
         router.register_route(group_uuid, new_group['route'])
 
         if group['route'] != 'no_group':
@@ -195,20 +194,18 @@ def preprocess_groups(source: dict,
             group.pop('label', None)
             group.pop('theme_uuid', None)
 
-            realm_route, realm_uuid = _kostyl(theme_uuid, update, router)
+            realm_route, realm_uuid = _kostyl(theme_uuid, unit, router)
             group['_realm_uuid'] = realm_uuid
             group['_theme_uuid'] = theme_uuid
             theme_route = router.get_route(theme_uuid)
             preprocess_group_meta_pack(
-                update,
+                unit,
                 leaf_folder,
                 realm_route,
                 theme_route,
                 group_route,
                 group_uuid,
                 group,
-                router,
-                identity_master,
                 uuid_master,
                 filesystem,
                 renderer,
@@ -249,14 +246,12 @@ def preprocess_group_meta_pack(update: dict,
                                group_route: str,
                                group_uuid: str,
                                pack: dict,
-                               router: use_cases.Router,
-                               identity_master: use_cases.IdentityMaster,
                                uuid_master: use_cases.UUIDMaster,
                                filesystem: core.Filesystem,
                                renderer: use_cases.Renderer) -> None:
     """Gather basic info on a specific meta."""
-    revision = omoide.use_cases.persistent.get_revision_number()
-    now = omoide.use_cases.persistent.get_now()
+    revision = use_cases.get_revision_number()
+    now = use_cases.get_now()
 
     tags = pack.pop('tags', [])
     permissions = pack.pop('permissions', [])
@@ -284,11 +279,11 @@ def preprocess_group_meta_pack(update: dict,
 
         meta_filename = f'{meta_uuid}.{ext}'
 
-        path_to_content = (f'/{realm_route}/{theme_route}'
+        path_to_content = (f'/images/{realm_route}/{theme_route}'
                            f'/{group_route}/{meta_filename}')
-        path_to_preview = (f'/{realm_route}/{theme_route}'
+        path_to_preview = (f'/preview/{realm_route}/{theme_route}'
                            f'/{group_route}/{meta_filename}')
-        path_to_thumbnail = (f'/{realm_route}/{theme_route}'
+        path_to_thumbnail = (f'/thumbnails/{realm_route}/{theme_route}'
                              f'/{group_route}/{meta_filename}')
 
         if total == 1:
@@ -353,8 +348,8 @@ def preprocess_no_group_meta_pack(update: dict,
                                   filesystem: core.Filesystem,
                                   renderer: use_cases.Renderer) -> None:
     """Gather basic info on a specific meta."""
-    revision = omoide.use_cases.persistent.get_revision_number()
-    now = omoide.use_cases.persistent.get_now()
+    revision = use_cases.get_revision_number()
+    now = use_cases.get_now()
 
     realm_uuid = identity_master.get_realm_uuid(pack.pop('_realm_uuid'),
                                                 uuid_master, strict=True)
@@ -389,11 +384,11 @@ def preprocess_no_group_meta_pack(update: dict,
 
         meta_filename = f'{meta_uuid}.{ext}'
 
-        path_to_content = (f'/{realm_route}/{theme_route}'
+        path_to_content = (f'/images/{realm_route}/{theme_route}'
                            f'/{group_route}/{meta_filename}')
-        path_to_preview = (f'/{realm_route}/{theme_route}'
+        path_to_preview = (f'/preview/{realm_route}/{theme_route}'
                            f'/{group_route}/{meta_filename}')
-        path_to_thumbnail = (f'/{realm_route}/{theme_route}'
+        path_to_thumbnail = (f'/thumbnails/{realm_route}/{theme_route}'
                              f'/{group_route}/{meta_filename}')
 
         new_meta = {

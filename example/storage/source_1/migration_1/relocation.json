@@ -1,0 +1,386 @@
+[
+    {
+        "uuid": "m_eba20b1f-3874-4c96-94f4-87eef7416323",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1238228.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\browney\\m_eba20b1f-3874-4c96-94f4-87eef7416323.jpg",
+        "width": 3048,
+        "height": 2164,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_eba20b1f-3874-4c96-94f4-87eef7416323",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1238228.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\browney\\m_eba20b1f-3874-4c96-94f4-87eef7416323.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_eba20b1f-3874-4c96-94f4-87eef7416323",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1238228.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\browney\\m_eba20b1f-3874-4c96-94f4-87eef7416323.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_de9672c8-db92-4183-81eb-19caefcd5983",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1239130.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\browney\\m_de9672c8-db92-4183-81eb-19caefcd5983.jpg",
+        "width": 3392,
+        "height": 2336,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_de9672c8-db92-4183-81eb-19caefcd5983",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1239130.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\browney\\m_de9672c8-db92-4183-81eb-19caefcd5983.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_de9672c8-db92-4183-81eb-19caefcd5983",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1239130.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\browney\\m_de9672c8-db92-4183-81eb-19caefcd5983.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_69f8b136-e454-4eb4-b260-3ac73e4e56a3",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1239134.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\browney\\m_69f8b136-e454-4eb4-b260-3ac73e4e56a3.jpg",
+        "width": 3192,
+        "height": 2336,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_69f8b136-e454-4eb4-b260-3ac73e4e56a3",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1239134.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\browney\\m_69f8b136-e454-4eb4-b260-3ac73e4e56a3.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_69f8b136-e454-4eb4-b260-3ac73e4e56a3",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1239134.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\browney\\m_69f8b136-e454-4eb4-b260-3ac73e4e56a3.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_512db276-dd22-4023-8660-6b80e13f03a4",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1239402.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\browney\\m_512db276-dd22-4023-8660-6b80e13f03a4.jpg",
+        "width": 3472,
+        "height": 2336,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_512db276-dd22-4023-8660-6b80e13f03a4",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1239402.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\browney\\m_512db276-dd22-4023-8660-6b80e13f03a4.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_512db276-dd22-4023-8660-6b80e13f03a4",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\browney\\animal-1239402.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\browney\\m_512db276-dd22-4023-8660-6b80e13f03a4.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_36b64dbf-9c01-47f0-b8d0-698823ac2cbe",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\whitey\\animal-1238237.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\whitey\\m_36b64dbf-9c01-47f0-b8d0-698823ac2cbe.jpg",
+        "width": 2728,
+        "height": 1992,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_36b64dbf-9c01-47f0-b8d0-698823ac2cbe",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\whitey\\animal-1238237.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\whitey\\m_36b64dbf-9c01-47f0-b8d0-698823ac2cbe.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_36b64dbf-9c01-47f0-b8d0-698823ac2cbe",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\whitey\\animal-1238237.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\whitey\\m_36b64dbf-9c01-47f0-b8d0-698823ac2cbe.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_d8894e9f-92fd-4bcb-bf0c-3cf94dbed98a",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\whitey\\animal-1238239.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\whitey\\m_d8894e9f-92fd-4bcb-bf0c-3cf94dbed98a.jpg",
+        "width": 2804,
+        "height": 2076,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_d8894e9f-92fd-4bcb-bf0c-3cf94dbed98a",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\whitey\\animal-1238239.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\whitey\\m_d8894e9f-92fd-4bcb-bf0c-3cf94dbed98a.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_d8894e9f-92fd-4bcb-bf0c-3cf94dbed98a",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\whitey\\animal-1238239.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\whitey\\m_d8894e9f-92fd-4bcb-bf0c-3cf94dbed98a.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_54929b87-7afa-4638-9a89-c082d977b81c",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\adorable-1239417.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_54929b87-7afa-4638-9a89-c082d977b81c.jpg",
+        "width": 3504,
+        "height": 2336,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_54929b87-7afa-4638-9a89-c082d977b81c",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\adorable-1239417.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_54929b87-7afa-4638-9a89-c082d977b81c.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_54929b87-7afa-4638-9a89-c082d977b81c",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\adorable-1239417.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_54929b87-7afa-4638-9a89-c082d977b81c.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_8c86bf81-866c-49a0-910a-ed81083f26e9",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\animal-1238374.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_8c86bf81-866c-49a0-910a-ed81083f26e9.jpg",
+        "width": 3232,
+        "height": 2196,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_8c86bf81-866c-49a0-910a-ed81083f26e9",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\animal-1238374.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_8c86bf81-866c-49a0-910a-ed81083f26e9.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_8c86bf81-866c-49a0-910a-ed81083f26e9",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\animal-1238374.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_8c86bf81-866c-49a0-910a-ed81083f26e9.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_84be1051-ee6b-48f0-af21-d1bcfd264bb7",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\animal-1238376.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_84be1051-ee6b-48f0-af21-d1bcfd264bb7.jpg",
+        "width": 2948,
+        "height": 2204,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_84be1051-ee6b-48f0-af21-d1bcfd264bb7",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\animal-1238376.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_84be1051-ee6b-48f0-af21-d1bcfd264bb7.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_84be1051-ee6b-48f0-af21-d1bcfd264bb7",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\animal-1238376.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_84be1051-ee6b-48f0-af21-d1bcfd264bb7.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_20575f6e-fc25-46ea-bbce-49f935620870",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\animal-1239221.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_20575f6e-fc25-46ea-bbce-49f935620870.jpg",
+        "width": 2732,
+        "height": 2016,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_20575f6e-fc25-46ea-bbce-49f935620870",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\animal-1239221.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_20575f6e-fc25-46ea-bbce-49f935620870.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_20575f6e-fc25-46ea-bbce-49f935620870",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\animal-1239221.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_20575f6e-fc25-46ea-bbce-49f935620870.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_1c763542-138b-4d51-8bcb-e28a86f4af1b",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\domestic-animal-1584385.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_1c763542-138b-4d51-8bcb-e28a86f4af1b.jpg",
+        "width": 3872,
+        "height": 2592,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_1c763542-138b-4d51-8bcb-e28a86f4af1b",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\domestic-animal-1584385.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_1c763542-138b-4d51-8bcb-e28a86f4af1b.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_1c763542-138b-4d51-8bcb-e28a86f4af1b",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\domestic-animal-1584385.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_1c763542-138b-4d51-8bcb-e28a86f4af1b.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_b96f5dbf-1039-471f-a652-5a3997efce80",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\domestic-animal-1584388.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_b96f5dbf-1039-471f-a652-5a3997efce80.jpg",
+        "width": 3303,
+        "height": 2211,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_b96f5dbf-1039-471f-a652-5a3997efce80",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\domestic-animal-1584388.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_b96f5dbf-1039-471f-a652-5a3997efce80.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_b96f5dbf-1039-471f-a652-5a3997efce80",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\domestic-animal-1584388.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_b96f5dbf-1039-471f-a652-5a3997efce80.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_64dd72cc-31e4-4424-ac6b-b11a8d2d4bc1",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\gerbil-716586.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_64dd72cc-31e4-4424-ac6b-b11a8d2d4bc1.jpg",
+        "width": 4264,
+        "height": 3392,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_64dd72cc-31e4-4424-ac6b-b11a8d2d4bc1",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\gerbil-716586.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_64dd72cc-31e4-4424-ac6b-b11a8d2d4bc1.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_64dd72cc-31e4-4424-ac6b-b11a8d2d4bc1",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\gerbil-716586.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_64dd72cc-31e4-4424-ac6b-b11a8d2d4bc1.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_751fbfca-f6a7-4779-acd5-264502890f3b",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\gerbil-5195035.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_751fbfca-f6a7-4779-acd5-264502890f3b.jpg",
+        "width": 3000,
+        "height": 3000,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_751fbfca-f6a7-4779-acd5-264502890f3b",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\gerbil-5195035.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_751fbfca-f6a7-4779-acd5-264502890f3b.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_751fbfca-f6a7-4779-acd5-264502890f3b",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\gerbil-5195035.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_751fbfca-f6a7-4779-acd5-264502890f3b.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_3a87eec6-195e-4e6a-b3bd-3c7c28982ab5",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\kulfoto_com.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_3a87eec6-195e-4e6a-b3bd-3c7c28982ab5.jpg",
+        "width": 630,
+        "height": 473,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_3a87eec6-195e-4e6a-b3bd-3c7c28982ab5",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\kulfoto_com.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_3a87eec6-195e-4e6a-b3bd-3c7c28982ab5.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_3a87eec6-195e-4e6a-b3bd-3c7c28982ab5",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\kulfoto_com.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_3a87eec6-195e-4e6a-b3bd-3c7c28982ab5.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_8c2da6c9-57c3-42c7-a426-b05784834071",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\mouse-2204321.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\images\\public\\gerbils\\no_group\\m_8c2da6c9-57c3-42c7-a426-b05784834071.jpg",
+        "width": 3456,
+        "height": 2304,
+        "operation_type": "copy"
+    },
+    {
+        "uuid": "m_8c2da6c9-57c3-42c7-a426-b05784834071",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\mouse-2204321.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group\\m_8c2da6c9-57c3-42c7-a426-b05784834071.jpg",
+        "width": 1024,
+        "height": 1024,
+        "operation_type": "scale"
+    },
+    {
+        "uuid": "m_8c2da6c9-57c3-42c7-a426-b05784834071",
+        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_1\\public\\gerbils\\no_group\\mouse-2204321.jpg",
+        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group\\m_8c2da6c9-57c3-42c7-a426-b05784834071.jpg",
+        "width": 384,
+        "height": 384,
+        "operation_type": "scale"
+    }
+]

@@ -8,7 +8,7 @@ from typing import Any, Dict
 from omoide import constants
 from omoide import core
 from omoide import use_cases
-from omoide.use_cases import commands, identity
+from omoide.use_cases import identity
 from omoide.use_cases.unite import preprocessing
 
 
@@ -41,8 +41,6 @@ def act(command: use_cases.UniteCommand,
         if filesystem.not_exists(source_file_path):
             stdout.gray(f'Source file does not exist: {source_file_path}')
             continue
-        else:
-            stdout.print(f'Uniting {leaf_folder}')
 
         unit_path = make_unit_in_leaf(
             command=command,
@@ -154,7 +152,7 @@ def make_unit(branch: str, leaf: str, leaf_folder: str,
 
 
 if __name__ == '__main__':
-    _command = commands.UniteCommand(
+    _command = use_cases.UniteCommand(
         branch='all',
         leaf='all',
         sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',

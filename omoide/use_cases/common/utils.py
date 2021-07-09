@@ -32,3 +32,11 @@ def walk_sources_from_command(command: use_cases.BaseCommand,
     """Typical iteration by command settings."""
     return walk(command.sources_folder, filesystem,
                 command.branch, command.leaf)
+
+
+def walk_storage_from_command(command: use_cases.BaseCommand,
+                              filesystem: core.Filesystem
+                              ) -> Iterator[Tuple[str, str, str]]:
+    """Typical iteration by command settings."""
+    return walk(command.storage_folder, filesystem,
+                command.branch, command.leaf)

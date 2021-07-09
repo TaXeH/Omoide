@@ -60,6 +60,8 @@ from omoide import core, use_cases
 from omoide.use_cases import cli
 from omoide.use_cases import commands
 from omoide.use_cases.unite import unite
+from omoide.use_cases.make_relocations import make_relocations
+from omoide.use_cases.relocate import relocate
 
 
 def main(args: List[str], *,
@@ -67,7 +69,7 @@ def main(args: List[str], *,
          stdout: core.STDOut = core.STDOut()) -> None:
     """Entry point."""
     if not args:
-        stdout.yellow('No arguments to unite')
+        stdout.yellow('No arguments to handle')
         return
 
     sources_path = os.environ.get('OMOIDE_SOURCE')
@@ -79,7 +81,7 @@ def main(args: List[str], *,
 
     if not filesystem.exists(command.sources_folder):
         raise FileNotFoundError(
-            f'Sources folder {command.sources_folder} does not exist'
+            f'Sources folder does not exist: {command.sources_folder}'
         )
 
     if command.storage_folder \
@@ -114,9 +116,9 @@ def perform_unite(command: commands.UniteCommand,
                   filesystem: core.Filesystem,
                   stdout: core.STDOut) -> None:
     """Perform unite command."""
-    stdout.print('Parsing source files')
+    stdout.print('Parsing source files and making unit files')
     total = unite.act(command, filesystem, stdout)
-    stdout.print(f'Total {total} units created')
+    stdout.print(f'Total {total} unit files created')
 
 
 def perform_make_migrations(command: commands.MakeMigrationsCommand,
@@ -131,8 +133,9 @@ def perform_make_relocations(command: commands.MakeRelocationsCommand,
                              filesystem: core.Filesystem,
                              stdout: core.STDOut) -> None:
     """Perform make_relocations command."""
-    stdout.print('Making relocations')
-    # TODO
+    stdout.print('Making relocation files')
+    total = make_relocations.act(command, filesystem, stdout)
+    stdout.print(f'Total {total} relocation files created')
 
 
 def perform_migrate(command: commands.MigrateCommand,

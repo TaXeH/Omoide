@@ -75,3 +75,11 @@ class Renderer:
 
         info = tool(path)
         return info
+
+    @staticmethod
+    def resize(path_from: str, path_to: str, width: int, height: int) -> None:
+        """Resize image."""
+        image = Image.open(path_from)
+        image.thumbnail((width, height))
+        image.save(path_to)
+        image.close()

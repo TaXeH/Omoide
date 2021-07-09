@@ -4,100 +4,83 @@
 """
 from typing import List
 
-from omoide import core, constants
-from omoide.files.operations import drop_files
-from omoide.use_cases import commands, identity
-from omoide.use_cases.unite import saving
+import omoide.use_cases.make_relocations.saving
+from omoide import constants
+from omoide import core
+from omoide import use_cases
 
 
-def act(command: commands.MakeRelocationsCommand, filesystem: core.Filesystem,
+def act(command: use_cases.MakeRelocationsCommand,
+        filesystem: core.Filesystem,
         stdout: core.STDOut) -> int:
     """Make relocations."""
-    filenames_to_delete = {
-        constants.RELOCATION_FILE_NAME,
-    }
-    drop_files(command, filenames_to_delete, filesystem, stdout)
+    walk = use_cases.utils.walk_sources_from_command(command, filesystem)
 
-    router = core.Router()
-    identity_master = core.IdentityMaster()
-    uuid_master = core.UUIDMaster()
+    total_new_relocations = 0
+    for branch, leaf, _ in walk:
+        storage_folder = filesystem.join(command.storage_folder, branch, leaf)
+        unit_file_path = filesystem.join(storage_folder,
+                                         constants.UNIT_FILE_NAME)
 
-    identity.gather_existing_identities(command.sources_folder,
-                                        router,
-                                        identity_master,
-                                        uuid_master,
-                                        filesystem)
-
-    total_relocations = 0
-    for branch in filesystem.list_folders(command.sources_folder):
-
-        if command.branch != 'all' and command.branch != branch:
+        if filesystem.not_exists(unit_file_path):
+            stdout.gray(f'Unit file does not exist: {unit_file_path}')
             continue
 
-        branch_folder = filesystem.join(command.sources_folder, branch)
-        for leaf in filesystem.list_folders(branch_folder):
+        relocations: List[core.Relocation] = []
+        content = filesystem.read_json(unit_file_path)
 
-            if command.leaf != 'all' and command.leaf != leaf:
-                continue
+        for meta in content.get('metas', []):
+            new_relocations = make_relocations_for_one_meta(
+                command=command,
+                meta=meta,
+                branch=branch,
+                leaf=leaf,
+                filesystem=filesystem,
+            )
+            relocations.extend(new_relocations)
+            total_new_relocations += len(new_relocations)
 
-            leaf_folder = filesystem.join(branch_folder, leaf)
-            unit_file = filesystem.join(leaf_folder, constants.UNIT_FILE_NAME)
+        relocation_path = use_cases.make_relocations.saving.save_relocations(
+            folder=storage_folder,
+            relocations=relocations,
+            filesystem=filesystem,
+        )
+        stdout.green(f'Created relocation file: {relocation_path}')
 
-            if filesystem.not_exists(unit_file):
-                continue
-
-            relocations: List[core.Relocation] = []
-            content = filesystem.read_json(unit_file)
-            for meta in content.get('metas', []):
-                new_relocations = make_relocations_for_one_meta(
-                    meta=meta,
-                    branch=branch,
-                    leaf=leaf,
-                    sources_folder=command.sources_folder,
-                    content_folder=command.content_folder,
-                    router=router,
-                    filesystem=filesystem,
-                )
-                relocations.extend(new_relocations)
-                total_relocations += len(new_relocations)
-
-            saving.save_relocations(leaf_folder, relocations, filesystem)
-            # TODO - get filename here
-            stdout.yellow(f'Saved relocations {leaf_folder}')
-
-    return total_relocations
+    return total_new_relocations
 
 
-def make_relocations_for_one_meta(meta: dict,
+def make_relocations_for_one_meta(command: use_cases.MakeRelocationsCommand,
+                                  meta: dict,
                                   branch: str,
                                   leaf: str,
-                                  sources_folder: str,
-                                  content_folder: str,
-                                  router: core.Router,
                                   filesystem: core.Filesystem):
+    """Gather all required for relocation information."""
     relocations: List[core.Relocation] = []
     uuid = meta['uuid']
-    realm_uuid = meta['_realm_uuid']
-    theme_uuid = meta['_theme_uuid']
-    group_uuid = meta['group_uuid']
     filename = meta['original_filename']
     ext = meta['original_extension']
 
+    path_to_content = meta['path_to_content']
+
+    _, category, realm, theme, group, _ = path_to_content.split('/')
+
     path_from = filesystem.join(
-        sources_folder,
+        command.sources_folder,
         branch,
         leaf,
-        router.get_route(realm_uuid),
-        router.get_route(theme_uuid),
-        router.get_route(group_uuid),
+        realm,
+        theme,
+        group,
         f'{filename}.{ext}',
     )
 
     path_to = filesystem.join(
-        content_folder,
-        router.get_route(realm_uuid),
-        router.get_route(theme_uuid),
-        router.get_route(group_uuid),
+        command.content_folder,
+        category,
+        realm,
+        theme,
+        group,
         f'{uuid}.{ext}'
     )
 
@@ -111,24 +94,53 @@ def make_relocations_for_one_meta(meta: dict,
     )
     relocations.append(new_relocation)
 
-    for (width, height) in constants.COMPRESS_TO:
-        new_relocation = core.Relocation(
-            uuid=uuid,
-            path_from=path_from,
-            path_to=path_to,
-            width=width,
-            height=height,
-            operation_type='scale',
-        )
-        relocations.append(new_relocation)
+    path_to = filesystem.join(
+        command.content_folder,
+        'preview',
+        realm,
+        theme,
+        group,
+        f'{uuid}.{ext}'
+    )
+
+    new_relocation = core.Relocation(
+        uuid=uuid,
+        path_from=path_from,
+        path_to=path_to,
+        width=constants.PREVIEW_SIZE[0],
+        height=constants.PREVIEW_SIZE[1],
+        operation_type='scale',
+    )
+    relocations.append(new_relocation)
+
+    path_to = filesystem.join(
+        command.content_folder,
+        'thumbnails',
+        realm,
+        theme,
+        group,
+        f'{uuid}.{ext}'
+    )
+
+    new_relocation = core.Relocation(
+        uuid=uuid,
+        path_from=path_from,
+        path_to=path_to,
+        width=constants.THUMBNAIL_SIZE[0],
+        height=constants.THUMBNAIL_SIZE[1],
+        operation_type='scale',
+    )
+    relocations.append(new_relocation)
+
     return relocations
 
 
 if __name__ == '__main__':
-    _command = commands.MakeRelocationsCommand(
+    _command = use_cases.MakeRelocationsCommand(
         branch='all',
         leaf='all',
         sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
+        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
         content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
     )
     _filesystem = core.Filesystem()

@@ -6,18 +6,21 @@ import sys
 
 from sqlalchemy.orm import sessionmaker
 
-from omoide import constants
+from omoide import constants, use_cases
 from omoide import core
+from omoide.database import models
 from omoide.database import operations
 from omoide.use_cases import commands
 from omoide.use_cases.freeze.indexes import build_indexes
 
+assert models
 
-def act(command: commands.FreezeCommand,
+
+def act(command: use_cases.FreezeCommand,
         filesystem: core.Filesystem,
         stdout: core.STDOut) -> None:
     """Create static database."""
-    root_db_path = filesystem.join(command.sources_folder,
+    root_db_path = filesystem.join(command.storage_folder,
                                    constants.ROOT_DB_FILE_NAME)
     static_db_path = filesystem.join(command.content_folder,
                                      constants.STATIC_DB_FILE_NAME)
@@ -26,12 +29,12 @@ def act(command: commands.FreezeCommand,
         stdout.red(f'Source database does not exist: {root_db_path}')
         sys.exit(1)
 
-    # if filesystem.exists(static_db_path):
-    #     stdout.yellow(f'Deleting old target database: {static_db_path}')
-    #     filesystem.delete_file(static_db_path)
+    if filesystem.exists(static_db_path):
+        stdout.yellow(f'Deleting old target database: {static_db_path}')
+        filesystem.delete_file(static_db_path)
 
     root = operations.create_database(
-        folder=command.sources_folder,
+        folder=command.storage_folder,
         filename=constants.ROOT_DB_FILE_NAME,
         filesystem=filesystem,
         stdout=stdout,
@@ -62,7 +65,10 @@ def act(command: commands.FreezeCommand,
 if __name__ == '__main__':
     cmd = commands.FreezeCommand(
         sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
+        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
         content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
+        branch='all',
+        leaf='all',
     )
     fs = core.Filesystem()
     st = core.STDOut()

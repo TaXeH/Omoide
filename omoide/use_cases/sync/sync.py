@@ -4,21 +4,25 @@
 """
 from sqlalchemy.orm import sessionmaker
 
-from omoide import core, constants
+from omoide import core, constants, use_cases
+from omoide.database import models
 from omoide.database import operations
-from omoide.use_cases import commands
 from omoide.database.operations import synchronize
+from omoide.use_cases import commands
+
+assert models
 
 
-def act(command: commands.SyncCommand, filesystem: core.Filesystem,
+def act(command: use_cases.SyncCommand,
+        filesystem: core.Filesystem,
         stdout: core.STDOut) -> int:
     """Sync."""
     root_db_file = filesystem.join(
-        command.sources_folder, constants.ROOT_DB_FILE_NAME
+        command.storage_folder, constants.ROOT_DB_FILE_NAME
     )
     needs_schema = filesystem.not_exists(root_db_file)
     root = operations.create_database(
-        folder=command.sources_folder,
+        folder=command.storage_folder,
         filename=constants.ROOT_DB_FILE_NAME,
         filesystem=filesystem,
         stdout=stdout,
@@ -31,12 +35,12 @@ def act(command: commands.SyncCommand, filesystem: core.Filesystem,
     session_root = SessionRoot()
 
     total_migrations = 0
-    for branch in filesystem.list_folders(command.sources_folder):
+    for branch in filesystem.list_folders(command.storage_folder):
 
         if command.branch != 'all' and command.branch != branch:
             continue
 
-        branch_folder = filesystem.join(command.sources_folder, branch)
+        branch_folder = filesystem.join(command.storage_folder, branch)
         branch_db_file = filesystem.join(branch_folder,
                                          constants.BRANCH_DB_FILE_NAME)
         needs_schema = filesystem.not_exists(branch_db_file)
@@ -92,6 +96,7 @@ if __name__ == '__main__':
         branch='all',
         leaf='all',
         sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
+        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
         content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
     )
     _filesystem = core.Filesystem()

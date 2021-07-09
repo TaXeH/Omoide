@@ -4,24 +4,21 @@
 """
 from typing import List
 
-from omoide import core, constants
-from omoide.files.operations import drop_files
+import omoide.use_cases.make_migrations.saving
+from omoide import core, constants, use_cases
 from omoide.use_cases import commands, identity
 from omoide.use_cases.make_migrations import schema
-from omoide.use_cases.unite import saving
 
 
-def act(command: commands.MakeRelocationsCommand, filesystem: core.Filesystem,
+def act(command: use_cases.MakeRelocationsCommand,
+        filesystem: core.Filesystem,
         stdout: core.STDOut) -> int:
     """Make migrations."""
-    filenames_to_delete = {
-        constants.MIGRATION_FILE_NAME,
-    }
-    drop_files(command, filenames_to_delete, filesystem, stdout)
+    walk = use_cases.utils.walk_storage_from_command(command, filesystem)
 
-    router = core.Router()
-    identity_master = core.IdentityMaster()
-    uuid_master = core.UUIDMaster()
+    router = use_cases.Router()
+    identity_master = use_cases.IdentityMaster()
+    uuid_master = use_cases.UUIDMaster()
 
     identity.gather_existing_identities(command.sources_folder,
                                         router,
@@ -30,29 +27,22 @@ def act(command: commands.MakeRelocationsCommand, filesystem: core.Filesystem,
                                         filesystem)
 
     total_migrations = 0
-    for branch in filesystem.list_folders(command.sources_folder):
+    for branch, leaf, leaf_folder in walk:
+        unit_file_path = filesystem.join(leaf_folder, constants.UNIT_FILE_NAME)
 
-        if command.branch != 'all' and command.branch != branch:
+        if filesystem.not_exists(unit_file_path):
+            stdout.gray(f'Unit file does not exist: {unit_file_path}')
             continue
 
-        branch_folder = filesystem.join(command.sources_folder, branch)
-        for leaf in filesystem.list_folders(branch_folder):
-
-            if command.leaf != 'all' and command.leaf != leaf:
-                continue
-
-            leaf_folder = filesystem.join(branch_folder, leaf)
-            unit_file = filesystem.join(leaf_folder, constants.UNIT_FILE_NAME)
-
-            if filesystem.not_exists(unit_file):
-                continue
-
-            content = filesystem.read_json(unit_file)
-            new_migrations = schema.instantiate_commands(content=content)
-            saving.save_migrations(leaf_folder, new_migrations, filesystem)
-            # TODO - get filename here
-            stdout.yellow(f'Saved migrations {leaf_folder}')
-            total_migrations += len(new_migrations)
+        content = filesystem.read_json(unit_file_path)
+        new_migrations = schema.instantiate_commands(content=content)
+        migration_path = use_cases.make_migrations.saving.save_migrations(
+            leaf_folder=leaf_folder,
+            migrations=new_migrations,
+            filesystem=filesystem,
+        )
+        stdout.green(f'Created migration file: {migration_path}')
+        total_migrations += len(new_migrations)
 
     return total_migrations
 
@@ -62,6 +52,7 @@ if __name__ == '__main__':
         branch='all',
         leaf='all',
         sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
+        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
         content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
     )
     _filesystem = core.Filesystem()
