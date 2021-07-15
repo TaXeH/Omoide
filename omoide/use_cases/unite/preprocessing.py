@@ -278,13 +278,11 @@ def preprocess_group_meta_pack(update: dict,
         meta_uuid = uuid_master.generate_uuid_meta()
 
         meta_filename = f'{meta_uuid}.{ext}'
+        common = f'{realm_route}/{theme_route}/{group_route}/{meta_filename}'
 
-        path_to_content = (f'/images/{realm_route}/{theme_route}'
-                           f'/{group_route}/{meta_filename}')
-        path_to_preview = (f'/preview/{realm_route}/{theme_route}'
-                           f'/{group_route}/{meta_filename}')
-        path_to_thumbnail = (f'/thumbnails/{realm_route}/{theme_route}'
-                             f'/{group_route}/{meta_filename}')
+        path_to_content = f'/content/{common}'
+        path_to_preview = f'/preview/{common}'
+        path_to_thumbnail = f'/thumbnails/{common}'
 
         if total == 1:
             _previous = ''
@@ -383,13 +381,11 @@ def preprocess_no_group_meta_pack(update: dict,
         meta_uuid = uuid_master.generate_uuid_meta()
 
         meta_filename = f'{meta_uuid}.{ext}'
+        common = f'{realm_route}/{theme_route}/{group_route}/{meta_filename}'
 
-        path_to_content = (f'/images/{realm_route}/{theme_route}'
-                           f'/{group_route}/{meta_filename}')
-        path_to_preview = (f'/preview/{realm_route}/{theme_route}'
-                           f'/{group_route}/{meta_filename}')
-        path_to_thumbnail = (f'/thumbnails/{realm_route}/{theme_route}'
-                             f'/{group_route}/{meta_filename}')
+        path_to_content = f'/content/{common}'
+        path_to_preview = f'/preview/{common}'
+        path_to_thumbnail = f'/thumbnails/{common}'
 
         new_meta = {
             'revision': revision,
@@ -428,8 +424,30 @@ def preprocess_no_group_meta_pack(update: dict,
             update['permissions_metas'].append(new_permission)
 
 
-def preprocess_users(source: dict, update: dict,
+def preprocess_users(source: dict, unit: dict,
                      identity_master: use_cases.IdentityMaster,
                      uuid_master: use_cases.UUIDMaster) -> None:
     """Extend users body."""
-    # TODO
+    users = source.pop('users', [])
+    revision = use_cases.get_revision_number()
+    now = use_cases.get_now()
+
+    for user in users:
+        user_uuid = identity_master.get_user_uuid(user['uuid'], uuid_master)
+
+        for permission in user.pop('permissions', []):
+            new_permission = {
+                'revision': revision,
+                'last_update': now,
+                'user_uuid': user_uuid,
+                'value': permission,
+            }
+            unit['permissions_users'].append(new_permission)
+
+        new_user = {
+            'revision': revision,
+            'last_update': now,
+            **user,
+            'uuid': user_uuid,
+        }
+        unit['users'].append(new_user)

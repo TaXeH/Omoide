@@ -3,10 +3,7 @@
 """Special class that handles UUID generation.
 """
 import uuid as uuid_module
-from typing import (
-    Set, Collection, Optional,
-    List, Union, Sequence, Tuple,
-)
+from typing import Set, Collection, Optional, List, Union, Sequence, Tuple
 
 from omoide import constants
 from omoide import core
@@ -108,6 +105,15 @@ class UUIDMaster:
         return self.generate_and_add_uuid(existing_uuids=self.uuids_metas,
                                           prefix=constants.PREFIX_META)
 
+    def generate_uuid_user(self) -> core.UUID:
+        """Create and add new UUID for user."""
+        return self.generate_and_add_uuid(existing_uuids=self.uuids_users,
+                                          prefix=constants.PREFIX_USER)
+
+    def insert_queue(self, uuids: Sequence[core.RawUUID]) -> None:
+        """Add uuids queue."""
+        self.given_queue = list(reversed(uuids)) + self.given_queue
+
     def __add__(self, other) -> 'UUIDMaster':
         """Sum two UUID Masters."""
         cls = type(self)
@@ -132,10 +138,6 @@ class UUIDMaster:
             uuids_metas=self.uuids_metas.union(other.uuids_metas),
             uuids_users=self.uuids_users.union(other.uuids_users),
         )
-
-    def insert_queue(self, uuids: Sequence[core.RawUUID]) -> None:
-        """Add uuids queue."""
-        self.given_queue = list(reversed(uuids)) + self.given_queue
 
     def extract_queue(self) -> List[core.RawUUID]:
         """Get all generated UUIDS."""

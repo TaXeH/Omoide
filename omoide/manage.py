@@ -54,14 +54,11 @@ Possible call variants:
 """
 import os
 import sys
-from typing import List, Callable
+from typing import List, Callable, Optional
 
 from omoide import core, use_cases
 from omoide.use_cases import cli
 from omoide.use_cases import commands
-from omoide.use_cases.unite import unite
-from omoide.use_cases.make_relocations import make_relocations
-from omoide.use_cases.relocate import relocate
 
 
 def main(args: List[str], *,
@@ -72,9 +69,9 @@ def main(args: List[str], *,
         stdout.yellow('No arguments to handle')
         return
 
-    sources_path = os.environ.get('OMOIDE_SOURCE')
-    storage_path = os.environ.get('OMOIDE_STORAGE')
-    content_path = os.environ.get('OMOIDE_CONTENT')
+    sources_path = get_and_announce('OMOIDE_SOURCE', stdout)
+    storage_path = get_and_announce('OMOIDE_STORAGE', stdout)
+    content_path = get_and_announce('OMOIDE_CONTENT', stdout)
 
     command = cli.parse_arguments(args, sources_path,
                                   storage_path, content_path)
@@ -94,6 +91,14 @@ def main(args: List[str], *,
 
     target_func = get_target_func(command)
     target_func(command, filesystem, stdout)
+
+
+def get_and_announce(variable: str, stdout: core.STDOut) -> Optional[str]:
+    """Notice that variable is not None."""
+    value = os.environ.get(variable)
+    if value is not None:
+        stdout.yellow(f'Using {variable}={value!r}')
+    return value
 
 
 def get_target_func(command: use_cases.BaseCommand) -> Callable:
@@ -116,66 +121,72 @@ def perform_unite(command: commands.UniteCommand,
                   filesystem: core.Filesystem,
                   stdout: core.STDOut) -> None:
     """Perform unite command."""
-    stdout.print('Parsing source files and making unit files')
-    total = unite.act(command, filesystem, stdout)
-    stdout.print(f'Total {total} unit files created')
+    stdout.magenta('[UNITE] Parsing source files and making unit files')
+    total = use_cases.unite.act(command, filesystem, stdout)
+    stdout.magenta(f'Total {total} unit files created')
 
 
 def perform_make_migrations(command: commands.MakeMigrationsCommand,
                             filesystem: core.Filesystem,
                             stdout: core.STDOut) -> None:
     """Perform unite command."""
-    stdout.print('Making migrations')
-    # TODO
+    stdout.magenta('[MAKE MIGRATIONS] Creating migration files')
+    total = use_cases.make_migrations.act(command, filesystem, stdout)
+    stdout.magenta(f'Total {total} migration files created')
 
 
 def perform_make_relocations(command: commands.MakeRelocationsCommand,
                              filesystem: core.Filesystem,
                              stdout: core.STDOut) -> None:
     """Perform make_relocations command."""
-    stdout.print('Making relocation files')
-    total = make_relocations.act(command, filesystem, stdout)
-    stdout.print(f'Total {total} relocation files created')
+    stdout.magenta('[MAKE RELOCATIONS] Creating relocation files')
+    total = use_cases.make_relocations.act(command, filesystem, stdout)
+    stdout.magenta(f'Total {total} relocation files created')
 
 
 def perform_migrate(command: commands.MigrateCommand,
                     filesystem: core.Filesystem,
                     stdout: core.STDOut) -> None:
     """Perform migration command."""
-    stdout.print('Applying migrations')
-    # TODO
+    stdout.magenta('[MIGRATE] Applying migrations')
+    total = use_cases.migrate.act(command, filesystem, stdout)
+    stdout.magenta(f'Total {total} migration files applied')
 
 
 def perform_relocate(command: commands.RelocateCommand,
                      filesystem: core.Filesystem,
                      stdout: core.STDOut) -> None:
     """Perform relocation command."""
-    stdout.print('Applying relocations')
-    # TODO
+    stdout.magenta('[RELOCATE] Applying relocations')
+    total = use_cases.relocate.act(command, filesystem, stdout)
+    stdout.magenta(f'Total {total} relocation files applied')
 
 
 def perform_sync(command: commands.SyncCommand,
                  filesystem: core.Filesystem,
                  stdout: core.STDOut) -> None:
     """Perform sync command."""
-    stdout.print('Synchronizing databases')
+    stdout.magenta('[SYNC] Synchronizing databases')
     # TODO
+    raise
 
 
 def perform_freeze(command: commands.FreezeCommand,
                    filesystem: core.Filesystem,
                    stdout: core.STDOut) -> None:
     """Perform freeze command."""
-    stdout.print('Making static database')
+    stdout.magenta('[FREEZE] Making static database')
     # TODO
+    raise
 
 
 def perform_runserver(command: commands.RunserverCommand,
                       filesystem: core.Filesystem,
                       stdout: core.STDOut) -> None:
     """Perform command."""
-    stdout.print('Starting server')
+    stdout.magenta('[RUNSERVER] Starting server')
     # TODO
+    raise
 
 
 if __name__ == '__main__':

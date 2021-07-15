@@ -41,6 +41,11 @@ class STDOut:
         return cls.prefix_print(Fore.LIGHTBLACK_EX, text, *args, **kwargs)
 
     @classmethod
+    def magenta(cls, text: str, *args, **kwargs) -> None:
+        """Print magenta."""
+        return cls.prefix_print(Fore.MAGENTA, text, *args, **kwargs)
+
+    @classmethod
     def prefix_print(cls, prefix: str, text: str, *args, **kwargs) -> None:
         """Print with prefix (usually color)."""
         return print(prefix + text, *args, **kwargs)

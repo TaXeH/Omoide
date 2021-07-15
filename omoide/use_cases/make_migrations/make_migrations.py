@@ -10,7 +10,7 @@ from omoide.use_cases import commands, identity
 from omoide.use_cases.make_migrations import schema
 
 
-def act(command: use_cases.MakeRelocationsCommand,
+def act(command: use_cases.MakeMigrationsCommand,
         filesystem: core.Filesystem,
         stdout: core.STDOut) -> int:
     """Make migrations."""
@@ -48,7 +48,7 @@ def act(command: use_cases.MakeRelocationsCommand,
 
 
 if __name__ == '__main__':
-    _command = commands.MakeRelocationsCommand(
+    _command = commands.MakeMigrationsCommand(
         branch='all',
         leaf='all',
         sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',

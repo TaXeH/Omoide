@@ -5,8 +5,8 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import relationship
 
-from omoide.database import common
 from omoide import constants
+from omoide.database import common
 
 __all__ = [
     'TagRealm',
@@ -14,7 +14,9 @@ __all__ = [
     'TagGroup',
     'TagMeta',
     'ImplicitTag',
+    'ImplicitTagValue',
     'Synonym',
+    'SynonymValue',
 ]
 
 
@@ -91,16 +93,34 @@ class Synonym(common.BaseModel):
     __tablename__ = 'synonyms'
 
     # primary and foreign keys
-    id = sa.Column(sa.Integer,
-                   primary_key=True, unique=True, autoincrement=True)
+    uuid = sa.Column(sa.String(length=constants.UUID_LEN),
+                     primary_key=True, nullable=False, index=True)
     theme_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                            sa.ForeignKey('themes.uuid'),
                            nullable=False, unique=False, index=True)
     # fields
+    label = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
+
+    # relations
+    theme = relationship('Theme', back_populates='synonyms')
+    values = relationship('SynonymValue', back_populates='synonym')
+
+
+class SynonymValue(common.BaseModel):
+    """Single synonym value model."""
+    __tablename__ = 'synonyms_values'
+
+    # primary and foreign keys
+    synonym_uuid = sa.Column('synonym_uuid',
+                             sa.String(length=constants.UUID_LEN),
+                             sa.ForeignKey('synonyms.uuid'),
+                             primary_key=True, nullable=False,
+                             unique=False, index=True)
+    # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
                       nullable=False)
     # relations
-    theme = relationship('Theme', back_populates='synonyms')
+    synonym = relationship('Synonym', back_populates='values')
 
 
 class ImplicitTag(common.BaseModel):
@@ -108,13 +128,31 @@ class ImplicitTag(common.BaseModel):
     __tablename__ = 'implicit_tags'
 
     # primary and foreign keys
-    id = sa.Column(sa.Integer,
-                   primary_key=True, unique=True, autoincrement=True)
+    uuid = sa.Column(sa.String(length=constants.UUID_LEN),
+                     primary_key=True, nullable=False, index=True)
     theme_uuid = sa.Column('theme_uuid', sa.String(length=constants.UUID_LEN),
                            sa.ForeignKey('themes.uuid'),
                            nullable=False, unique=False, index=True)
     # fields
-    value = sa.Column('value', sa.String(length=constants.MAX_LEN),
+    label = sa.Column(sa.String(length=constants.MAX_LEN),
                       nullable=False)
     # relations
     theme = relationship('Theme', back_populates='implicit_tags')
+    values = relationship('ImplicitTagValue', back_populates='implicit_tag')
+
+
+class ImplicitTagValue(common.BaseModel):
+    """Single implicit tag value model."""
+    __tablename__ = 'implicit_tags_values'
+
+    # primary and foreign keys
+    implicit_tag_uuid = sa.Column('implicit_tag_uuid',
+                                  sa.String(length=constants.UUID_LEN),
+                                  sa.ForeignKey('implicit_tags.uuid'),
+                                  primary_key=True, nullable=False,
+                                  unique=False, index=True)
+    # fields
+    value = sa.Column(sa.String(length=constants.MAX_LEN),
+                      nullable=False)
+    # relations
+    implicit_tag = relationship('ImplicitTag', back_populates='values')
