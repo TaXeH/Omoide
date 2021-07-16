@@ -9,7 +9,8 @@ from omoide import constants
 from omoide import core
 from omoide import use_cases
 from omoide.use_cases import identity
-from omoide.use_cases.unite import preprocessing
+from omoide.use_cases import transient
+from omoide.use_cases.step_01_unite import preprocessing
 
 
 def act(command: use_cases.UniteCommand,
@@ -80,7 +81,7 @@ def make_unit_in_leaf(command: use_cases.UniteCommand, branch: str, leaf: str,
     )
 
     used_variables = identity_master.extract()
-    unit['variables'].update(used_variables)
+    unit.variables.update(used_variables)
     identity_master.freeze()
 
     used_uuids = uuid_master.extract_queue()
@@ -92,7 +93,7 @@ def make_unit_in_leaf(command: use_cases.UniteCommand, branch: str, leaf: str,
 
     filesystem.ensure_folder_exists(unit_folder, stdout)
 
-    filesystem.write_json(unit_path, unit)
+    filesystem.write_json(unit_path, unit.dict())
     filesystem.write_json(uuids_path, used_uuids)
 
     return unit_path
@@ -103,62 +104,28 @@ def make_unit(branch: str, leaf: str, leaf_folder: str,
               identity_master: use_cases.IdentityMaster,
               uuid_master: use_cases.UUIDMaster,
               filesystem: core.Filesystem,
-              renderer: use_cases.Renderer) -> Dict[str, Any]:
+              renderer: use_cases.Renderer) -> transient.Unit :
     """Combine all updates in big JSON file."""
     source_path = filesystem.join(leaf_folder, constants.SOURCE_FILE_NAME)
     source_raw_text = filesystem.read_file(source_path)
     source_text = preprocessing.preprocess_source(source_raw_text, branch,
                                                   leaf)
-    source = json.loads(source_text)
+    source_dict = json.loads(source_text)
+    source = use_cases.ephemeral.Source(**source_dict)
+    unit = use_cases.transient.Unit()
 
-    unit = {
-        'variables': {},
-
-        'realms': [],
-        'themes': [],
-        'groups': [],
-        'metas': [],
-        'users': [],
-
-        'permissions_realm': [],
-        'permissions_themes': [],
-        'permissions_groups': [],
-        'permissions_metas': [],
-        'permissions_users': [],
-
-        'tags_realms': [],
-        'tags_themes': [],
-        'tags_groups': [],
-        'tags_metas': [],
-
-        'synonyms': [],
-        'implicit_tags': [],
-    }
     preprocessing.preprocess_realms(source, unit, router,
                                     identity_master, uuid_master)
     preprocessing.preprocess_themes(source, unit, router,
                                     identity_master, uuid_master)
-    preprocessing.preprocess_groups(source, unit, router, identity_master,
-                                    uuid_master, filesystem, leaf_folder,
-                                    renderer)
-    preprocessing.preprocess_no_group_metas(source, unit, router,
-                                            identity_master,
-                                            uuid_master, filesystem,
-                                            leaf_folder, renderer)
+    # preprocessing.preprocess_groups(source, unit, router, identity_master,
+    #                                 uuid_master, filesystem, leaf_folder,
+    #                                 renderer)
+    # preprocessing.preprocess_no_group_metas(source, unit, router,
+    #                                         identity_master,
+    #                                         uuid_master, filesystem,
+    #                                         leaf_folder, renderer)
     preprocessing.preprocess_users(source, unit,
                                    identity_master, uuid_master)
 
     return unit
-
-
-if __name__ == '__main__':
-    _command = use_cases.UniteCommand(
-        branch='all',
-        leaf='all',
-        sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
-        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
-        content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
-    )
-    _filesystem = core.Filesystem()
-    _stdout = core.STDOut()
-    act(_command, _filesystem, _stdout)

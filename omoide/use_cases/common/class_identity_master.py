@@ -74,6 +74,16 @@ class IdentityMaster:
             constants.PREFIX_USER: self._cached_u_uuids,
         }
 
+        self._prefix_to_method = {
+            constants.PREFIX_REALM: 'generate_uuid_realm',
+            constants.PREFIX_THEME: 'generate_uuid_theme',
+            constants.PREFIX_SYNONYM: 'generate_uuid_synonym',
+            constants.PREFIX_IMPLICIT_TAG: 'generate_uuid_implicit_tag',
+            constants.PREFIX_GROUP: 'generate_uuid_group',
+            constants.PREFIX_META: 'generate_uuid_meta',
+            constants.PREFIX_USER: 'generate_uuid_user',
+        }
+
     @staticmethod
     def get_prefix(string: str) -> str:
         """Return prefix of the variable."""
@@ -111,8 +121,11 @@ class IdentityMaster:
                     f'Variable {variable} in not found '
                     f'in cache by prefix {prefix}'
                 )
-            uuid = uuid_master.generate_uuid_realm()
+
+            generator = getattr(uuid_master, self._prefix_to_method[prefix])
+            uuid = generator()
             cache[variable] = uuid
+
         return uuid
 
     def get_realm_uuid(self, variable: str, uuid_master: UUIDMaster,

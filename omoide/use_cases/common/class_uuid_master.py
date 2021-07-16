@@ -23,6 +23,8 @@ class UUIDMaster:
                  uuids_queue: RawValues = None,
                  uuids_realms: Values = None,
                  uuids_themes: Values = None,
+                 uuids_synonyms: Values = None,
+                 uuids_implicit_tags: Values = None,
                  uuids_groups: Values = None,
                  uuids_metas: Values = None,
                  uuids_users: Values = None,
@@ -38,6 +40,8 @@ class UUIDMaster:
 
         self.uuids_realms = make_set(uuids_realms)
         self.uuids_themes = make_set(uuids_themes)
+        self.uuids_synonyms = make_set(uuids_synonyms)
+        self.uuids_implicit_tags = make_set(uuids_implicit_tags)
         self.uuids_groups = make_set(uuids_groups)
         self.uuids_metas = make_set(uuids_metas)
         self.uuids_users = make_set(uuids_users)
@@ -52,6 +56,8 @@ class UUIDMaster:
         return any([
             uuid in self.uuids_realms,
             uuid in self.uuids_themes,
+            uuid in self.uuids_synonyms,
+            uuid in self.uuids_implicit_tags,
             uuid in self.uuids_groups,
             uuid in self.uuids_metas,
             uuid in self.uuids_users,
@@ -110,6 +116,18 @@ class UUIDMaster:
         return self.generate_and_add_uuid(existing_uuids=self.uuids_users,
                                           prefix=constants.PREFIX_USER)
 
+    def generate_uuid_synonym(self) -> core.UUID:
+        """Create and add new UUID for synonym."""
+        return self.generate_and_add_uuid(existing_uuids=self.uuids_synonyms,
+                                          prefix=constants.PREFIX_SYNONYM)
+
+    def generate_uuid_implicit_tag(self) -> core.UUID:
+        """Create and add new UUID for implicit tag."""
+        return self.generate_and_add_uuid(
+            existing_uuids=self.uuids_implicit_tags,
+            prefix=constants.PREFIX_IMPLICIT_TAG,
+        )
+
     def insert_queue(self, uuids: Sequence[core.RawUUID]) -> None:
         """Add uuids queue."""
         self.given_queue = list(reversed(uuids)) + self.given_queue
@@ -134,6 +152,9 @@ class UUIDMaster:
         return cls(
             uuids_realms=self.uuids_realms.union(other.uuids_realms),
             uuids_themes=self.uuids_themes.union(other.uuids_themes),
+            uuids_synonyms=self.uuids_synonyms.union(other.uuids_synonyms),
+            uuids_implicit_tags=self.uuids_implicit_tags
+                .union(other.uuids_implicit_tags),
             uuids_groups=self.uuids_groups.union(other.uuids_groups),
             uuids_metas=self.uuids_metas.union(other.uuids_metas),
             uuids_users=self.uuids_users.union(other.uuids_users),

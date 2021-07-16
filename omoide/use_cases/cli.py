@@ -13,7 +13,7 @@ T = TypeVar('T')
 def parse_arguments(args: List[str],
                     sources_folder: Optional[str],
                     storage_folder: Optional[str],
-                    content_folder: Optional[str]) -> use_cases.BaseCommand:
+                    content_folder: Optional[str]) -> use_cases.AnyCommand:
     """Construct operation from arguments."""
     sources_folder, args = extract_parameter(
         name=constants.SOURCES_FOLDER_NAME,
@@ -39,7 +39,7 @@ def parse_arguments(args: List[str],
     args = [x.lower() for x in args]
     command, rest = args[0], args[1:]
 
-    if command == 'unite':
+    if command == 'step_01_unite':
         instance = make_operation_unite(rest,
                                         sources_folder,
                                         storage_folder,

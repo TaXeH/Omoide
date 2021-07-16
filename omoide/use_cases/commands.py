@@ -4,8 +4,9 @@
 """
 from dataclasses import dataclass
 
+from typing import Union
+
 __all__ = [
-    'BaseCommand',
     'UniteCommand',
     'MakeRelocationsCommand',
     'MakeMigrationsCommand',
@@ -14,6 +15,8 @@ __all__ = [
     'SyncCommand',
     'FreezeCommand',
     'RunserverCommand',
+    'AnyPathCommand',
+    'AnyCommand',
 ]
 
 
@@ -31,7 +34,7 @@ class BaseCommand:
 @dataclass(frozen=True)
 class UniteCommand(BaseCommand):
     """We have nothing ready, lets create base unit of source information."""
-    name: str = 'unite'
+    name: str = 'step_01_unite'
 
 
 @dataclass(frozen=True)
@@ -71,10 +74,32 @@ class FreezeCommand(BaseCommand):
 
 
 @dataclass(frozen=True)
-class RunserverCommand(BaseCommand):
+class RunserverCommand:
     """Start web application."""
     host: str = ''
     port: int = ''
     template_folder: str = ''
     static_folder: str = ''
     name: str = 'runserver'
+
+
+AnyPathCommand = Union[
+    UniteCommand,
+    MakeRelocationsCommand,
+    MakeMigrationsCommand,
+    MigrateCommand,
+    RelocateCommand,
+    SyncCommand,
+    FreezeCommand,
+]
+
+AnyCommand = Union[
+    UniteCommand,
+    MakeRelocationsCommand,
+    MakeMigrationsCommand,
+    MigrateCommand,
+    RelocateCommand,
+    SyncCommand,
+    FreezeCommand,
+    RunserverCommand
+]

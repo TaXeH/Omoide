@@ -8,7 +8,7 @@ from omoide.manage import main as manage
 def main():
     """Entry point.
     """
-    manage(['unite', 'all', 'all'])
+    manage(['step_01_unite', 'all', 'all'])
     # manage(['migrate'])
     # manage(['sync'])
     # manage(['runserver'])

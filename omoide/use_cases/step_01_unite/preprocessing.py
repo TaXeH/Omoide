@@ -8,6 +8,8 @@ from typing import Tuple
 from omoide import constants
 from omoide import core
 from omoide import use_cases
+from omoide.use_cases.common import ephemeral
+from omoide.use_cases.common import transient
 
 
 def preprocess_source(source: str, branch: str, leaf: str) -> str:
@@ -43,103 +45,141 @@ def apply_global_variables(source: str) -> str:
     return source
 
 
-def preprocess_realms(source: dict, unit: dict, router: use_cases.Router,
+def preprocess_realms(source: ephemeral.Source,
+                      unit: transient.Unit,
+                      router: use_cases.Router,
                       identity_master: use_cases.IdentityMaster,
                       uuid_master: use_cases.UUIDMaster) -> None:
     """Extend realms body."""
-    realms = source.pop('realms', [])
     revision = use_cases.get_revision_number()
     now = use_cases.get_now()
 
-    for realm in realms:
-        realm_uuid = identity_master.get_realm_uuid(realm['uuid'], uuid_master)
+    for ep_realm in source.realms:
+        realm_uuid = identity_master.get_realm_uuid(ep_realm.uuid, uuid_master)
 
-        for tag in realm.pop('tags', []):
-            new_tag = {
-                'revision': revision,
-                'last_update': now,
-                'realm_uuid': realm_uuid,
-                'value': tag,
-            }
-            unit['tags_realms'].append(new_tag)
+        assert len(ep_realm.tags) == len(set(ep_realm.tags))
+        for tag_string in ep_realm.tags:
+            new_tag = transient.TagRealm(
+                revision=revision,
+                last_update=now,
+                realm_uuid=realm_uuid,
+                value=tag_string,
+            )
+            unit.tags_realms.append(new_tag)
 
-        for permission in realm.pop('permissions', []):
-            new_permission = {
-                'revision': revision,
-                'last_update': now,
-                'realm_uuid': realm_uuid,
-                'value': permission,
-            }
-            unit['permissions_realm'].append(new_permission)
+        assert len(ep_realm.permissions) == len(set(ep_realm.permissions))
+        for permission_string in ep_realm.permissions:
+            new_permission = transient.PermissionRealm(
+                revision=revision,
+                last_update=now,
+                realm_uuid=realm_uuid,
+                value=permission_string,
+            )
+            unit.permissions_realm.append(new_permission)
 
-        new_realm = {
-            'revision': revision,
-            'last_update': now,
-            **realm,
-            'uuid': realm_uuid,
-        }
-        unit['realms'].append(new_realm)
-        router.register_route(realm_uuid, new_realm['route'])
+        new_realm = transient.Realm(
+            revision=revision,
+            last_update=now,
+            uuid=realm_uuid,
+            route=ep_realm.route,
+            label=ep_realm.label
+        )
+        unit.realms.append(new_realm)
+        router.register_route(realm_uuid, new_realm.route)
 
 
-def preprocess_themes(source: dict, unit: dict, router: use_cases.Router,
+def preprocess_themes(source: ephemeral.Source,
+                      unit: transient.Unit,
+                      router: use_cases.Router,
                       identity_master: use_cases.IdentityMaster,
                       uuid_master: use_cases.UUIDMaster) -> None:
     """Extend themes body."""
-    themes = source.pop('themes', [])
     revision = use_cases.get_revision_number()
     now = use_cases.get_now()
 
-    for theme in themes:
-        realm_uuid = identity_master.get_realm_uuid(theme['realm_uuid'],
-                                                    uuid_master)
-        theme_uuid = identity_master.get_theme_uuid(theme['uuid'], uuid_master)
+    for ep_theme in source.themes:
+        realm_uuid = identity_master.get_realm_uuid(
+            ep_theme.realm_uuid, uuid_master)
+        theme_uuid = identity_master.get_theme_uuid(
+            ep_theme.uuid, uuid_master)
 
-        for synonym in theme.pop('synonyms', []):
-            new_synonym = {
-                'revision': revision,
-                'last_update': now,
-                'theme_uuid': theme_uuid,
-                'value': synonym,
-            }
-            unit['synonyms'].append(new_synonym)
+        for synonym in ep_theme.synonyms:
+            synonym_uuid = identity_master.get_synonym_uuid(
+                synonym.uuid, uuid_master)
 
-        for implicit_tag in theme.pop('implicit_tags', []):
-            new_implicit_tag = {
-                'revision': revision,
-                'last_update': now,
-                'theme_uuid': theme_uuid,
-                'value': implicit_tag,
-            }
-            unit['implicit_tags'].append(new_implicit_tag)
+            new_synonym = transient.Synonym(
+                revision=revision,
+                last_update=now,
+                uuid=synonym_uuid,
+                theme_uuid=theme_uuid,
+                label=synonym.label,
+            )
+            unit.synonyms.append(new_synonym)
 
-        for tag in theme.pop('tags', []):
-            new_tag = {
-                'revision': revision,
-                'last_update': now,
-                'theme_uuid': theme_uuid,
-                'value': tag,
-            }
-            unit['tags_themes'].append(new_tag)
+            assert len(synonym.values) == len(set(synonym.values))
+            for value in synonym.values:
+                new_synonym_value = transient.SynonymValue(
+                    revision=revision,
+                    last_update=now,
+                    synonym_uuid=synonym_uuid,
+                    value=value,
+                )
+                unit.synonyms_values.append(new_synonym_value)
 
-        for permission in theme.pop('permissions', []):
-            new_permission = {
-                'revision': revision,
-                'last_update': now,
-                'theme_uuid': theme_uuid,
-                'value': permission,
-            }
-            unit['permissions_themes'].append(new_permission)
+        for implicit_tag in ep_theme.implicit_tags:
+            implicit_tag_uuid = identity_master.get_implicit_tag_uuid(
+                implicit_tag.uuid, uuid_master)
 
-        new_theme = {
-            'revision': revision,
-            'last_update': now,
-            **theme,
-            'uuid': theme_uuid,
-            'realm_uuid': realm_uuid,
-        }
-        unit['themes'].append(new_theme)
-        router.register_route(theme_uuid, new_theme['route'])
+            new_implicit_tag = transient.ImplicitTag(
+                revision=revision,
+                last_update=now,
+                uuid=implicit_tag_uuid,
+                theme_uuid=theme_uuid,
+                label=implicit_tag.label,
+            )
+            unit.implicit_tags.append(new_implicit_tag)
+
+            assert len(implicit_tag.values) \
+                   == len(set(implicit_tag.values))
+            for value in implicit_tag.values:
+                new_implicit_tag_value = transient.ImplicitTagValue(
+                    revision=revision,
+                    last_update=now,
+                    implicit_tag_uuid=implicit_tag_uuid,
+                    value=value,
+                )
+                unit.implicit_tags_values.append(new_implicit_tag_value)
+
+        assert len(ep_theme.tags) == len(set(ep_theme.tags))
+        for tag in ep_theme.tags:
+            new_tag = transient.TagTheme(
+                revision=revision,
+                last_update=now,
+                theme_uuid=theme_uuid,
+                value=tag,
+            )
+            unit.tags_themes.append(new_tag)
+
+        assert len(ep_theme.permissions) == len(set(ep_theme.permissions))
+        for permission in ep_theme.permissions:
+            new_permission = transient.PermissionTheme(
+                revision=revision,
+                last_update=now,
+                theme_uuid=theme_uuid,
+                value=permission,
+            )
+            unit.permissions_themes.append(new_permission)
+
+        new_theme = transient.Theme(
+            revision=revision,
+            last_update=now,
+            uuid=theme_uuid,
+            realm_uuid=realm_uuid,
+            route=ep_theme.route,
+            label=ep_theme.label,
+        )
+        unit.themes.append(new_theme)
+        router.register_route(theme_uuid, new_theme.route)
 
 
 def preprocess_groups(source: dict,
@@ -424,30 +464,31 @@ def preprocess_no_group_meta_pack(update: dict,
             update['permissions_metas'].append(new_permission)
 
 
-def preprocess_users(source: dict, unit: dict,
+def preprocess_users(source: ephemeral.Source,
+                     unit: transient.Unit,
                      identity_master: use_cases.IdentityMaster,
                      uuid_master: use_cases.UUIDMaster) -> None:
     """Extend users body."""
-    users = source.pop('users', [])
     revision = use_cases.get_revision_number()
     now = use_cases.get_now()
 
-    for user in users:
-        user_uuid = identity_master.get_user_uuid(user['uuid'], uuid_master)
+    for ep_user in source.users:
+        user_uuid = identity_master.get_user_uuid(ep_user.uuid, uuid_master)
 
-        for permission in user.pop('permissions', []):
-            new_permission = {
-                'revision': revision,
-                'last_update': now,
-                'user_uuid': user_uuid,
-                'value': permission,
-            }
-            unit['permissions_users'].append(new_permission)
+        assert len(ep_user.permissions) == len(set(ep_user.permissions))
+        for permission in ep_user.permissions:
+            new_permission = transient.PermissionUser(
+                revision=revision,
+                last_update=now,
+                user_uuid=user_uuid,
+                value=permission,
+            )
+            unit.permissions_users.append(new_permission)
 
-        new_user = {
-            'revision': revision,
-            'last_update': now,
-            **user,
-            'uuid': user_uuid,
-        }
-        unit['users'].append(new_user)
+        new_user = transient.User(
+            revision=revision,
+            last_update=now,
+            uuid=user_uuid,
+            name=ep_user.name,
+        )
+        unit.users.append(new_user)

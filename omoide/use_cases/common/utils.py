@@ -5,7 +5,7 @@
 from typing import Iterator, Tuple
 
 from omoide import core
-from omoide import use_cases
+from omoide.use_cases.commands import AnyPathCommand
 
 
 def walk(folder: str, filesystem: core.Filesystem, branch: str = 'all',
@@ -26,7 +26,7 @@ def walk(folder: str, filesystem: core.Filesystem, branch: str = 'all',
             yield current_branch, current_leaf, leaf_folder
 
 
-def walk_sources_from_command(command: use_cases.BaseCommand,
+def walk_sources_from_command(command: AnyPathCommand,
                               filesystem: core.Filesystem
                               ) -> Iterator[Tuple[str, str, str]]:
     """Typical iteration by command settings."""
@@ -34,7 +34,7 @@ def walk_sources_from_command(command: use_cases.BaseCommand,
                 command.branch, command.leaf)
 
 
-def walk_storage_from_command(command: use_cases.BaseCommand,
+def walk_storage_from_command(command: AnyPathCommand,
                               filesystem: core.Filesystem
                               ) -> Iterator[Tuple[str, str, str]]:
     """Typical iteration by command settings."""

@@ -8,7 +8,7 @@
 #
 # from omoide import core
 # from omoide.core import constants
-# from omoide.use_cases.unite import preprocessing
+# from omoide.use_cases.step_01_unite import preprocessing
 #
 #
 # @pytest.fixture
