@@ -51,7 +51,7 @@ def preprocess_realms(source: ephemeral.Source,
                       identity_master: use_cases.IdentityMaster,
                       uuid_master: use_cases.UUIDMaster) -> None:
     """Extend realms body."""
-    revision = use_cases.get_revision_number()
+    revision = use_cases.get_revision()
     now = use_cases.get_now()
 
     for ep_realm in source.realms:
@@ -94,7 +94,7 @@ def preprocess_themes(source: ephemeral.Source,
                       identity_master: use_cases.IdentityMaster,
                       uuid_master: use_cases.UUIDMaster) -> None:
     """Extend themes body."""
-    revision = use_cases.get_revision_number()
+    revision = use_cases.get_revision()
     now = use_cases.get_now()
 
     for ep_theme in source.themes:
@@ -192,7 +192,7 @@ def preprocess_groups(source: dict,
                       renderer: use_cases.Renderer) -> None:
     """Extend groups body."""
     groups = source.pop('groups', [])
-    revision = use_cases.get_revision_number()
+    revision = use_cases.get_revision()
     now = use_cases.get_now()
 
     for group in groups:
@@ -290,7 +290,7 @@ def preprocess_group_meta_pack(update: dict,
                                filesystem: core.Filesystem,
                                renderer: use_cases.Renderer) -> None:
     """Gather basic info on a specific meta."""
-    revision = use_cases.get_revision_number()
+    revision = use_cases.get_revision()
     now = use_cases.get_now()
 
     tags = pack.pop('tags', [])
@@ -386,7 +386,7 @@ def preprocess_no_group_meta_pack(update: dict,
                                   filesystem: core.Filesystem,
                                   renderer: use_cases.Renderer) -> None:
     """Gather basic info on a specific meta."""
-    revision = use_cases.get_revision_number()
+    revision = use_cases.get_revision()
     now = use_cases.get_now()
 
     realm_uuid = identity_master.get_realm_uuid(pack.pop('_realm_uuid'),
@@ -469,7 +469,7 @@ def preprocess_users(source: ephemeral.Source,
                      identity_master: use_cases.IdentityMaster,
                      uuid_master: use_cases.UUIDMaster) -> None:
     """Extend users body."""
-    revision = use_cases.get_revision_number()
+    revision = use_cases.get_revision()
     now = use_cases.get_now()
 
     for ep_user in source.users:

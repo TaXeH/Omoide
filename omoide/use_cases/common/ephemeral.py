@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
 
 """Collection of classes used on initial parsing stage.
-"""
-from typing import List
 
-from pydantic import BaseModel, Field
+This module describes actual requirements that imposed on source files.
+We're using intentionally simplified syntax there, so these entities
+are not like actual database models.
+"""
+from typing import List, Collection, NoReturn, Optional
+
+from pydantic import BaseModel, Field, validator
+
+from omoide import constants
 
 __all__ = [
     'Source',
@@ -17,21 +23,84 @@ __all__ = [
 ]
 
 
-# TODO - add validators for uuid fields
-# class UUIDCheckMixin(BaseModel):
-#     """Mixin that checks UUID field."""
-#     uuid: str
-#
-#     @validator('uuid')
-#     def must_be_variable(self, value):
-#         if not str(value).startswith(constants.VARIABLE_SIGN):
-#             raise ValueError(
-#                 f'UUIDS are accepted only as variables, not {value!r}'
-#             )
-#         return value
+def get_prefix(field_name: str, string: str) -> str:
+    """Extract prefix from full variable name."""
+    try:
+        _, _, variable = string.split('.')
+    except ValueError:
+        sign = constants.VARIABLE_SIGN
+        raise ValueError(
+            f'Field {field_name} is supposed to contain '
+            f'variable in form {sign}source.leaf.variable, got {string!r}'
+        )
+    return variable[0]
 
 
-class Realm(BaseModel):
+def ensure_unique(field_name: str, collection: Collection[str]
+                  ) -> Optional[NoReturn]:
+    """Raise if items are not unique."""
+    if len(collection) != len(set(collection)):
+        raise ValueError(
+            f'Field {field_name} must have unique items, got {collection}'
+        )
+
+
+def ensure_variable(field_name: str, string: str) -> Optional[NoReturn]:
+    """Raise if string is not some form of variable."""
+    if not str(string).startswith(constants.VARIABLE_SIGN):
+        raise ValueError(
+            f'Field {field_name} is supposed to '
+            f'contain variable name, got {string!r}'
+        )
+
+
+def ensure_has_prefix(field_name: str, string: str,
+                      expected_prefix: str) -> Optional[NoReturn]:
+    """Raise if prefix is incorrect."""
+    prefix = get_prefix(field_name, string)
+
+    if prefix != expected_prefix:
+        raise ValueError(
+            f'Field {field_name} is supposed to '
+            f'have prefix {expected_prefix}, got {string!r}'
+        )
+
+
+# noinspection PyMethodParameters
+class UniqueTagsMixin:
+    """Mixin that checks uniqueness."""
+
+    @validator('tags')
+    def must_be_unique(cls, value):
+        """Raise if items are not unique."""
+        ensure_unique('tags', value)
+        return value
+
+
+# noinspection PyMethodParameters
+class UniquePermissionsMixin:
+    """Mixin that checks uniqueness."""
+
+    @validator('permissions')
+    def must_be_unique(cls, value):
+        """Raise if items are not unique."""
+        ensure_unique('permissions', value)
+        return value
+
+
+# noinspection PyMethodParameters
+class UniqueValuesMixin:
+    """Mixin that checks uniqueness."""
+
+    @validator('values')
+    def must_be_unique(cls, value):
+        """Raise if items are not unique."""
+        ensure_unique('values', value)
+        return value
+
+
+# noinspection PyMethodParameters
+class Realm(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
     """User defined Realm."""
     uuid: str
     route: str
@@ -39,24 +108,56 @@ class Realm(BaseModel):
     tags: List[str] = Field(default_factory=list)
     permissions: List[str] = Field(default_factory=list)
 
+    @validator('uuid')
+    def must_be_realm(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('uuid', value)
+        ensure_has_prefix('uuid', value, constants.PREFIX_REALM)
+        return value
 
-class _NestedField(BaseModel):
+
+# noinspection PyMethodParameters
+class _NestedField(BaseModel, UniqueValuesMixin):
     """Base class for nested elements of theme."""
     uuid: str
     theme_uuid: str
     label: str
     values: List[str] = Field(default_factory=list)
 
+    @validator('theme_uuid')
+    def must_be_theme(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('theme_uuid', value)
+        ensure_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
+        return value
 
+
+# noinspection PyMethodParameters
 class Synonym(_NestedField):
     """User defined Synonym."""
 
+    @validator('uuid')
+    def must_be_synonym(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('uuid', value)
+        ensure_has_prefix('uuid', value, constants.PREFIX_SYNONYM)
+        return value
 
+
+# noinspection PyMethodParameters
 class ImplicitTag(_NestedField):
     """User defined ImplicitTag."""
 
+    @validator('uuid')
+    def must_be_implicit_tag(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('uuid', value)
+        ensure_has_prefix('uuid', value, constants.PREFIX_IMPLICIT_TAG)
+        return value
 
-class Theme(BaseModel):
+
+# noinspection PyMethodParameters
+class Theme(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
     """User defined Theme."""
     uuid: str
     realm_uuid: str
@@ -67,8 +168,23 @@ class Theme(BaseModel):
     tags: List[str] = Field(default_factory=list)
     permissions: List[str] = Field(default_factory=list)
 
+    @validator('realm_uuid')
+    def must_be_realm(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('realm_uuid', value)
+        ensure_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
+        return value
 
-class _BaseEntity(BaseModel):
+    @validator('uuid')
+    def must_be_theme(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('uuid', value)
+        ensure_has_prefix('uuid', value, constants.PREFIX_THEME)
+        return value
+
+
+# noinspection PyMethodParameters
+class _BaseEntity(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
     """Base class for Group and Meta."""
     registered_on: str = Field(default='')
     registered_by: str = Field(default='')
@@ -80,7 +196,16 @@ class _BaseEntity(BaseModel):
     tags: List[str] = Field(default_factory=list)
     permissions: List[str] = Field(default_factory=list)
 
+    @validator('registered_by')
+    def must_be_user(cls, value):
+        """Raise if UUID is incorrect."""
+        if value:
+            ensure_variable('registered_by', value)
+            ensure_has_prefix('registered_by', value, constants.PREFIX_USER)
+        return value
 
+
+# noinspection PyMethodParameters
 class Group(_BaseEntity):
     """User defined Theme."""
     uuid: str
@@ -88,7 +213,22 @@ class Group(_BaseEntity):
     route: str
     label: str
 
+    @validator('uuid')
+    def must_be_group(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('uuid', value)
+        ensure_has_prefix('uuid', value, constants.PREFIX_GROUP)
+        return value
 
+    @validator('theme_uuid')
+    def must_be_theme(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('theme_uuid', value)
+        ensure_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
+        return value
+
+
+# noinspection PyMethodParameters
 class Meta(_BaseEntity):
     """User defined Meta."""
     realm_uuid: str
@@ -96,13 +236,49 @@ class Meta(_BaseEntity):
     group_uuid: str
     filenames: List[str]
 
+    @validator('realm_uuid')
+    def must_be_realm(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('realm_uuid', value)
+        ensure_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
+        return value
 
-class User(BaseModel):
+    @validator('theme_uuid')
+    def must_be_theme(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('theme_uuid', value)
+        ensure_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
+        return value
+
+    @validator('group_uuid')
+    def must_be_group(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('group_uuid', value)
+        ensure_has_prefix('group_uuid', value, constants.PREFIX_GROUP)
+        return value
+
+    @validator('filenames')
+    def must_be_unique(cls, value):
+        """Raise if items are not unique."""
+        ensure_unique('filenames', value)
+        return value
+
+
+# noinspection PyMethodParameters
+class User(BaseModel, UniquePermissionsMixin):
     """User defined User (lol)."""
     uuid: str
     name: str
     permissions: List[str] = Field(default_factory=list)
+
     # TODO - User must have more fields than that
+
+    @validator('uuid')
+    def must_be_user(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('uuid', value)
+        ensure_has_prefix('uuid', value, constants.PREFIX_USER)
+        return value
 
 
 class Source(BaseModel):

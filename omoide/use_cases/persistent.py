@@ -5,36 +5,60 @@
 import random
 import string
 from datetime import datetime
-from functools import lru_cache
+from typing import Optional
 
 from omoide import constants
 
 __all__ = [
     'get_now',
     'get_today',
-    'get_revision_number',
+    'get_revision',
 ]
 
+_TODAY: Optional[str] = None
+_NOW: Optional[str] = None
+_REVISION: Optional[str] = None
 
-@lru_cache()
+
 def get_today() -> str:
     """Get today date as a string."""
-    return str(datetime.now().date())
+    global _TODAY
+    if _TODAY is None:
+        _TODAY = str(datetime.now().date())
+    return _TODAY
 
 
-@lru_cache()
+def set_today(today: str) -> None:
+    """Set value."""
+    global _TODAY
+    _TODAY = today
+
+
 def get_now() -> str:
-    """Get current moment as a string.
+    """Get current moment as a string."""
+    global _NOW
+    if _NOW is None:
+        _NOW = str(datetime.now().replace(microsecond=0))
+    return _NOW
 
-    Note that we're using only one moment
-    for all operations through all migration creation.
-    """
-    return str(datetime.now().replace(microsecond=0))
+
+def set_now(now: str) -> None:
+    """Set value."""
+    global _NOW
+    _NOW = now
 
 
-@lru_cache()
-def get_revision_number(length: int = constants.REVISION_LEN) -> str:
+def get_revision(length: int = constants.REVISION_LEN) -> str:
     """Generate unique revision number from os random generator."""
-    symbols = string.ascii_lowercase + string.digits
-    tokens = [random.choice(symbols) for _ in range(length)]
-    return ''.join(tokens)
+    global _REVISION
+    if _REVISION is None:
+        symbols = string.ascii_lowercase + string.digits
+        tokens = [random.choice(symbols) for _ in range(length)]
+        _REVISION = ''.join(tokens)
+    return _REVISION
+
+
+def set_revision(revision: str) -> None:
+    """Set value."""
+    global _REVISION
+    _REVISION = revision

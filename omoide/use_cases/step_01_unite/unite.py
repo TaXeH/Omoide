@@ -40,7 +40,7 @@ def act(command: use_cases.UniteCommand,
                                            constants.SOURCE_FILE_NAME)
 
         if filesystem.not_exists(source_file_path):
-            stdout.gray(f'Source file does not exist: {source_file_path}')
+            stdout.gray(f'\tSource file does not exist: {source_file_path}')
             continue
 
         unit_path = make_unit_in_leaf(
@@ -55,7 +55,7 @@ def act(command: use_cases.UniteCommand,
             filesystem=filesystem,
             stdout=stdout,
         )
-        stdout.green(f'Created unit file: {unit_path}')
+        stdout.green(f'\tCreated unit file: {unit_path}')
         total_new_units += 1
 
     return total_new_units
