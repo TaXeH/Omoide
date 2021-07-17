@@ -14,10 +14,6 @@ class Query(NamedTuple):
     and_: FrozenSet[str]
     or_: FrozenSet[str]
     not_: FrozenSet[str]
-    include_realms: FrozenSet[str]
-    exclude_realms: FrozenSet[str]
-    include_themes: FrozenSet[str]
-    exclude_themes: FrozenSet[str]
     flags: FrozenSet[str]
 
     def __str__(self) -> str:
@@ -31,14 +27,11 @@ class Query(NamedTuple):
 
     def __bool__(self) -> bool:
         """Return True if query has actual words to search."""
-        return bool(self.and_ or self.or_)
+        return bool(self.and_ or self.or_ or self.not_)
 
     def total_items(self) -> int:
         """Return total amount of registered items."""
-        return sum(map(len, [self.and_, self.or_, self.not_,
-                             self.include_realms, self.exclude_realms,
-                             self.include_themes, self.exclude_themes,
-                             self.flags]))
+        return sum(map(len, [self.and_, self.or_, self.not_, self.flags]))
 
     def as_keywords(self) -> Dict[str, List[str]]:
         """Return sorted collection of internal keywords."""
@@ -52,10 +45,6 @@ class Query(NamedTuple):
             'and_': _str('KW_AND', self.and_),
             'or_': _str('KW_OR', self.or_),
             'not_': _str('KW_NOT', self.not_),
-            'include_realms': _str('KW_INCLUDE_R', self.include_realms),
-            'exclude_realms': _str('KW_EXCLUDE_R', self.exclude_realms),
-            'include_themes': _str('KW_INCLUDE_T', self.include_themes),
-            'exclude_themes': _str('KW_EXCLUDE_T', self.exclude_themes),
             'flags': _str('KW_FLAG', self.flags),
         }
 
@@ -65,9 +54,5 @@ class Query(NamedTuple):
             'and_': sorted(self.and_),
             'or_': sorted(self.or_),
             'not_': sorted(self.not_),
-            'include_realms': sorted(self.include_realms),
-            'exclude_realms': sorted(self.exclude_realms),
-            'include_themes': sorted(self.include_themes),
-            'exclude_themes': sorted(self.exclude_themes),
             'flags': sorted(self.flags),
         }

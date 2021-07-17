@@ -1,18 +1,41 @@
+import time
+
 import flask
+from flask import request, abort
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
 from omoide import use_cases, constants
+from omoide.core.core_utils import byte_count_to_text
+from omoide.vision import database
+from omoide.vision import search
+from omoide.vision.search.class_paginator import Paginator
 
 
 def create_app(command: use_cases.RunserverCommand,
                engine: Engine) -> flask.Flask:
+    """Create web application instance."""
     app = flask.Flask(
         import_name='omoide',
         template_folder=command.template_folder,
         static_folder=command.static_folder,
     )
     Session = sessionmaker(bind=engine)
+    query_builder = search.QueryBuilder(target_type=search.Query)
+
+    _session = Session()
+    index_thumbnails = database.get_index_thumbnails(_session)
+
+    @app.context_processor
+    def common_names():
+        """Populate context with common names."""
+        return {
+            # 'title': config['title'],
+            'note': '',
+            # 'injection': config['injection'],
+            # 'rewrite_query_for_paging': utils_browser.rewrite_query_for_paging,
+            'byte_count_to_text': byte_count_to_text,
+        }
 
     @app.route('/content/<path:filename>')
     def serve_content(filename: str):
@@ -27,78 +50,98 @@ def create_app(command: use_cases.RunserverCommand,
 
     @app.route('/')
     def index_entry():
-        """Entry page.
-
-        Redirects user to path with default directory.
-        """
-        # session = Session()
-        # meta = session.query(models.Meta).all()
-        # lines = []
-        #
-        # for each in meta:
-        #     lines.append(
-        #         f'<img src="/content{each.path_to_thumbnail}">test</img>'
-        #     )
-        #     if len(lines) > 10:
-        #         break
-        # text = '\n'.join(lines)
-        # return f"""
-        # <html><body>{text}</body></html>
-        # """
+        """Entry page."""
         return flask.redirect(
             flask.url_for(
                 'index',
-                realm=constants.ALL_REALMS,
-                theme=constants.ALL_THEMES,
-                group=constants.ALL_GROUPS,
+                realm_route=constants.ALL_REALMS,
+                theme_route=constants.ALL_THEMES,
+                group_route=constants.ALL_GROUPS,
             )
         )
 
-    @app.route('/index/<realm>/<theme>/<group>/', methods=['GET', 'POST'])
-    def index(realm: str, theme: str, group: str):
+    @app.route('/<realm_route>/<theme_route>/<group_route>/',
+               methods=['GET', 'POST'])
+    def index(realm_route: str, theme_route: str, group_route: str):
         """Main page of the script."""
+        session = Session()
         # if request.method == 'POST':
         #     return utils_browser.add_query_to_path(request, directory)
 
-        # start = time.perf_counter()
-        # query_text = request.args.get('q', '')
-        # current_page = int(request.args.get('page', 1))
-        # current_theme = themes_repository.get(directory) or abort(404)
-        # query = query_builder.from_query(query_text, directory)
-        # hidden = 0
-        #
-        # if query:
+        start = time.perf_counter()
+        query_text = request.args.get('q', '')
+        current_page = int(request.args.get('page', 1))
+
+        realm_uuid = database.get_realm_uuid(session,
+                                             realm_route) or abort(404)
+        theme_uuid = database.get_theme_uuid(session,
+                                             theme_route) or abort(404)
+        group_uuid = database.get_group_uuid(session,
+                                             group_route) or abort(404)
+
+        query = query_builder.from_query(realm_uuid, theme_uuid,
+                                         group_uuid, query_text)
+
+        if query:
+            pass
         #     chosen_metarecords, hidden = utils_core.select_records(
         #         theme=current_theme,
         #         repository=repository,
         #         query=query,
         #     )
-        # else:
+        else:
+            pass
         #     chosen_metarecords = utils_core.select_random_records(
         #         theme=current_theme,
         #         repository=repository,
         #         query=query,
         #         amount=config['items_per_page'],
         #     )
-        #
-        # paginator = Paginator(
-        #     sequence=chosen_metarecords,
-        #     current_page=current_page,
-        #     items_per_page=config['items_per_page'],
-        # )
-        #
+
+        metas = [x.uuid for x in database.get_all_metas(session)]
+
+        paginator = Paginator(
+            sequence=metas,
+            current_page=current_page,
+            items_per_page=25,
+        )
+
         # note = utils_browser.get_note_on_search(len(paginator),
         #                                         time.perf_counter() - start,
         #                                         hidden)
         context = {
             'title': 'test',
-            # 'paginator': paginator,
-            # 'query': query_text,
-            # 'note': note,
+            'paginator': paginator,
+            'query': query_text,
+            'realm_route': realm_route,
+            'theme_route': theme_route,
+            'group_route': group_route,
+            'index_thumbnails': index_thumbnails,
+            'note': '???',
             # 'directory': directory,
             # 'placeholder': utils_browser.get_placeholder(current_theme),
         }
         return flask.render_template('content.html', **context)
+
+    @app.route(
+        '/preview/<realm_route>/<theme_route>/<group_route>/<meta_uuid>'
+    )
+    def preview(realm_route: str, theme_route: str,
+                group_route: str, meta_uuid: str):
+        """Show description for a single record."""
+        session = Session()
+        meta = database.get_meta(session, meta_uuid) or abort(404)
+        query_text = request.args.get('q', '')
+
+        context = {
+            'meta': meta,
+            'note': '???',
+            'query_text': query_text,
+            'realm_route': realm_route,
+            'theme_route': theme_route,
+            'group_route': group_route,
+        }
+        return flask.render_template('preview.html', **context)
 
     @app.errorhandler(404)
     def page_not_found(exc):

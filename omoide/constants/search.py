@@ -95,32 +95,26 @@ ALL_MEDIA_TYPES = {
     MEDIA_TYPE_AUDIO,
 }
 
+FLAG_ASC = 'asc'
 FLAG_DESC = 'desc'
-FLAG_DEMAND = 'demand'
+FLAG_RAND = 'rand'
 
 ALL_FLAGS = {
+    FLAG_ASC,
     FLAG_DESC,
-    FLAG_DEMAND,
+    FLAG_RAND,
 }
 
 KW_AND = '+'
 KW_OR = '|'
 KW_NOT = '-'
 KW_FLAG = '~'
-KW_INCLUDE_R = '&&'
-KW_EXCLUDE_R = '!!'
-KW_INCLUDE_T = '&'
-KW_EXCLUDE_T = '!'
 
 OPERATORS = {
     KW_AND,
     KW_OR,
     KW_NOT,
     KW_FLAG,
-    KW_INCLUDE_R,
-    KW_EXCLUDE_R,
-    KW_INCLUDE_T,
-    KW_EXCLUDE_T,
 }
 
 KEYWORDS = frozenset([

@@ -5,8 +5,7 @@
 import re
 from itertools import zip_longest
 from typing import (
-    TypeVar, Generic, Type, List, Dict,
-    Set, Iterable, Any, Iterator,
+    TypeVar, Generic, Type, List, Dict, Set, Iterable, Any, Iterator,
 )
 
 from omoide import constants
@@ -40,10 +39,6 @@ class QueryBuilder(Generic[QueryType]):
         constants.KW_OR: 'or_',
         constants.KW_NOT: 'not_',
         constants.KW_FLAG: 'flags',
-        constants.KW_INCLUDE_R: 'include_realms',
-        constants.KW_EXCLUDE_R: 'exclude_realms',
-        constants.KW_INCLUDE_T: 'include_themes',
-        constants.KW_EXCLUDE_T: 'exclude_themes',
     }
 
     def __init__(self, target_type: Type[QueryType]) -> None:
@@ -54,7 +49,7 @@ class QueryBuilder(Generic[QueryType]):
         """Turn user request into series of words."""
         parts = self.pattern.split(query_text)
         parts = [x.strip() for x in parts if x.strip()]
-
+        print(parts)
         if not parts:
             return []
 
@@ -74,25 +69,27 @@ class QueryBuilder(Generic[QueryType]):
         if target:
             sets[target].add(word)
 
-    def from_query(self, query_text: str, current_realm: str = '',
-                   current_theme: str = '') -> QueryType:
+    def from_query(self,
+                   current_realm: str,
+                   current_theme: str,
+                   current_group: str,
+                   query_text: str) -> QueryType:
         """Make instance representing given query."""
         sets = dict(and_=set(),
                     or_=set(),
                     not_=set(),
-                    include_realms=set(),
-                    exclude_realms=set(),
-                    include_themes=set(),
-                    exclude_themes=set(),
                     flags=set())
 
         parts = self.split_request_into_parts(query_text)
 
         if current_realm and current_realm != constants.ALL_REALMS:
-            sets['include_realms'].add(current_realm)
+            sets['and_'].add(current_realm)
 
         if current_theme and current_theme != constants.ALL_THEMES:
-            sets['include_themes'].add(current_theme)
+            sets['and_'].add(current_theme)
+
+        if current_group and current_group != constants.ALL_GROUPS:
+            sets['and_'].add(current_group)
 
         for operator, word in group_to_size(parts):
             if not {operator, word} & constants.KEYWORDS:
@@ -102,10 +99,6 @@ class QueryBuilder(Generic[QueryType]):
                     and_=frozenset([constants.NEVER_FIND_THIS]),
                     or_=frozenset(sets['or_']),
                     not_=frozenset(sets['not_']),
-                    include_realms=frozenset(sets['include_realms']),
-                    exclude_realms=frozenset(sets['exclude_realms']),
-                    include_themes=frozenset(sets['include_themes']),
-                    exclude_themes=frozenset(sets['exclude_themes']),
                     flags=frozenset(sets['flags']),
                 )
 
@@ -115,9 +108,5 @@ class QueryBuilder(Generic[QueryType]):
             and_=frozenset(sets['and_']),
             or_=frozenset(sets['or_']),
             not_=frozenset(sets['not_']),
-            include_realms=frozenset(sets['include_realms']),
-            exclude_realms=frozenset(sets['exclude_realms']),
-            include_themes=frozenset(sets['include_themes']),
-            exclude_themes=frozenset(sets['exclude_themes']),
             flags=frozenset(sets['flags'])
         )

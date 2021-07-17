@@ -1,0 +1,122 @@
+{% extends "index.html" %}
+{% from "macros.html" import if_not_empty %}
+{% from "macros.html" import if_not_empty_key %}
+
+
+{% block content %}
+{#    <script>#}
+{#        function copy(text) {#}
+{#            let input = document.createElement('input');#}
+{#            input.setAttribute('value', text);#}
+{#            document.body.appendChild(input);#}
+{#            input.select();#}
+{#            let result = document.execCommand('copy');#}
+{#            document.body.removeChild(input);#}
+{#            return result;#}
+{#        }#}
+{#    </script>#}
+
+    {% if meta.next or meta.previous %}
+        <div class="limited_width">
+            <div class="buttons_block">
+                {% if meta.previous %}
+                    <a href="/preview/{{ realm_route }}/{{ theme_route }}/{{ group_route }}/{{ meta.previous }}"
+                       class="cls_button">Previous</a>
+                {% else %}
+                    <a class="spacer">&nbsp;</a>
+                {% endif %}
+
+                <span class="spacer">&nbsp;</span>
+
+                {% if meta.next_record %}
+                    <a href="/preview/{{ realm_route }}/{{ theme_route }}/{{ group_route }}/{{ meta.next }}"
+                       class="cls_button">Next</a>
+                {% else %}
+                    <a class="spacer">&nbsp;</a>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="preview_block">
+
+        <div>
+            <a href="/content/{{ meta.path_to_content }}">
+                <img src="/content/{{ meta.path_to_preview }}"
+                     alt="Click here for full resolution"/>
+            </a>
+        </div>
+
+        <div>
+            <table class="preview_table">
+                <tr>
+                    <th colspan="2">Information</th>
+                </tr>
+                {{ if_not_empty('Original filename', meta.original_filename) }}
+
+                <tr>
+                    <th colspan="2">Parameters</th>
+                </tr>
+
+                {{ if_not_empty('Width', meta.width, ' px') }}
+                {{ if_not_empty('Height', meta.height, ' px') }}
+                {{ if_not_empty('Resolution', meta.resolution, ' Mpx') }}
+                {{ if_not_empty('Media type', meta.type) }}
+
+                <tr>
+                    <td>Size</td>
+                    <td>{{ byte_count_to_text(meta.size) }}</td>
+                </tr>
+
+                <tr>
+                    <th colspan="2">Tags</th>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <ol>
+                            {% for tag in meta.tags %}
+                                <li>
+                                    <a href="/{{ realm_route }}/{{ theme_route }}/{{ group_route }}/?q={{ tag.value }}">{{ tag.value }}</a>
+                                </li>
+                            {% endfor %}
+                        </ol>
+                    </td>
+                </tr>
+
+                {% if meta.author or meta.origin_url %}
+                    <tr>
+                        <th colspan="2">Origin</th>
+                    </tr>
+                    {% if meta.origin_url %}
+                        <tr>
+                            <td>Url</td>
+                            <td class="possible_wide">
+                                <a href="{{ meta.origin_url }}">{{ meta.origin_url }}</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+
+                    {% if meta.author %}
+                        <tr>
+                            <td>Author</td>
+                            <td class="possible_wide">{{ meta.author }}</td>
+                        </tr>
+                    {% endif %}
+
+                    {% if meta.author_url %}
+                        <tr>
+                            <td>Profile</td>
+                            <td class="possible_wide">
+                                <a href="{{ meta.author_url }}">{{ meta.author_url }}</a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+
+            </table>
+        </div>
+
+    </div>
+
+{% endblock %}
