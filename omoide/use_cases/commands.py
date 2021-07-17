@@ -73,14 +73,17 @@ class FreezeCommand(BaseCommand):
     name: str = 'freeze'
 
 
-@dataclass(frozen=True)
+@dataclass()
 class RunserverCommand:
     """Start web application."""
-    host: str = ''
-    port: int = ''
-    template_folder: str = ''
-    static_folder: str = ''
+    host: str
+    port: int
+    content_folder: str
+    template_folder: str
+    static_folder: str
     name: str = 'runserver'
+    sources_folder: str = ''
+    storage_folder: str = ''
 
 
 AnyPathCommand = Union[

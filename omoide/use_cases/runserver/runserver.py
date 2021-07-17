@@ -7,7 +7,6 @@ import sys
 from omoide import constants, use_cases
 from omoide import core
 from omoide.database import operations
-from omoide.use_cases import commands
 from omoide.vision.app import create_app
 
 
@@ -32,22 +31,3 @@ def act(command: use_cases.RunserverCommand,
 
     app = create_app(command, engine)
     app.run(host=command.host, port=command.port, debug=True)
-
-
-if __name__ == '__main__':
-    cmd = commands.RunserverCommand(
-        host='127.0.0.1',
-        port=5000,
-        sources_folder='',
-        content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
-        storage_folder='',
-        branch='',
-        leaf='',
-        template_folder='D:\\PycharmProjects\\'
-                        'Omoide\\omoide\\vision\\templates',
-        static_folder='D:\\PycharmProjects\\'
-                      'Omoide\\omoide\\vision\\static',
-    )
-    fs = core.Filesystem()
-    st = core.STDOut()
-    act(cmd, filesystem=fs, stdout=st)

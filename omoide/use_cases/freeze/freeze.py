@@ -60,16 +60,3 @@ def act(command: use_cases.FreezeCommand,
 
     operations.synchronize(session_root, session_static)
     build_indexes(session_static)
-
-
-if __name__ == '__main__':
-    cmd = commands.FreezeCommand(
-        sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
-        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
-        content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
-        branch='all',
-        leaf='all',
-    )
-    fs = core.Filesystem()
-    st = core.STDOut()
-    act(cmd, filesystem=fs, stdout=st)

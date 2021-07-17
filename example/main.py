@@ -20,9 +20,9 @@ def main():
     # manage(['make_relocations', 'all', 'all'])
     # manage(['migrate', 'all', 'all'])
     # manage(['relocate', 'all', 'all'])
-    manage(['sync', 'all', 'all'])
+    # manage(['sync', 'all', 'all'])
     # manage(['freeze'])
-    # manage(['runserver'])
+    manage(['runserver'])
 
 
 if __name__ == '__main__':

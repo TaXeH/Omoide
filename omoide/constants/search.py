@@ -7,6 +7,7 @@ NEVER_FIND_THIS = 'ʕ•ᴥ•ʔ'
 UNKNOWN = 'UNKNOWN'
 ALL_REALMS = 'all_realms'
 ALL_THEMES = 'all_themes'
+ALL_GROUPS = 'all_groups'
 NO_GROUP = 'no_group'
 
 # identity

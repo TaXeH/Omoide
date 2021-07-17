@@ -2,8 +2,7 @@ import flask
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
-from omoide import use_cases
-from omoide.database import models
+from omoide import use_cases, constants
 
 
 def create_app(command: use_cases.RunserverCommand,
@@ -18,39 +17,45 @@ def create_app(command: use_cases.RunserverCommand,
     @app.route('/content/<path:filename>')
     def serve_content(filename: str):
         """Serve files from main storage.
+
         Contents of the main storage are served through this function.
-        It's not about static css or js files.
+        It's not about static css or js files. Not supposed to be used
+        in production.
         """
         return flask.send_from_directory(command.content_folder,
                                          filename, conditional=True)
 
     @app.route('/')
-    def index():
+    def index_entry():
         """Entry page.
 
         Redirects user to path with default directory.
         """
-        session = Session()
-        meta = session.query(models.Meta).all()
-        lines = []
-
-        for each in meta:
-            lines.append(
-                f'<img src="/content{each.path_to_thumbnail}">test</img>'
+        # session = Session()
+        # meta = session.query(models.Meta).all()
+        # lines = []
+        #
+        # for each in meta:
+        #     lines.append(
+        #         f'<img src="/content{each.path_to_thumbnail}">test</img>'
+        #     )
+        #     if len(lines) > 10:
+        #         break
+        # text = '\n'.join(lines)
+        # return f"""
+        # <html><body>{text}</body></html>
+        # """
+        return flask.redirect(
+            flask.url_for(
+                'index',
+                realm=constants.ALL_REALMS,
+                theme=constants.ALL_THEMES,
+                group=constants.ALL_GROUPS,
             )
-            if len(lines) > 10:
-                break
-        text = '\n'.join(lines)
-        return f"""
-        <html><body>{text}</body></html>
-        """
-        # return flask.redirect(
-        #     url_for('index_all', directory=constants.ALL_THEMES)
-        # )
+        )
 
-    @app.route('/index/<directory>/', methods=['GET', 'POST'])
-    @app.route('/index/<directory>/search', methods=['GET', 'POST'])
-    def index_all(directory: str):
+    @app.route('/index/<realm>/<theme>/<group>/', methods=['GET', 'POST'])
+    def index(realm: str, theme: str, group: str):
         """Main page of the script."""
         # if request.method == 'POST':
         #     return utils_browser.add_query_to_path(request, directory)
@@ -98,7 +103,6 @@ def create_app(command: use_cases.RunserverCommand,
     @app.errorhandler(404)
     def page_not_found(exc):
         """Return not found page."""
-        print(exc)
         context = {
             # 'directory': constants.ALL_THEMES,
         }

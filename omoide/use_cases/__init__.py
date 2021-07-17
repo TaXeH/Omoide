@@ -8,3 +8,5 @@ from omoide.use_cases.migrate import migrate
 from omoide.use_cases.relocate import relocate
 from omoide.use_cases.sync import sync
 from omoide.use_cases.unite import unite
+from omoide.use_cases.freeze import freeze
+from omoide.use_cases.runserver import runserver

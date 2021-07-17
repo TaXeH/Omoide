@@ -135,7 +135,7 @@ def build_index_thumbnails(session: Session) -> int:
         group_route = meta.group.route
 
         path_to_thumbnail = (
-            f'/{realm_route}/{theme_route}'
+            f'/thumbnails/{realm_route}/{theme_route}'
             f'/{group_route}/{meta.uuid}.{meta.original_extension}'
         )
 

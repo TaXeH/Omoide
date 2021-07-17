@@ -177,8 +177,8 @@ def perform_freeze(command: commands.FreezeCommand,
                    stdout: core.STDOut) -> None:
     """Perform freeze command."""
     stdout.magenta('[FREEZE] Making static database')
-    # TODO
-    raise
+    use_cases.freeze.act(command, filesystem, stdout)
+    stdout.magenta(f'Successfully created static database')
 
 
 def perform_runserver(command: commands.RunserverCommand,
@@ -186,8 +186,8 @@ def perform_runserver(command: commands.RunserverCommand,
                       stdout: core.STDOut) -> None:
     """Perform command."""
     stdout.magenta('[RUNSERVER] Starting server')
-    # TODO
-    raise
+    command.content_folder = filesystem.absolute(command.content_folder)
+    use_cases.runserver.act(command, filesystem, stdout)
 
 
 if __name__ == '__main__':

@@ -189,7 +189,8 @@ def make_operation_freeze(storage_folder: str,
 
 
 def make_operation_runserver(args: List[str],
-                             content_folder: str) -> use_cases.RunserverCommand:
+                             content_folder: str
+                             ) -> use_cases.RunserverCommand:
     """Make server running operation."""
     host = constants.DEFAULT_SERVER_HOST
     port = constants.DEFAULT_SERVER_PORT
@@ -216,11 +217,7 @@ def make_operation_runserver(args: List[str],
     return use_cases.RunserverCommand(
         host=host,
         port=port,
-        sources_folder='',
-        storage_folder='',
         content_folder=content_folder,
-        branch='',
-        leaf='',
         template_folder=constants.DEFAULT_TEMPLATE_FOLDER,
         static_folder=constants.DEFAULT_STATIC_FOLDER,
     )
