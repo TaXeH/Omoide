@@ -19,8 +19,8 @@ def main():
     # manage(['make_migrations', 'all', 'all'])
     # manage(['make_relocations', 'all', 'all'])
     # manage(['migrate', 'all', 'all'])
-    manage(['relocate', 'all', 'all'])
-    # manage(['sync', 'all', 'all'])
+    # manage(['relocate', 'all', 'all'])
+    manage(['sync', 'all', 'all'])
     # manage(['freeze'])
     # manage(['runserver'])
 

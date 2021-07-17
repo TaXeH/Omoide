@@ -76,7 +76,8 @@ def main(args: List[str], *,
     command = cli.parse_arguments(args, sources_path,
                                   storage_path, content_path)
 
-    if not filesystem.exists(command.sources_folder):
+    if command.sources_folder \
+            and filesystem.not_exists(command.sources_folder):
         raise FileNotFoundError(
             f'Sources folder does not exist: {command.sources_folder}'
         )
@@ -132,7 +133,7 @@ def perform_make_migrations(command: commands.MakeMigrationsCommand,
     """Perform unite command."""
     stdout.magenta('[MAKE MIGRATIONS] Creating migration files')
     total = use_cases.make_migrations.act(command, filesystem, stdout)
-    stdout.magenta(f'Total {total} migration files created')
+    stdout.magenta(f'Total {total} migration operations created')
 
 
 def perform_make_relocations(command: commands.MakeRelocationsCommand,
@@ -141,7 +142,7 @@ def perform_make_relocations(command: commands.MakeRelocationsCommand,
     """Perform make_relocations command."""
     stdout.magenta('[MAKE RELOCATIONS] Creating relocation files')
     total = use_cases.make_relocations.act(command, filesystem, stdout)
-    stdout.magenta(f'Total {total} relocation files created')
+    stdout.magenta(f'Total {total} relocation operations created')
 
 
 def perform_migrate(command: commands.MigrateCommand,
@@ -150,7 +151,7 @@ def perform_migrate(command: commands.MigrateCommand,
     """Perform migration command."""
     stdout.magenta('[MIGRATE] Applying migrations')
     total = use_cases.migrate.act(command, filesystem, stdout)
-    stdout.magenta(f'Total {total} migration files applied')
+    stdout.magenta(f'Total {total} migration operations applied')
 
 
 def perform_relocate(command: commands.RelocateCommand,
@@ -159,7 +160,7 @@ def perform_relocate(command: commands.RelocateCommand,
     """Perform relocation command."""
     stdout.magenta('[RELOCATE] Applying relocations')
     total = use_cases.relocate.act(command, filesystem, stdout)
-    stdout.magenta(f'Total {total} relocation files applied')
+    stdout.magenta(f'Total {total} relocation operations applied')
 
 
 def perform_sync(command: commands.SyncCommand,
@@ -167,8 +168,8 @@ def perform_sync(command: commands.SyncCommand,
                  stdout: core.STDOut) -> None:
     """Perform sync command."""
     stdout.magenta('[SYNC] Synchronizing databases')
-    # TODO
-    raise
+    total = use_cases.sync.act(command, filesystem, stdout)
+    stdout.magenta(f'Total {total} databases synchronized')
 
 
 def perform_freeze(command: commands.FreezeCommand,

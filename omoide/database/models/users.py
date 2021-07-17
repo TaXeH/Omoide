@@ -21,7 +21,7 @@ class User(common.BaseModel):
     uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                      primary_key=True, nullable=False, index=True)
     # fields
-    name = sa.Column('value', sa.String(length=constants.MAX_LEN),
-                     nullable=False)
+    name = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
+
     # relations
     permissions = relationship('PermissionUser', back_populates='user')

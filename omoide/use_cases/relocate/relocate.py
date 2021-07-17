@@ -20,7 +20,7 @@ def act(command: use_cases.RelocateCommand,
 
         if filesystem.not_exists(relocation_file_path):
             stdout.gray(
-                f'\tRelocation file does not exist: {relocation_file_path}'
+                f'\t[{branch}][{leaf}] Relocation file does not exist'
             )
             continue
 
@@ -50,11 +50,11 @@ def relocate_single_file(relocation: core.Relocation,
     if relocation.operation_type == 'copy':
         filesystem.copy_file(relocation.path_from, relocation.path_to)
         stdout.yellow(
-            f'\t{relocation.operation_type.title()}: {relocation.filename}'
+            f'\t\t{relocation.operation_type.title()}: {relocation.filename}'
         )
     else:
         renderer.resize(relocation.path_from, relocation.path_to,
                         relocation.width, relocation.height)
         stdout.green(
-            f'\t{relocation.operation_type.title()}: {relocation.filename}'
+            f'\t\t{relocation.operation_type.title()}: {relocation.filename}'
         )

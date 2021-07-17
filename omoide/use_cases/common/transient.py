@@ -63,7 +63,7 @@ class Theme(BaseUnitElement):
     label: str
 
 
-class _BaseEntity(BaseModel):
+class _BaseEntity(BaseUnitElement):
     """Base class for Group and Meta."""
     registered_on: str = Field(default='')
     registered_by: str = Field(default='')

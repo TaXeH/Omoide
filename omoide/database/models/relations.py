@@ -111,10 +111,12 @@ class SynonymValue(common.BaseModel):
     __tablename__ = 'synonyms_values'
 
     # primary and foreign keys
+    id = sa.Column(sa.Integer,
+                   primary_key=True, unique=True, autoincrement=True)
     synonym_uuid = sa.Column('synonym_uuid',
                              sa.String(length=constants.UUID_LEN),
                              sa.ForeignKey('synonyms.uuid'),
-                             primary_key=True, nullable=False,
+                             nullable=False,
                              unique=False, index=True)
     # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
@@ -146,10 +148,12 @@ class ImplicitTagValue(common.BaseModel):
     __tablename__ = 'implicit_tags_values'
 
     # primary and foreign keys
+    id = sa.Column(sa.Integer,
+                   primary_key=True, unique=True, autoincrement=True)
     implicit_tag_uuid = sa.Column('implicit_tag_uuid',
                                   sa.String(length=constants.UUID_LEN),
                                   sa.ForeignKey('implicit_tags.uuid'),
-                                  primary_key=True, nullable=False,
+                                  nullable=False,
                                   unique=False, index=True)
     # fields
     value = sa.Column(sa.String(length=constants.MAX_LEN),

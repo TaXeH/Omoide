@@ -9,12 +9,17 @@ import sqlalchemy as sa
 from omoide import core
 from omoide.database import models
 
+FIELDS_TO_DROP = {
+    models.Meta: {'realm_uuid', 'theme_uuid'}
+}
 
-def drop_temporary_params(something: dict) -> dict:
+
+def drop_temporary_params(something: dict, model_type) -> dict:
+    """Remove fields used on initial stages."""
     return {
         key: value for
         key, value in something.items()
-        if not key.startswith('_')
+        if key not in FIELDS_TO_DROP.get(model_type, set())
     }
 
 
@@ -23,7 +28,7 @@ def as_sql(objects: List[dict], model_type) -> List[core.SQL]:
     sql = []
 
     for each in objects:
-        each = drop_temporary_params(each)
+        each = drop_temporary_params(each, model_type)
         stmt = sa.insert(model_type).values(**each)
         sql.append(core.SQL(stmt))
 
@@ -54,7 +59,10 @@ def instantiate_commands(content: dict):
     sql.extend(as_sql(_get('tags_themes'), models.TagTheme))
     sql.extend(as_sql(_get('tags_groups'), models.TagGroup))
     sql.extend(as_sql(_get('tags_metas'), models.TagMeta))
+
     sql.extend(as_sql(_get('synonyms'), models.Synonym))
+    sql.extend(as_sql(_get('synonyms_values'), models.SynonymValue))
     sql.extend(as_sql(_get('implicit_tags'), models.ImplicitTag))
+    sql.extend(as_sql(_get('implicit_tags_values'), models.ImplicitTagValue))
 
     return sql

@@ -15,6 +15,7 @@ __all__ = [
     'create_database',
     'create_scheme',
     'restore_database_from_scratch',
+    'synchronize',
 ]
 
 

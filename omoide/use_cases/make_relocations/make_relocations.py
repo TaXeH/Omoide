@@ -24,7 +24,7 @@ def act(command: use_cases.MakeRelocationsCommand,
                                          constants.UNIT_FILE_NAME)
 
         if filesystem.not_exists(unit_file_path):
-            stdout.gray(f'Unit file does not exist: {unit_file_path}')
+            stdout.gray(f'\t[{branch}][{leaf}] Unit file does not exist')
             continue
 
         relocations: List[core.Relocation] = []
@@ -42,12 +42,12 @@ def act(command: use_cases.MakeRelocationsCommand,
             relocations.extend(new_relocations)
             total_new_relocations += len(new_relocations)
 
-        relocation_path = save_relocations(
+        save_relocations(
             folder=storage_folder,
             relocations=relocations,
             filesystem=filesystem,
         )
-        stdout.green(f'Created relocation file: {relocation_path}')
+        stdout.green(f'\t[{branch}][{leaf}] Created relocation file')
 
     return total_new_relocations
 

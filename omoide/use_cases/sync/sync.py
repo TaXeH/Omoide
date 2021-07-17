@@ -8,7 +8,6 @@ from omoide import core, constants, use_cases
 from omoide.database import models
 from omoide.database import operations
 from omoide.database.operations import synchronize
-from omoide.use_cases import commands
 
 assert models
 
@@ -20,8 +19,9 @@ def act(command: use_cases.SyncCommand,
     root_db_file = filesystem.join(
         command.storage_folder, constants.ROOT_DB_FILE_NAME
     )
+
     needs_schema = filesystem.not_exists(root_db_file)
-    root = operations.create_database(
+    root_db = operations.create_database(
         folder=command.storage_folder,
         filename=constants.ROOT_DB_FILE_NAME,
         filesystem=filesystem,
@@ -29,9 +29,9 @@ def act(command: use_cases.SyncCommand,
         echo=True,
     )
     if needs_schema:
-        operations.create_scheme(root, stdout)
+        operations.create_scheme(root_db, stdout)
 
-    SessionRoot = sessionmaker(bind=root)
+    SessionRoot = sessionmaker(bind=root_db)
     session_root = SessionRoot()
 
     total_migrations = 0
@@ -44,7 +44,7 @@ def act(command: use_cases.SyncCommand,
         branch_db_file = filesystem.join(branch_folder,
                                          constants.BRANCH_DB_FILE_NAME)
         needs_schema = filesystem.not_exists(branch_db_file)
-        branch = operations.create_database(
+        branch_db = operations.create_database(
             folder=branch_folder,
             filename=constants.BRANCH_DB_FILE_NAME,
             filesystem=filesystem,
@@ -52,9 +52,9 @@ def act(command: use_cases.SyncCommand,
             echo=True,
         )
         if needs_schema:
-            operations.create_scheme(branch, stdout)
+            operations.create_scheme(branch_db, stdout)
 
-        SessionBranch = sessionmaker(bind=branch)
+        SessionBranch = sessionmaker(bind=branch_db)
         session_branch = SessionBranch()
 
         for leaf in filesystem.list_folders(branch_folder):
@@ -67,38 +67,27 @@ def act(command: use_cases.SyncCommand,
                                            constants.LEAF_DB_FILE_NAME)
 
             if not filesystem.exists(leaf_db_file):
-                stdout.print(f'Nothing to migrate in {leaf_folder}')
+                stdout.print(f'\t[{branch}][{leaf}] Nothing to migrate')
                 continue
 
-            leaf = operations.create_database(
+            spacer = '  ' + len(branch) * ' '
+
+            leaf_db = operations.create_database(
                 folder=leaf_folder,
                 filename=constants.LEAF_DB_FILE_NAME,
                 filesystem=filesystem,
                 stdout=stdout,
                 echo=True,
             )
-            SessionLeaf = sessionmaker(bind=leaf)
+            SessionLeaf = sessionmaker(bind=leaf_db)
             session_leaf = SessionLeaf()
 
             synchronize(session_from=session_leaf, session_to=session_branch)
             total_migrations += 1
-            stdout.yellow(f'Synchronized {leaf_folder}')
+            stdout.yellow(f'\t{spacer}[{leaf}] Synchronized')
 
         synchronize(session_from=session_branch, session_to=session_root)
         total_migrations += 1
-        stdout.yellow(f'Synchronized {branch_folder}')
+        stdout.yellow(f'\t[{branch}] Synchronized')
 
     return total_migrations
-
-
-if __name__ == '__main__':
-    _command = commands.SyncCommand(
-        branch='all',
-        leaf='all',
-        sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
-        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
-        content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
-    )
-    _filesystem = core.Filesystem()
-    _stdout = core.STDOut()
-    act(_command, _filesystem, _stdout)

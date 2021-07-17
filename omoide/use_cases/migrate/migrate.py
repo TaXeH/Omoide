@@ -6,7 +6,6 @@ import sqlalchemy as sa
 
 from omoide import core, constants, use_cases
 from omoide.database import operations
-from omoide.use_cases import commands
 
 
 def act(command: use_cases.MigrateCommand,
@@ -21,7 +20,7 @@ def act(command: use_cases.MigrateCommand,
                                          constants.MIGRATION_FILE_NAME)
 
         if not filesystem.exists(migration_file):
-            stdout.print(f'Nothing to migrate in {leaf_folder}')
+            stdout.print(f'\t[{branch}][{leaf}] Nothing to migrate')
             continue
 
         local_db_file = filesystem.join(leaf_folder,
@@ -29,7 +28,9 @@ def act(command: use_cases.MigrateCommand,
 
         if filesystem.exists(local_db_file):
             filesystem.delete_file(local_db_file)
-            stdout.yellow(f'Deleted {local_db_file}')
+            stdout.yellow(
+                f'\t[{branch}][{leaf}] Deleted {constants.LEAF_DB_FILE_NAME}'
+            )
 
         engine = operations.restore_database_from_scratch(
             folder=leaf_folder,
@@ -53,19 +54,6 @@ def act(command: use_cases.MigrateCommand,
                 raise
 
         total_new_migrations += len(migrations)
-        stdout.yellow(f'Saved migrations {local_db_file}')
+        stdout.yellow(f'\t[{branch}][{leaf}] Saved migrations')
 
     return total_new_migrations
-
-
-if __name__ == '__main__':
-    _command = commands.MigrateCommand(
-        branch='all',
-        leaf='all',
-        sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
-        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
-        content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
-    )
-    _filesystem = core.Filesystem()
-    _stdout = core.STDOut()
-    act(_command, _filesystem, _stdout)
