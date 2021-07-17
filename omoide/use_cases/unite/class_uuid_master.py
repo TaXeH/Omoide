@@ -3,7 +3,7 @@
 """Special class that handles UUID generation.
 """
 import uuid as uuid_module
-from typing import Set, Collection, Optional, Union, Sequence, Tuple
+from typing import Set, Collection, Optional, List, Union, Sequence, Tuple
 
 from omoide import constants
 from omoide import core
@@ -20,6 +20,7 @@ class UUIDMaster:
     """Special class that handles UUID generation."""
 
     def __init__(self,
+                 uuids_queue: RawValues = None,
                  uuids_realms: Values = None,
                  uuids_themes: Values = None,
                  uuids_synonyms: Values = None,
@@ -44,6 +45,11 @@ class UUIDMaster:
         self.uuids_groups = make_set(uuids_groups)
         self.uuids_metas = make_set(uuids_metas)
         self.uuids_users = make_set(uuids_users)
+
+        uuids_queue = uuids_queue or []
+
+        self.given_queue: List[core.RawUUID] = list(reversed(uuids_queue))
+        self.used_queue: List[core.RawUUID] = []
 
         self._prefix_to_storage = {
             constants.PREFIX_REALM: self.uuids_realms,
@@ -85,7 +91,13 @@ class UUIDMaster:
     def generate_and_add_uuid(self, existing_uuids: Set[core.UUID],
                               prefix: str) -> core.UUID:
         """Create and add new UUID."""
-        new_uuid, original = self.generate_uuid(existing_uuids, prefix)
+        if self.given_queue:
+            original = self.given_queue.pop()
+            new_uuid = f'{prefix}_{original}'
+        else:
+            new_uuid, original = self.generate_uuid(existing_uuids, prefix)
+
+        self.used_queue.append(original)
         existing_uuids.add(new_uuid)
         return core.UUID(new_uuid)
 
@@ -126,6 +138,10 @@ class UUIDMaster:
             prefix=constants.PREFIX_IMPLICIT_TAG,
         )
 
+    def insert_queue(self, uuids: Sequence[core.RawUUID]) -> None:
+        """Add uuids queue."""
+        self.given_queue = list(reversed(uuids)) + self.given_queue
+
     def __add__(self, other) -> 'UUIDMaster':
         """Sum two UUID Masters."""
         cls = type(self)
@@ -133,6 +149,14 @@ class UUIDMaster:
             raise TypeError(
                 f'{cls.__name__} can be added only to '
                 'an instance of the same type'
+            )
+
+        if any([self.given_queue,
+                self.used_queue,
+                other.given_queue,
+                other.used_queue]):
+            raise ValueError(
+                'You must empty queues before adding uuid masters'
             )
 
         return cls(
@@ -145,6 +169,14 @@ class UUIDMaster:
             uuids_metas=self.uuids_metas.union(other.uuids_metas),
             uuids_users=self.uuids_users.union(other.uuids_users),
         )
+
+    def extract_queue(self) -> List[core.RawUUID]:
+        """Get all generated UUIDS."""
+        return self.used_queue.copy()
+
+    def clear_queue(self):
+        """Clear list of generated UUIDS."""
+        self.used_queue.clear()
 
     @staticmethod
     def get_prefix(string: str) -> str:

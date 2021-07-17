@@ -32,6 +32,12 @@ def gather_existing_identities(storage_folder: str,
         gather_variables_from_unit(raw_unit, identity_master)
         gather_uuids_from_unit(raw_unit, uuid_master)
 
+        uuids_file_path = filesystem.join(leaf_folder,
+                                          constants.UUIDS_FILE_NAME)
+        if filesystem.exists(uuids_file_path):
+            uuids = filesystem.read_json(uuids_file_path)
+            uuid_master.insert_queue(uuids)
+
 
 def gather_routes_from_unit(raw_unit: dict, router: Router) -> None:
     """Find all routes in given unit and store them into router."""

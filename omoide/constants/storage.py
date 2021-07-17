@@ -13,6 +13,7 @@ __all__ = [
     'DEFAULT_CONTENT_FOLDER',
     'SOURCE_FILE_NAME',
     'UNIT_FILE_NAME',
+    'UUIDS_FILE_NAME',
     'MIGRATION_FILE_NAME',
     'RELOCATION_FILE_NAME',
     'ROOT_DB_FILE_NAME',
@@ -40,6 +41,7 @@ DEFAULT_CONTENT_FOLDER = os.path.join('.', CONTENT_FOLDER_NAME)
 
 SOURCE_FILE_NAME = 'source.json'
 UNIT_FILE_NAME = 'unit.json'
+UUIDS_FILE_NAME = 'uuids.json'
 MIGRATION_FILE_NAME = 'migration.sql'
 RELOCATION_FILE_NAME = 'relocation.json'
 

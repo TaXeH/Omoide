@@ -84,11 +84,17 @@ def make_unit_in_leaf(command: use_cases.UniteCommand, branch: str, leaf: str,
     used_variables = identity_master.extract(branch, leaf)
     unit.variables.update(used_variables)
 
+    used_uuids = uuid_master.extract_queue()
+    uuid_master.clear_queue()
+
     unit_folder = filesystem.join(command.storage_folder, branch, leaf)
     unit_path = filesystem.join(unit_folder, constants.UNIT_FILE_NAME)
+    uuids_path = filesystem.join(unit_folder, constants.UUIDS_FILE_NAME)
 
     filesystem.ensure_folder_exists(unit_folder, stdout)
+
     filesystem.write_json(unit_path, unit.dict())
+    filesystem.write_json(uuids_path, used_uuids)
 
     return unit_path
 
