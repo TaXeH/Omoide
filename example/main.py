@@ -15,9 +15,13 @@ def main():
     persistent.set_today('2021-07-17')
     persistent.set_revision('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
 
-    manage(['unite', 'all', 'all'])
-    # manage(['migrate'])
-    # manage(['sync'])
+    # manage(['unite', 'all', 'all'])
+    # manage(['make_migrations', 'all', 'all'])
+    # manage(['make_relocations', 'all', 'all'])
+    # manage(['migrate', 'all', 'all'])
+    manage(['relocate', 'all', 'all'])
+    # manage(['sync', 'all', 'all'])
+    # manage(['freeze'])
     # manage(['runserver'])
 
 

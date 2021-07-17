@@ -84,6 +84,7 @@ class Group(_BaseEntity):
 
 class Meta(_BaseEntity):
     """User defined Meta."""
+    uuid: str
     realm_uuid: str
     theme_uuid: str
     group_uuid: str

@@ -20,7 +20,7 @@ def act(command: use_cases.RelocateCommand,
 
         if filesystem.not_exists(relocation_file_path):
             stdout.gray(
-                f'Relocation file does not exist: {relocation_file_path}'
+                f'\tRelocation file does not exist: {relocation_file_path}'
             )
             continue
 
@@ -49,21 +49,12 @@ def relocate_single_file(relocation: core.Relocation,
 
     if relocation.operation_type == 'copy':
         filesystem.copy_file(relocation.path_from, relocation.path_to)
-        stdout.yellow(relocation.path_to)
+        stdout.yellow(
+            f'\t{relocation.operation_type.title()}: {relocation.filename}'
+        )
     else:
         renderer.resize(relocation.path_from, relocation.path_to,
                         relocation.width, relocation.height)
-        stdout.green(relocation.path_to)
-
-
-if __name__ == '__main__':
-    _command = use_cases.RelocateCommand(
-        branch='all',
-        leaf='all',
-        sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
-        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
-        content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
-    )
-    _filesystem = core.Filesystem()
-    _stdout = core.STDOut()
-    act(_command, _filesystem, _stdout)
+        stdout.green(
+            f'\t{relocation.operation_type.title()}: {relocation.filename}'
+        )

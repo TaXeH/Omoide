@@ -48,12 +48,18 @@ def parse_arguments(args: List[str],
         instance = make_operation_migrations(rest,
                                              storage_folder,
                                              content_folder)
+    elif command == 'make_relocations':
+        instance = make_operation_relocations(rest,
+                                              sources_folder,
+                                              storage_folder,
+                                              content_folder)
     elif command == 'migrate':
         instance = make_operation_migrate(rest,
                                           storage_folder,
                                           content_folder)
     elif command == 'relocate':
         instance = make_operation_relocate(rest,
+                                           sources_folder,
                                            storage_folder,
                                            content_folder)
     elif command == 'sync':
@@ -115,6 +121,16 @@ def make_operation_migrations(args: List[str],
                         '', storage_folder, content_folder)
 
 
+def make_operation_relocations(args: List[str],
+                               sources_folder: str,
+                               storage_folder: str,
+                               content_folder: str
+                               ) -> use_cases.MakeRelocationsCommand:
+    """Make relocation preparation operation."""
+    return _make_common(args, use_cases.MakeRelocationsCommand,
+                        sources_folder, storage_folder, content_folder)
+
+
 def make_operation_migrate(args: List[str],
                            storage_folder: str,
                            content_folder: str
@@ -125,12 +141,13 @@ def make_operation_migrate(args: List[str],
 
 
 def make_operation_relocate(args: List[str],
+                            sources_folder: str,
                             storage_folder: str,
                             content_folder: str
                             ) -> use_cases.RelocateCommand:
     """Make relocation operation."""
     return _make_common(args, use_cases.RelocateCommand,
-                        '', storage_folder, content_folder)
+                        sources_folder, storage_folder, content_folder)
 
 
 def make_operation_sync(args: List[str],

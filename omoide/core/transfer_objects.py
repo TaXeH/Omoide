@@ -18,6 +18,7 @@ class Relocation:
     uuid: str
     path_from: str
     path_to: str
+    filename: str
     width: int
     height: int
     operation_type: str

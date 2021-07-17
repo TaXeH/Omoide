@@ -2,12 +2,13 @@
 
 """Make relocations.
 """
+from dataclasses import asdict
 from typing import List
 
-import omoide.use_cases.make_relocations.saving
 from omoide import constants
 from omoide import core
 from omoide import use_cases
+from omoide.use_cases.common import transient
 
 
 def act(command: use_cases.MakeRelocationsCommand,
@@ -27,9 +28,10 @@ def act(command: use_cases.MakeRelocationsCommand,
             continue
 
         relocations: List[core.Relocation] = []
-        content = filesystem.read_json(unit_file_path)
+        unit_dict = filesystem.read_json(unit_file_path)
+        unit = transient.Unit(**unit_dict)
 
-        for meta in content.get('metas', []):
+        for meta in unit.metas:
             new_relocations = make_relocations_for_one_meta(
                 command=command,
                 meta=meta,
@@ -40,7 +42,7 @@ def act(command: use_cases.MakeRelocationsCommand,
             relocations.extend(new_relocations)
             total_new_relocations += len(new_relocations)
 
-        relocation_path = use_cases.make_relocations.saving.save_relocations(
+        relocation_path = save_relocations(
             folder=storage_folder,
             relocations=relocations,
             filesystem=filesystem,
@@ -51,19 +53,14 @@ def act(command: use_cases.MakeRelocationsCommand,
 
 
 def make_relocations_for_one_meta(command: use_cases.MakeRelocationsCommand,
-                                  meta: dict,
+                                  meta: transient.Meta,
                                   branch: str,
                                   leaf: str,
                                   filesystem: core.Filesystem):
     """Gather all required for relocation information."""
     relocations: List[core.Relocation] = []
-    uuid = meta['uuid']
-    filename = meta['original_filename']
-    ext = meta['original_extension']
 
-    path_to_content = meta['path_to_content']
-
-    _, category, realm, theme, group, _ = path_to_content.split('/')
+    _, category, realm, theme, group, _ = meta.path_to_content.split('/')
 
     path_from = filesystem.join(
         command.sources_folder,
@@ -72,7 +69,7 @@ def make_relocations_for_one_meta(command: use_cases.MakeRelocationsCommand,
         realm,
         theme,
         group,
-        f'{filename}.{ext}',
+        f'{meta.original_filename}.{meta.original_extension}',
     )
 
     path_to = filesystem.join(
@@ -81,15 +78,16 @@ def make_relocations_for_one_meta(command: use_cases.MakeRelocationsCommand,
         realm,
         theme,
         group,
-        f'{uuid}.{ext}'
+        f'{meta.uuid}.{meta.original_extension}'
     )
 
     new_relocation = core.Relocation(
-        uuid=uuid,
+        uuid=meta.uuid,
+        filename=f'{meta.original_filename}.{meta.original_extension}',
         path_from=path_from,
         path_to=path_to,
-        width=meta['width'],
-        height=meta['height'],
+        width=meta.width,
+        height=meta.height,
         operation_type='copy',
     )
     relocations.append(new_relocation)
@@ -100,11 +98,12 @@ def make_relocations_for_one_meta(command: use_cases.MakeRelocationsCommand,
         realm,
         theme,
         group,
-        f'{uuid}.{ext}'
+        f'{meta.uuid}.{meta.original_extension}'
     )
 
     new_relocation = core.Relocation(
-        uuid=uuid,
+        uuid=meta.uuid,
+        filename=f'{meta.original_filename}.{meta.original_extension}',
         path_from=path_from,
         path_to=path_to,
         width=constants.PREVIEW_SIZE[0],
@@ -119,11 +118,12 @@ def make_relocations_for_one_meta(command: use_cases.MakeRelocationsCommand,
         realm,
         theme,
         group,
-        f'{uuid}.{ext}'
+        f'{meta.uuid}.{meta.original_extension}'
     )
 
     new_relocation = core.Relocation(
-        uuid=uuid,
+        uuid=meta.uuid,
+        filename=f'{meta.original_filename}.{meta.original_extension}',
         path_from=path_from,
         path_to=path_to,
         width=constants.THUMBNAIL_SIZE[0],
@@ -135,14 +135,10 @@ def make_relocations_for_one_meta(command: use_cases.MakeRelocationsCommand,
     return relocations
 
 
-if __name__ == '__main__':
-    _command = use_cases.MakeRelocationsCommand(
-        branch='all',
-        leaf='all',
-        sources_folder='D:\\PycharmProjects\\Omoide\\example\\sources',
-        storage_folder='D:\\PycharmProjects\\Omoide\\example\\storage',
-        content_folder='D:\\PycharmProjects\\Omoide\\example\\content',
-    )
-    _filesystem = core.Filesystem()
-    _stdout = core.STDOut()
-    act(_command, _filesystem, _stdout)
+def save_relocations(folder: str,
+                     relocations: List[core.Relocation],
+                     filesystem: core.Filesystem) -> str:
+    """Save relocations as JSON file."""
+    file_path = filesystem.join(folder, constants.RELOCATION_FILE_NAME)
+    filesystem.write_json(file_path, [asdict(x) for x in relocations])
+    return file_path
