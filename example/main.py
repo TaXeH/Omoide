@@ -3,7 +3,7 @@
 """Prepare resources and launch application.
 """
 from omoide.manage import main as manage
-from omoide.use_cases import persistent
+from omoide.use_cases.unite import persistent
 
 
 def main():
@@ -15,7 +15,7 @@ def main():
     persistent.set_today('2021-07-17')
     persistent.set_revision('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
 
-    manage(['step_01_unite', 'all', 'all'])
+    manage(['unite', 'all', 'all'])
     # manage(['migrate'])
     # manage(['sync'])
     # manage(['runserver'])

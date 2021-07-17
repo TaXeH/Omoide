@@ -88,6 +88,23 @@ class Meta(_BaseEntity):
     theme_uuid: str
     group_uuid: str
 
+    path_to_content: str = Field(default='')
+    path_to_preview: str = Field(default='')
+    path_to_thumbnail: str = Field(default='')
+    original_filename: str = Field(default='')
+    original_extension: str = Field(default='')
+    width: int = Field(default=0)
+    height: int = Field(default=0)
+    resolution: float = Field(default=0.0)
+    size: int = Field(default=0)
+    duration: int = Field(default=0)
+    type: str = Field(default='')
+    ordering: int = Field(default=0)
+    signature: str = Field(default='')
+    signature_type: str = Field(default='')
+    previous: str = Field(default='')
+    next: str = Field(default='')
+
 
 class User(BaseUnitElement):
     """User defined User (lol)."""

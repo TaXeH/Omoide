@@ -66,6 +66,14 @@ def ensure_has_prefix(field_name: str, string: str,
         )
 
 
+def ensure_equal(var1: str, var2: str) -> Optional[NoReturn]:
+    """Raise if values differ."""
+    if var1 != var2:
+        raise ValueError(
+            f'Values are different {var1!r} != {var2!r}'
+        )
+
+
 # noinspection PyMethodParameters
 class UniqueTagsMixin:
     """Mixin that checks uniqueness."""
@@ -186,6 +194,7 @@ class Theme(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
 # noinspection PyMethodParameters
 class _BaseEntity(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
     """Base class for Group and Meta."""
+    realm_uuid: str
     registered_on: str = Field(default='')
     registered_by: str = Field(default='')
     author: str = Field(default='')
@@ -202,6 +211,13 @@ class _BaseEntity(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
         if value:
             ensure_variable('registered_by', value)
             ensure_has_prefix('registered_by', value, constants.PREFIX_USER)
+        return value
+
+    @validator('realm_uuid')
+    def must_be_realm(cls, value):
+        """Raise if UUID is incorrect."""
+        ensure_variable('realm_uuid', value)
+        ensure_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
         return value
 
 

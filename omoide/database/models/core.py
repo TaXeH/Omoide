@@ -78,24 +78,22 @@ class Group(common.BaseModel):
     # metarecord values are more important than these
     # date of registration in form '2021-01-01'
     registered_on = sa.Column(sa.String(length=constants.DATE_LEN),
-                              nullable=False, server_default='')
+                              nullable=False)
     # uuid of user or ''
     registered_by = sa.Column(sa.String(length=constants.MAX_LEN),
-                              nullable=False, server_default='')
+                              nullable=False)
     # name of the author
-    author = sa.Column(sa.String(length=constants.MAX_LEN),
-                       nullable=False, server_default='')
+    author = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
     # link to author's page or account
-    author_url = sa.Column(sa.Text, nullable=False, server_default='')
+    author_url = sa.Column(sa.Text, nullable=False)
     # link to the page where this content was seen
-    origin_url = sa.Column(sa.Text, nullable=False, server_default='')
+    origin_url = sa.Column(sa.Text, nullable=False)
     # optional description of the entity
-    comment = sa.Column(sa.Text, nullable=False, server_default='')
+    comment = sa.Column(sa.Text, nullable=False)
 
     # string with arbitrary names, that represent some logical structure
     # supposed to be used in ordering, like 'plants,flowers,daisy'
-    hierarchy = sa.Column(sa.Text,
-                          nullable=False, server_default='')
+    hierarchy = sa.Column(sa.Text, nullable=False)
 
     # relations
     theme = relationship('Theme', back_populates='groups')
@@ -121,33 +119,32 @@ class Meta(common.BaseModel):
                            nullable=False, unique=False)
     # fields
     # path to actual files, relative to theme directory
-    path_to_content = sa.Column(sa.Text, nullable=False, server_default='')
-    path_to_preview = sa.Column(sa.Text, nullable=False, server_default='')
-    path_to_thumbnail = sa.Column(sa.Text, nullable=False, server_default='')
+    path_to_content = sa.Column(sa.Text, nullable=False)
+    path_to_preview = sa.Column(sa.Text, nullable=False)
+    path_to_thumbnail = sa.Column(sa.Text, nullable=False)
 
     # original file parameters, can indirectly help in sorting
     # like 'somefile', without extension and dot
-    original_filename = sa.Column(sa.Text, nullable=False, server_default='')
+    original_filename = sa.Column(sa.Text, nullable=False)
     # like 'jpg', without dot
     original_extension = sa.Column(sa.String(length=constants.MAX_LEN),
-                                   nullable=False, server_default='')
+                                   nullable=False)
     # specific content information
     # in pixels for images, 0 for everything else
-    width = sa.Column(sa.Integer, nullable=False, server_default='0')
+    width = sa.Column(sa.Integer, nullable=False)
     # in pixels for images, 0 for everything else
-    height = sa.Column(sa.Integer, nullable=False, server_default='0')
+    height = sa.Column(sa.Integer, nullable=False)
     # in megapixels for images, 0 for everything else
-    resolution = sa.Column(sa.Float, nullable=False, server_default='0')
+    resolution = sa.Column(sa.Float, nullable=False)
     # in bytes for any file
-    size = sa.Column(sa.Integer, nullable=False, server_default='0')
+    size = sa.Column(sa.Integer, nullable=False)
     # in seconds for video and audio, 0 for everything else
-    duration = sa.Column(sa.Integer, nullable=False, server_default='0')
+    duration = sa.Column(sa.Integer, nullable=False)
     # string like 'image', 'video', etc.
-    type = sa.Column(sa.String(length=constants.MAX_LEN),
-                     nullable=False, server_default='')
+    type = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
 
     # used in group handling, some arbitrary number, that helps in sorting
-    ordering = sa.Column(sa.Integer, nullable=False, server_default='0')
+    ordering = sa.Column(sa.Integer, nullable=False)
 
     # information about origin
     # metarecord values are more important than these
@@ -156,31 +153,30 @@ class Meta(common.BaseModel):
                               nullable=False, server_default='')
     # uuid of user or ''
     registered_by = sa.Column(sa.String(length=constants.MAX_LEN),
-                              nullable=False, server_default='')
+                              nullable=False)
     # name of the author
-    author = sa.Column(sa.String(length=constants.MAX_LEN),
-                       nullable=False, server_default='')
+    author = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
     # link to author's page or account
-    author_url = sa.Column(sa.Text, nullable=False, server_default='')
+    author_url = sa.Column(sa.Text, nullable=False)
     # link to the page where this content was seen
-    origin_url = sa.Column(sa.Text, nullable=False, server_default='')
+    origin_url = sa.Column(sa.Text, nullable=False)
     # optional description of the entity
-    comment = sa.Column(sa.Text, nullable=False, server_default='')
+    comment = sa.Column(sa.Text, nullable=False)
 
     # identification info
     # encoded signature string
-    signature = sa.Column(sa.Text, nullable=False, server_default='')
+    signature = sa.Column(sa.Text, nullable=False)
     # human-readable type, like 'md5'
-    signature_type = sa.Column(sa.Text, nullable=False, server_default='')
+    signature_type = sa.Column(sa.Text, nullable=False)
 
     # uuid of the previous meta
-    previous = sa.Column(sa.Text, nullable=False, server_default='')
+    previous = sa.Column(sa.Text, nullable=False)
     # uuid of the next meta
-    next = sa.Column(sa.Text, nullable=False, server_default='')
+    next = sa.Column(sa.Text, nullable=False)
 
     # string with arbitrary names, that represent some logical structure
     # supposed to be used in ordering, like 'plants,flowers,daisy'
-    hierarchy = sa.Column(sa.Text, nullable=False, server_default='')
+    hierarchy = sa.Column(sa.Text, nullable=False)
 
     # relations
     group = relationship('Group', back_populates='metas')

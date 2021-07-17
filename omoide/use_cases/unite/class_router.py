@@ -16,12 +16,12 @@ class Router:
 
     def __init__(self) -> None:
         """Initialize instance."""
-        self._memory: Dict[UUID, str] = {}
+        self._memory: Dict[str, str] = {}
 
-    def register_route(self, uuid: UUID, route: str) -> None:
+    def register_route(self, uuid: str, route: str) -> None:
         # FIXME
         self._memory[uuid] = route
 
-    def get_route(self, uuid: UUID) -> str:
+    def get_route(self, uuid: str) -> str:
         # FIXME
         return self._memory[uuid]

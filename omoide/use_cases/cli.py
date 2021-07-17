@@ -39,7 +39,7 @@ def parse_arguments(args: List[str],
     args = [x.lower() for x in args]
     command, rest = args[0], args[1:]
 
-    if command == 'step_01_unite':
+    if command == 'unite':
         instance = make_operation_unite(rest,
                                         sources_folder,
                                         storage_folder,

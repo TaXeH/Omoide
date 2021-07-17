@@ -2,11 +2,10 @@
 
 """Make migrations.
 """
-from typing import List
 
-import omoide.use_cases.make_migrations.saving
 from omoide import core, constants, use_cases
-from omoide.use_cases import commands, identity
+from omoide.use_cases import commands
+from omoide.use_cases.unite import identity
 from omoide.use_cases.make_migrations import schema
 
 

@@ -34,7 +34,7 @@ class BaseCommand:
 @dataclass(frozen=True)
 class UniteCommand(BaseCommand):
     """We have nothing ready, lets create base unit of source information."""
-    name: str = 'step_01_unite'
+    name: str = 'unite'
 
 
 @dataclass(frozen=True)

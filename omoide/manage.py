@@ -104,7 +104,7 @@ def get_and_announce(variable: str, stdout: core.STDOut) -> Optional[str]:
 def get_target_func(command: use_cases.AnyCommand) -> Callable:
     """Return perform func based on domain."""
     target_func = {
-        'step_01_unite': perform_unite,
+        'unite': perform_unite,
         'make_migrations': perform_make_migrations,
         'make_relocations': perform_make_relocations,
         'migrate': perform_migrate,
@@ -120,7 +120,7 @@ def get_target_func(command: use_cases.AnyCommand) -> Callable:
 def perform_unite(command: commands.UniteCommand,
                   filesystem: core.Filesystem,
                   stdout: core.STDOut) -> None:
-    """Perform step_01_unite command."""
+    """Perform unite command."""
     stdout.magenta('[UNITE] Parsing source files and making unit files')
     total = use_cases.unite.act(command, filesystem, stdout)
     stdout.magenta(f'Total {total} unit files created')
@@ -129,7 +129,7 @@ def perform_unite(command: commands.UniteCommand,
 def perform_make_migrations(command: commands.MakeMigrationsCommand,
                             filesystem: core.Filesystem,
                             stdout: core.STDOut) -> None:
-    """Perform step_01_unite command."""
+    """Perform unite command."""
     stdout.magenta('[MAKE MIGRATIONS] Creating migration files')
     total = use_cases.make_migrations.act(command, filesystem, stdout)
     stdout.magenta(f'Total {total} migration files created')
