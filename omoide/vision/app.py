@@ -5,14 +5,15 @@ from flask import request, abort
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
-from omoide import use_cases, constants
-from omoide.core.core_utils import byte_count_to_text
+from omoide import constants
+from omoide import commands
+from omoide.utils import byte_count_to_text
 from omoide.vision import database
 from omoide.vision import search
 from omoide.vision.search.class_paginator import Paginator
 
 
-def create_app(command: use_cases.RunserverCommand,
+def create_app(command: commands.RunserverCommand,
                engine: Engine) -> flask.Flask:
     """Create web application instance."""
     app = flask.Flask(
@@ -82,6 +83,14 @@ def create_app(command: use_cases.RunserverCommand,
         query = query_builder.from_query(realm_uuid, theme_uuid,
                                          group_uuid, query_text)
 
+        if current_realm and current_realm != constants.ALL_REALMS:
+            sets['and_'].add(current_realm)
+
+        if current_theme and current_theme != constants.ALL_THEMES:
+            sets['and_'].add(current_theme)
+
+        if current_group and current_group != constants.ALL_GROUPS:
+            sets['and_'].add(current_group)
         if query:
             pass
         #     chosen_metarecords, hidden = utils_core.select_records(

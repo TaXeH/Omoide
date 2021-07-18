@@ -47,8 +47,6 @@ def test_query_builder_split_query(query_builder):
     f = query_builder.split_request_into_parts
     assert f('cats | dogs') == ['|', 'cats', '|', 'dogs']
     assert f('a + b - c') == ['|', 'a', '+', 'b', '-', 'c']
-    assert f('x & y ~ f') == ['|', 'x', '&', 'y', '~', 'f']
-    assert f('k ! d') == ['|', 'k', '!', 'd']
 
 
 def test_query_builder_1(query_builder):
@@ -56,11 +54,7 @@ def test_query_builder_1(query_builder):
     query = query_builder.from_query(text)
     assert query.as_dict() == {
         'and_': [],
-        'exclude_realms': [],
-        'exclude_themes': [],
         'flags': [],
-        'include_realms': [],
-        'include_themes': [],
         'not_': [],
         'or_': ['cats', 'dogs'],
     }
@@ -68,18 +62,14 @@ def test_query_builder_1(query_builder):
 
 
 def test_query_builder_2(query_builder):
-    text = '+ cats | dogs + turtle - frog + IMAGE & test'
+    text = '+ cats | dogs + turtle - frog ~ image'
 
     query = query_builder.from_query(text)
     assert query.as_dict() == {
-        'and_': [constants.MEDIA_TYPE_IMAGE, 'cats', 'turtle'],
+        'and_': ['cats', 'turtle'],
         'or_': ['dogs'],
         'not_': ['frog'],
-        'exclude_realms': [],
-        'exclude_themes': [],
-        'flags': [],
-        'include_realms': [],
-        'include_themes': ['test'],
+        'flags': [constants.MEDIA_TYPE_IMAGE],
     }
     assert str(query) == '+ IMAGE + cats + turtle | dogs - frog & test'
 

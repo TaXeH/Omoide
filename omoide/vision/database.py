@@ -1,14 +1,13 @@
-from typing import Union
+from typing import Optional
 
 from sqlalchemy.orm import Session
 
 from omoide import constants
-from omoide import core
 from omoide.database import models
 
 
 def get_realm_uuid(session: Session,
-                   realm_route: str) -> Union[core.UUID, str, None]:
+                   realm_route: str) -> Optional[str]:
     if realm_route == constants.ALL_REALMS:
         return realm_route
 
@@ -22,7 +21,7 @@ def get_realm_uuid(session: Session,
 
 
 def get_theme_uuid(session: Session,
-                   theme_route: str) -> Union[core.UUID, str, None]:
+                   theme_route: str) -> Optional[str]:
     if theme_route == constants.ALL_THEMES:
         return theme_route
 
@@ -36,7 +35,7 @@ def get_theme_uuid(session: Session,
 
 
 def get_group_uuid(session: Session,
-                   group_route: str) -> Union[core.UUID, str, None]:
+                   group_route: str) -> Optional[str]:
     if group_route == constants.ALL_GROUPS:
         return group_route
 

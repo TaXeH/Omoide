@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
-from omoide import core
+from omoide import rite
 from omoide.database import common, models
 
 __all__ = [
@@ -20,7 +20,7 @@ __all__ = [
 
 
 def drop_database(sources_folder: str, filename: str,
-                  filesystem: core.Filesystem, stdout: core.STDOut) -> None:
+                  filesystem: rite.Filesystem, stdout: rite.STDOut) -> None:
     """Remove database file from folder."""
     path = filesystem.absolute(filesystem.join(sources_folder, filename))
 
@@ -36,7 +36,7 @@ def drop_database(sources_folder: str, filename: str,
 
 
 def create_database(folder: str, filename: str,
-                    filesystem: core.Filesystem, stdout: core.STDOut,
+                    filesystem: rite.Filesystem, stdout: rite.STDOut,
                     echo: bool) -> Engine:
     """Create database file."""
     path = filesystem.absolute(filesystem.join(folder, filename))
@@ -48,8 +48,8 @@ def create_database(folder: str, filename: str,
 
 
 def create_read_only_database(folder: str, filename: str,
-                              filesystem: core.Filesystem,
-                              stdout: core.STDOut,
+                              filesystem: rite.Filesystem,
+                              stdout: rite.STDOut,
                               echo: bool) -> Engine:
     """Create database file."""
     path = filesystem.absolute(filesystem.join(folder, filename))
@@ -61,7 +61,7 @@ def create_read_only_database(folder: str, filename: str,
     return engine
 
 
-def create_scheme(database: Engine, stdout: core.STDOut) -> None:
+def create_scheme(database: Engine, stdout: rite.STDOut) -> None:
     """Create all required tables."""
     common.metadata.create_all(bind=database)
     stdout.green('Created all tables')
@@ -69,8 +69,8 @@ def create_scheme(database: Engine, stdout: core.STDOut) -> None:
 
 def restore_database_from_scratch(folder: str,
                                   filename: str,
-                                  filesystem: core.Filesystem,
-                                  stdout: core.STDOut,
+                                  filesystem: rite.Filesystem,
+                                  stdout: rite.STDOut,
                                   echo: bool = True) -> Engine:
     """Drop existing leaf database and create a new one.
     """

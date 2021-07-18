@@ -3,27 +3,14 @@
 """Helper class that stores query parameters.
 """
 import re
-from itertools import zip_longest
 from typing import (
-    TypeVar, Generic, Type, List, Dict, Set, Iterable, Any, Iterator,
+    TypeVar, Generic, Type, List, Dict, Set,
 )
 
 from omoide import constants
+from omoide.utils import group_to_size
 
 QueryType = TypeVar('QueryType')
-
-
-def group_to_size(iterable: Iterable, group_size: int = 2,
-                  default: Any = '?') -> Iterator[tuple]:
-    """Return contents of the iterable grouped in blocks of given size.
-
-    >>> list(group_to_size([1, 2, 3, 4, 5, 6, 7], 2, '?'))
-    [(1, 2), (3, 4), (5, 6), (7, '?')]
-
-    >>> list(group_to_size([1, 2, 3, 4, 5, 6, 7], 3, '?'))
-    [(1, 2, 3), (4, 5, 6), (7, '?', '?')]
-    """
-    return zip_longest(*[iter(iterable)] * group_size, fillvalue=default)
 
 
 class QueryBuilder(Generic[QueryType]):
@@ -49,7 +36,7 @@ class QueryBuilder(Generic[QueryType]):
         """Turn user request into series of words."""
         parts = self.pattern.split(query_text)
         parts = [x.strip() for x in parts if x.strip()]
-        print(parts)
+
         if not parts:
             return []
 
@@ -69,11 +56,7 @@ class QueryBuilder(Generic[QueryType]):
         if target:
             sets[target].add(word)
 
-    def from_query(self,
-                   current_realm: str,
-                   current_theme: str,
-                   current_group: str,
-                   query_text: str) -> QueryType:
+    def from_query(self, query_text: str) -> QueryType:
         """Make instance representing given query."""
         sets = dict(and_=set(),
                     or_=set(),
@@ -81,15 +64,6 @@ class QueryBuilder(Generic[QueryType]):
                     flags=set())
 
         parts = self.split_request_into_parts(query_text)
-
-        if current_realm and current_realm != constants.ALL_REALMS:
-            sets['and_'].add(current_realm)
-
-        if current_theme and current_theme != constants.ALL_THEMES:
-            sets['and_'].add(current_theme)
-
-        if current_group and current_group != constants.ALL_GROUPS:
-            sets['and_'].add(current_group)
 
         for operator, word in group_to_size(parts):
             if not {operator, word} & constants.KEYWORDS:
