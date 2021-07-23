@@ -4,7 +4,7 @@
 """
 import pytest
 
-from omoide.vision.search.class_query import Query
+from omoide.application.search.class_query import Query
 
 
 @pytest.fixture

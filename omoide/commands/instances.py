@@ -30,8 +30,10 @@ class FilesRelatedCommand(BaseCommand):
     sources_folder: str
     storage_folder: str
     content_folder: str
+    database_folder: str
     branch: str
     leaf: str
+    force: bool
 
 
 @dataclass
@@ -87,7 +89,7 @@ class RunserverCommand(BaseCommand):
     """Start web application."""
     host: str
     port: int
-    content_folder: str
+    database_folder: str
     template_folder: str
     static_folder: str
     name: str = 'runserver'

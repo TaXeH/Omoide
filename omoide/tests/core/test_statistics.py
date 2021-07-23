@@ -6,7 +6,7 @@ from unittest.mock import ANY
 
 import pytest
 
-from omoide.essence.class_statistics import Statistics
+from omoide.maybe_delete.class_statistics import Statistics
 
 
 @pytest.fixture

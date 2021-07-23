@@ -1,137 +1,132 @@
 [
     {
-        "uuid": "m_5d658903-321a-4bcb-9fc3-0b3041e5fbcb",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\barn-1081686.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm\\m_5d658903-321a-4bcb-9fc3-0b3041e5fbcb.jpg",
-        "filename": "barn-1081686.jpg",
-        "width": 960,
-        "height": 640,
-        "operation_type": "copy"
+        "uuid": "m_ad09e3fe-fcac-4d85-8bbd-efc0aaa9ced5",
+        "source_filename": "barn-1081686.jpg",
+        "target_filename": "m_ad09e3fe-fcac-4d85-8bbd-efc0aaa9ced5.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
+        "operations": [
+            {
+                "width": 960,
+                "height": 640,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm",
+                "operation_type": "scale"
+            }
+        ]
     },
     {
-        "uuid": "m_5d658903-321a-4bcb-9fc3-0b3041e5fbcb",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\barn-1081686.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm\\m_5d658903-321a-4bcb-9fc3-0b3041e5fbcb.jpg",
-        "filename": "barn-1081686.jpg",
-        "width": 1024,
-        "height": 1024,
-        "operation_type": "scale"
+        "uuid": "m_bd637f73-6011-46ed-8503-46357a0f8db0",
+        "source_filename": "barn-216372.jpg",
+        "target_filename": "m_bd637f73-6011-46ed-8503-46357a0f8db0.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
+        "operations": [
+            {
+                "width": 960,
+                "height": 637,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm",
+                "operation_type": "scale"
+            }
+        ]
     },
     {
-        "uuid": "m_5d658903-321a-4bcb-9fc3-0b3041e5fbcb",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\barn-1081686.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm\\m_5d658903-321a-4bcb-9fc3-0b3041e5fbcb.jpg",
-        "filename": "barn-1081686.jpg",
-        "width": 384,
-        "height": 384,
-        "operation_type": "scale"
+        "uuid": "m_fc67ad55-afc6-43fe-b73f-c8f3d1a4932f",
+        "source_filename": "fence-918535.jpg",
+        "target_filename": "m_fc67ad55-afc6-43fe-b73f-c8f3d1a4932f.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
+        "operations": [
+            {
+                "width": 960,
+                "height": 552,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm",
+                "operation_type": "scale"
+            }
+        ]
     },
     {
-        "uuid": "m_1995820c-73cb-4fbb-8091-491404558926",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\barn-216372.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm\\m_1995820c-73cb-4fbb-8091-491404558926.jpg",
-        "filename": "barn-216372.jpg",
-        "width": 960,
-        "height": 637,
-        "operation_type": "copy"
+        "uuid": "m_53e4ed9a-45f1-4953-a569-50b8f15b55f7",
+        "source_filename": "grapes-553463.jpg",
+        "target_filename": "m_53e4ed9a-45f1-4953-a569-50b8f15b55f7.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
+        "operations": [
+            {
+                "width": 960,
+                "height": 640,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm",
+                "operation_type": "scale"
+            }
+        ]
     },
     {
-        "uuid": "m_1995820c-73cb-4fbb-8091-491404558926",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\barn-216372.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm\\m_1995820c-73cb-4fbb-8091-491404558926.jpg",
-        "filename": "barn-216372.jpg",
-        "width": 1024,
-        "height": 1024,
-        "operation_type": "scale"
-    },
-    {
-        "uuid": "m_1995820c-73cb-4fbb-8091-491404558926",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\barn-216372.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm\\m_1995820c-73cb-4fbb-8091-491404558926.jpg",
-        "filename": "barn-216372.jpg",
-        "width": 384,
-        "height": 384,
-        "operation_type": "scale"
-    },
-    {
-        "uuid": "m_df36651f-6bef-4a8f-ad40-750b629f0503",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\fence-918535.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm\\m_df36651f-6bef-4a8f-ad40-750b629f0503.jpg",
-        "filename": "fence-918535.jpg",
-        "width": 960,
-        "height": 552,
-        "operation_type": "copy"
-    },
-    {
-        "uuid": "m_df36651f-6bef-4a8f-ad40-750b629f0503",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\fence-918535.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm\\m_df36651f-6bef-4a8f-ad40-750b629f0503.jpg",
-        "filename": "fence-918535.jpg",
-        "width": 1024,
-        "height": 1024,
-        "operation_type": "scale"
-    },
-    {
-        "uuid": "m_df36651f-6bef-4a8f-ad40-750b629f0503",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\fence-918535.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm\\m_df36651f-6bef-4a8f-ad40-750b629f0503.jpg",
-        "filename": "fence-918535.jpg",
-        "width": 384,
-        "height": 384,
-        "operation_type": "scale"
-    },
-    {
-        "uuid": "m_39d81d4b-4cd7-4867-b15f-e41da4ad25ff",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\grapes-553463.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm\\m_39d81d4b-4cd7-4867-b15f-e41da4ad25ff.jpg",
-        "filename": "grapes-553463.jpg",
-        "width": 960,
-        "height": 640,
-        "operation_type": "copy"
-    },
-    {
-        "uuid": "m_39d81d4b-4cd7-4867-b15f-e41da4ad25ff",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\grapes-553463.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm\\m_39d81d4b-4cd7-4867-b15f-e41da4ad25ff.jpg",
-        "filename": "grapes-553463.jpg",
-        "width": 1024,
-        "height": 1024,
-        "operation_type": "scale"
-    },
-    {
-        "uuid": "m_39d81d4b-4cd7-4867-b15f-e41da4ad25ff",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\grapes-553463.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm\\m_39d81d4b-4cd7-4867-b15f-e41da4ad25ff.jpg",
-        "filename": "grapes-553463.jpg",
-        "width": 384,
-        "height": 384,
-        "operation_type": "scale"
-    },
-    {
-        "uuid": "m_7702af25-9122-4cca-9631-e04f8daedf14",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\rabbit-2409186.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm\\m_7702af25-9122-4cca-9631-e04f8daedf14.jpg",
-        "filename": "rabbit-2409186.jpg",
-        "width": 960,
-        "height": 642,
-        "operation_type": "copy"
-    },
-    {
-        "uuid": "m_7702af25-9122-4cca-9631-e04f8daedf14",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\rabbit-2409186.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm\\m_7702af25-9122-4cca-9631-e04f8daedf14.jpg",
-        "filename": "rabbit-2409186.jpg",
-        "width": 1024,
-        "height": 1024,
-        "operation_type": "scale"
-    },
-    {
-        "uuid": "m_7702af25-9122-4cca-9631-e04f8daedf14",
-        "path_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm\\rabbit-2409186.jpg",
-        "path_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm\\m_7702af25-9122-4cca-9631-e04f8daedf14.jpg",
-        "filename": "rabbit-2409186.jpg",
-        "width": 384,
-        "height": 384,
-        "operation_type": "scale"
+        "uuid": "m_fe1415e6-ad46-470b-9bb8-07006f2df1ce",
+        "source_filename": "rabbit-2409186.jpg",
+        "target_filename": "m_fe1415e6-ad46-470b-9bb8-07006f2df1ce.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
+        "operations": [
+            {
+                "width": 960,
+                "height": 642,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\farm\\farm",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\farm\\farm",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\farm\\farm",
+                "operation_type": "scale"
+            }
+        ]
     }
 ]

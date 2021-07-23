@@ -5,8 +5,8 @@
 import pytest
 
 from omoide import constants
-from omoide.vision.search.class_query import Query
-from omoide.vision.search.class_query_builder import QueryBuilder
+from omoide.application.search.class_query import Query
+from omoide.application.search.class_query_builder import QueryBuilder
 
 
 @pytest.fixture

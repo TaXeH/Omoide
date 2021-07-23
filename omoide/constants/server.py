@@ -8,8 +8,8 @@ DEFAULT_SERVER_PORT = 8000
 
 # FIXME
 DEFAULT_TEMPLATE_FOLDER = (
-    'D:\\PycharmProjects\\Omoide\\omoide\\vision\\templates'
+    'D:\\PycharmProjects\\Omoide\\omoide\\application\\templates'
 )
 DEFAULT_STATIC_FOLDER = (
-    'D:\\PycharmProjects\\Omoide\\omoide\\vision\\static'
+    'D:\\PycharmProjects\\Omoide\\omoide\\application\\static'
 )

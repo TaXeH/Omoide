@@ -15,31 +15,33 @@ __all__ = [
 ]
 
 
-def parse_arguments(args: List[str],
-                    sources_folder: Optional[str],
-                    storage_folder: Optional[str],
-                    content_folder: Optional[str]) -> instances.BaseCommand:
+def parse_arguments(args: List[str]) -> instances.BaseCommand:
     """Construct operation from arguments."""
     sources_folder, args = extract_parameter(
         name=constants.SOURCES_FOLDER_NAME,
         args=args,
-        variant=sources_folder,
         default=constants.DEFAULT_SOURCES_FOLDER,
     )
 
     storage_folder, args = extract_parameter(
         name=constants.STORAGE_FOLDER_NAME,
         args=args,
-        variant=storage_folder,
         default=constants.DEFAULT_STORAGE_FOLDER,
     )
 
     content_folder, args = extract_parameter(
         name=constants.CONTENT_FOLDER_NAME,
         args=args,
-        variant=content_folder,
-        default=constants.DEFAULT_CONTENT_FOLDER
+        default=constants.DEFAULT_CONTENT_FOLDER,
     )
+
+    database_folder, args = extract_parameter(
+        name=constants.DATABASE_FOLDER_NAME,
+        args=args,
+        default=constants.DEFAULT_DATABASE_FOLDER,
+    )
+
+    force, args = extract_flag('force', args, default=False)
 
     args = [x.lower() for x in args]
     command, rest = args[0], args[1:]
@@ -47,7 +49,9 @@ def parse_arguments(args: List[str],
     maker = partial(_make_common,
                     sources_folder=sources_folder,
                     storage_folder=storage_folder,
-                    content_folder=content_folder)
+                    content_folder=content_folder,
+                    database_folder=database_folder,
+                    force=force)
 
     if command == 'unite':
         instance = maker(rest, instances.UniteCommand)
@@ -74,7 +78,7 @@ def parse_arguments(args: List[str],
         instance = maker(rest, instances.ShowTreeCommand)
 
     elif command == 'runserver':
-        instance = make_operation_runserver(rest, content_folder)
+        instance = make_operation_runserver(rest, database_folder)
 
     else:
         raise ValueError(f'Unknown command: {command!r}')
@@ -83,22 +87,35 @@ def parse_arguments(args: List[str],
 
 
 def extract_parameter(name: str, args: List[str],
-                      variant: Optional[str] = None,
                       default: Optional[str] = '.') -> Tuple[str, List[str]]:
     """Try extracting parameter from arguments."""
-    key = f'--{name}'
+    keys = [f'--{name}', f'-{name[0].lower()}']
+    result = default
+    resulting_args = args.copy()
+
     for i, value in enumerate(args):
-        if value == key:
+        if value in keys:
             if i >= len(args) - 1:
-                raise ValueError(
-                    f'You need to specify value for {key} parameter'
-                )
+                break
             result = args[i + 1]
             resulting_args = args[:i] + args[i + 2:]
             break
 
+    return result, resulting_args
+
+
+def extract_flag(name: str, args: List[str],
+                 default: bool) -> Tuple[bool, List[str]]:
+    """Try extracting flag from arguments."""
+    keys = [f'--{name}', f'-{name[0].lower()}']
+    for i, value in enumerate(args):
+        if value in keys:
+            result = True
+            resulting_args = args[:i] + args[i + 1:]
+            break
+
     else:
-        result = variant or default
+        result = default
         resulting_args = args.copy()
 
     return result, resulting_args
@@ -111,7 +128,9 @@ def _make_common(args: List[str],
                  desired_type: Type[T],
                  sources_folder: str,
                  storage_folder: str,
-                 content_folder: str) -> T:
+                 content_folder: str,
+                 database_folder: str,
+                 force: bool) -> T:
     """Common creation of operation."""
     if len(args) == 0:
         branch, leaf = 'all', 'all'
@@ -126,10 +145,12 @@ def _make_common(args: List[str],
                         leaf=leaf,
                         sources_folder=sources_folder,
                         storage_folder=storage_folder,
-                        content_folder=content_folder)
+                        content_folder=content_folder,
+                        database_folder=database_folder,
+                        force=force)
 
 
-def make_operation_runserver(args: List[str], content_folder: str
+def make_operation_runserver(args: List[str], database_folder: str
                              ) -> instances.RunserverCommand:
     """Make server running operation."""
     host = constants.DEFAULT_SERVER_HOST
@@ -157,7 +178,7 @@ def make_operation_runserver(args: List[str], content_folder: str
     return instances.RunserverCommand(
         host=host,
         port=port,
-        content_folder=content_folder,
+        database_folder=database_folder,
         template_folder=constants.DEFAULT_TEMPLATE_FOLDER,
         static_folder=constants.DEFAULT_STATIC_FOLDER,
     )

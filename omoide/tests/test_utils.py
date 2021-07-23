@@ -2,12 +2,12 @@
 
 """Tests.
 """
-from omoide.utils import byte_count_to_text, sep_digits
+from omoide import utils
 
 
 def test_byte_count_to_text_ru():
     """Must convert to readable size in russian."""
-    func = byte_count_to_text
+    func = utils.byte_count_to_text
     assert func(-2_000, language='RU') == '-2.0 КиБ'
     assert func(-2_048, language='RU') == '-2.0 КиБ'
     assert func(0, language='RU') == '0 Б'
@@ -29,7 +29,7 @@ def test_byte_count_to_text_ru():
 
 def test_byte_count_to_text_en():
     """Must convert to readable size in english."""
-    func = byte_count_to_text
+    func = utils.byte_count_to_text
     assert func(-2_000, language='EN') == '-2.0 KiB'
     assert func(-2_048, language='EN') == '-2.0 KiB'
     assert func(0, language='EN') == '0 B'
@@ -51,7 +51,7 @@ def test_byte_count_to_text_en():
 
 def test_sep_digits():
     """Must separate digits on 1000s."""
-    func = sep_digits
+    func = utils.sep_digits
     assert func('12345678') == '12345678'
     assert func(12345678) == '12 345 678'
     assert func(1234.5678) == '1 234.57'

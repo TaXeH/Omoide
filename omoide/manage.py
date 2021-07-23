@@ -54,31 +54,26 @@ Possible call variants:
         Use --sources to specify sources folder.
         Use --storage to specify storage folder.
         Use --content to specify content folder.
+        Use --force to allow overwriting.
 """
-import os
 import sys
-from typing import List, Callable, Optional
+from typing import List, Callable
 
 from omoide import commands
-from omoide import rite
-from omoide import incarnation
+from omoide import infra
+from omoide.migration_engine import operations as migration_operations
 
 
 def main(args: List[str],
          *,
-         filesystem: rite.Filesystem = rite.Filesystem(),
-         stdout: rite.STDOut = rite.STDOut()) -> None:
+         filesystem: infra.Filesystem = infra.Filesystem(),
+         stdout: infra.STDOut = infra.STDOut()) -> None:
     """Entry point."""
     if not args:
         stdout.yellow('No arguments to handle')
         return
 
-    sources_path = get_and_announce('OMOIDE_SOURCE', stdout)
-    storage_path = get_and_announce('OMOIDE_STORAGE', stdout)
-    content_path = get_and_announce('OMOIDE_CONTENT', stdout)
-
-    command = commands.parse_arguments(args, sources_path,
-                                       storage_path, content_path)
+    command = commands.parse_arguments(args)
 
     if isinstance(command, commands.FilesRelatedCommand):
         assert_sources_folder_exist(command, filesystem, stdout)
@@ -89,7 +84,7 @@ def main(args: List[str],
         command.content_folder = filesystem.absolute(command.content_folder)
 
     elif getattr(command, 'name') == 'runserver':
-        command.content_folder = filesystem.absolute(command.content_folder)
+        command.database_folder = filesystem.absolute(command.database_folder)
         command.template_folder = filesystem.absolute(command.template_folder)
         command.static_folder = filesystem.absolute(command.static_folder)
 
@@ -98,20 +93,12 @@ def main(args: List[str],
 
 
 def assert_sources_folder_exist(command: commands.FilesRelatedCommand,
-                                filesystem: rite.Filesystem,
-                                stdout: rite.STDOut) -> None:
+                                filesystem: infra.Filesystem,
+                                stdout: infra.STDOut) -> None:
     """Stop execution if source folder does not exist."""
     if filesystem.not_exists(command.sources_folder):
         stdout.red(f'Sources folder does not exist: {command.sources_folder}')
         sys.exit(1)
-
-
-def get_and_announce(variable: str, stdout: rite.STDOut) -> Optional[str]:
-    """Announce that variable is not None."""
-    value = os.environ.get(variable)
-    if value is not None:
-        stdout.yellow(f'Using {variable}={value!r}')
-    return value
 
 
 def get_target_func(command: commands.BaseCommand) -> Callable:
@@ -132,83 +119,118 @@ def get_target_func(command: commands.BaseCommand) -> Callable:
 
 
 def perform_unite(command: commands.UniteCommand,
-                  filesystem: rite.Filesystem,
-                  stdout: rite.STDOut) -> None:
+                  filesystem: infra.Filesystem,
+                  stdout: infra.STDOut) -> None:
     """Perform unite command."""
     stdout.magenta('[UNITE] Parsing source files and making unit files')
-    total = incarnation.act_unite(command, filesystem, stdout)
+    total = migration_operations.unite.act(
+        command=command,
+        filesystem=filesystem,
+        stdout=stdout,
+    )
     stdout.magenta(f'Total {total} unit files created')
 
 
 def perform_make_migrations(command: commands.MakeMigrationsCommand,
-                            filesystem: rite.Filesystem,
-                            stdout: rite.STDOut) -> None:
+                            filesystem: infra.Filesystem,
+                            stdout: infra.STDOut) -> None:
     """Perform unite command."""
     stdout.magenta('[MAKE MIGRATIONS] Creating migration files')
-    total = incarnation.act_make_migrations(command, filesystem, stdout)
+    total = migration_operations.make_migrations.act(
+        command=command,
+        filesystem=filesystem,
+        stdout=stdout,
+    )
     stdout.magenta(f'Total {total} migration operations created')
 
 
 def perform_make_relocations(command: commands.MakeRelocationsCommand,
-                             filesystem: rite.Filesystem,
-                             stdout: rite.STDOut) -> None:
+                             filesystem: infra.Filesystem,
+                             stdout: infra.STDOut) -> None:
     """Perform make_relocations command."""
     stdout.magenta('[MAKE RELOCATIONS] Creating relocation files')
-    total = incarnation.act_make_relocations(command, filesystem, stdout)
+    total = migration_operations.make_relocations.act(
+        command=command,
+        filesystem=filesystem,
+        stdout=stdout,
+    )
     stdout.magenta(f'Total {total} relocation operations created')
 
 
 def perform_migrate(command: commands.MigrateCommand,
-                    filesystem: rite.Filesystem,
-                    stdout: rite.STDOut) -> None:
+                    filesystem: infra.Filesystem,
+                    stdout: infra.STDOut) -> None:
     """Perform migration command."""
     stdout.magenta('[MIGRATE] Applying migrations')
-    total = incarnation.act_migrate(command, filesystem, stdout)
+    total = migration_operations.migrate.act(
+        command=command,
+        filesystem=filesystem,
+        stdout=stdout,
+    )
     stdout.magenta(f'Total {total} migration operations applied')
 
 
 def perform_relocate(command: commands.RelocateCommand,
-                     filesystem: rite.Filesystem,
-                     stdout: rite.STDOut) -> None:
+                     filesystem: infra.Filesystem,
+                     stdout: infra.STDOut) -> None:
     """Perform relocation command."""
     stdout.magenta('[RELOCATE] Applying relocations')
-    total = incarnation.act_relocate(command, filesystem, stdout)
+    total = migration_operations.relocate.act(
+        command=command,
+        filesystem=filesystem,
+        stdout=stdout,
+    )
     stdout.magenta(f'Total {total} relocation operations applied')
 
 
 def perform_sync(command: commands.SyncCommand,
-                 filesystem: rite.Filesystem,
-                 stdout: rite.STDOut) -> None:
+                 filesystem: infra.Filesystem,
+                 stdout: infra.STDOut) -> None:
     """Perform sync command."""
     stdout.magenta('[SYNC] Synchronizing databases')
-    total = incarnation.act_sync(command, filesystem, stdout)
+    total = migration_operations.sync.act(
+        command=command,
+        filesystem=filesystem,
+        stdout=stdout,
+    )
     stdout.magenta(f'Total {total} databases synchronized')
 
 
 def perform_freeze(command: commands.FreezeCommand,
-                   filesystem: rite.Filesystem,
-                   stdout: rite.STDOut) -> None:
+                   filesystem: infra.Filesystem,
+                   stdout: infra.STDOut) -> None:
     """Perform freeze command."""
     stdout.magenta('[FREEZE] Making static database')
-    incarnation.act_freeze(command, filesystem, stdout)
+    migration_operations.freeze.act(
+        command=command,
+        filesystem=filesystem,
+        stdout=stdout,
+    )
     stdout.magenta(f'Successfully created static database')
 
 
 def perform_runserver(command: commands.RunserverCommand,
-                      filesystem: rite.Filesystem,
-                      stdout: rite.STDOut) -> None:
+                      filesystem: infra.Filesystem,
+                      stdout: infra.STDOut) -> None:
     """Perform command."""
-    stdout.magenta('[RUNSERVER] Starting server')
-    command.content_folder = filesystem.absolute(command.content_folder)
-    incarnation.act_runserver(command, filesystem, stdout)
+    stdout.magenta('[RUNSERVER] Starting development server')
+    migration_operations.runserver.act(
+        command=command,
+        filesystem=filesystem,
+        stdout=stdout,
+    )
 
 
 def perform_show_tree(command: commands.ShowTreeCommand,
-                      filesystem: rite.Filesystem,
-                      stdout: rite.STDOut) -> None:
+                      filesystem: infra.Filesystem,
+                      stdout: infra.STDOut) -> None:
     """Perform command."""
     stdout.magenta('[SHOW_TREE] Displaying folder tree')
-    total = incarnation.act_show_tree(command, filesystem, stdout)
+    total = migration_operations.show_tree.act(
+        command=command,
+        filesystem=filesystem,
+        stdout=stdout,
+    )
     stdout.magenta(f'Got {total} subfolders')
 
 
