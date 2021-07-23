@@ -23,6 +23,7 @@ INSERT INTO users (revision, last_update, uuid, name) VALUES ('XXXXXXXXXXXXXXXXX
 INSERT INTO permissions_realms (revision, last_update, realm_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 'r_bff4ea23-2d46-4384-9e14-dec4d876f987', 'public');
 INSERT INTO permissions_users (revision, last_update, user_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 'u_fc67ad55-afc6-43fe-b73f-c8f3d1a4932f', 'some permission');
 INSERT INTO permissions_users (revision, last_update, user_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 'u_fc67ad55-afc6-43fe-b73f-c8f3d1a4932f', 'public');
+INSERT INTO tags_themes (revision, last_update, theme_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 't_b4754afc-b194-4317-9367-6ed89ae3498b', 'gerbil');
 INSERT INTO tags_groups (revision, last_update, group_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 'g_3042daf7-be95-476e-ac56-916a21725d96', 'browney');
 INSERT INTO tags_groups (revision, last_update, group_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 'g_c69a4940-2b45-400f-b110-a8d004a8f1e5', 'whitey');
 INSERT INTO tags_metas (revision, last_update, meta_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 'm_3042daf7-be95-476e-ac56-916a21725d96', 'browney');
@@ -34,6 +35,7 @@ INSERT INTO tags_metas (revision, last_update, meta_uuid, value) VALUES ('XXXXXX
 INSERT INTO synonyms (revision, last_update, uuid, theme_uuid, label) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 's_c962e91c-3894-4e4f-9eb6-3f06e9718340', 't_b4754afc-b194-4317-9367-6ed89ae3498b', 'Rodents');
 INSERT INTO synonyms_values (revision, last_update, synonym_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 's_c962e91c-3894-4e4f-9eb6-3f06e9718340', 'mouse');
 INSERT INTO synonyms_values (revision, last_update, synonym_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 's_c962e91c-3894-4e4f-9eb6-3f06e9718340', 'gerbil');
+INSERT INTO synonyms_values (revision, last_update, synonym_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 's_c962e91c-3894-4e4f-9eb6-3f06e9718340', 'gerbils');
 INSERT INTO synonyms_values (revision, last_update, synonym_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 's_c962e91c-3894-4e4f-9eb6-3f06e9718340', 'mice');
 INSERT INTO implicit_tags (revision, last_update, uuid, theme_uuid, label) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 'i_130bdf66-a891-433c-b810-43a9e197646a', 't_b4754afc-b194-4317-9367-6ed89ae3498b', 'Creepy images');
 INSERT INTO implicit_tags_values (revision, last_update, implicit_tag_uuid, value) VALUES ('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX', '2021-07-17 00:00:00', 'i_130bdf66-a891-433c-b810-43a9e197646a', 'scary')

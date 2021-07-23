@@ -80,17 +80,16 @@ def create_app(command: commands.RunserverCommand,
         group_uuid = database.get_group_uuid(session,
                                              group_route) or abort(404)
 
-        query = query_builder.from_query(realm_uuid, theme_uuid,
-                                         group_uuid, query_text)
+        query = query_builder.from_query(query_text)
 
-        if current_realm and current_realm != constants.ALL_REALMS:
-            sets['and_'].add(current_realm)
-
-        if current_theme and current_theme != constants.ALL_THEMES:
-            sets['and_'].add(current_theme)
-
-        if current_group and current_group != constants.ALL_GROUPS:
-            sets['and_'].add(current_group)
+        # if current_realm and current_realm != constants.ALL_REALMS:
+        #     sets['and_'].add(current_realm)
+        #
+        # if current_theme and current_theme != constants.ALL_THEMES:
+        #     sets['and_'].add(current_theme)
+        #
+        # if current_group and current_group != constants.ALL_GROUPS:
+        #     sets['and_'].add(current_group)
         if query:
             pass
         #     chosen_metarecords, hidden = utils_core.select_records(
@@ -112,7 +111,7 @@ def create_app(command: commands.RunserverCommand,
         paginator = Paginator(
             sequence=metas,
             current_page=current_page,
-            items_per_page=25,
+            items_per_page=250,
         )
 
         # note = utils_browser.get_note_on_search(len(paginator),
@@ -122,9 +121,9 @@ def create_app(command: commands.RunserverCommand,
             'title': 'test',
             'paginator': paginator,
             'query': query_text,
-            'realm_route': realm_route,
-            'theme_route': theme_route,
-            'group_route': group_route,
+            # 'realm_route': realm_route,
+            # 'theme_route': theme_route,
+            # 'group_route': group_route,
             'index_thumbnails': index_thumbnails,
             'note': '???',
             # 'directory': directory,

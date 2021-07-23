@@ -84,6 +84,7 @@ def main(args: List[str],
         command.content_folder = filesystem.absolute(command.content_folder)
 
     elif getattr(command, 'name') == 'runserver':
+        command.content_folder = filesystem.absolute(command.content_folder)
         command.database_folder = filesystem.absolute(command.database_folder)
         command.template_folder = filesystem.absolute(command.template_folder)
         command.static_folder = filesystem.absolute(command.static_folder)

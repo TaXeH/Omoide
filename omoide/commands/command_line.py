@@ -78,7 +78,8 @@ def parse_arguments(args: List[str]) -> instances.BaseCommand:
         instance = maker(rest, instances.ShowTreeCommand)
 
     elif command == 'runserver':
-        instance = make_operation_runserver(rest, database_folder)
+        instance = make_operation_runserver(rest, database_folder,
+                                            content_folder)
 
     else:
         raise ValueError(f'Unknown command: {command!r}')
@@ -150,7 +151,9 @@ def _make_common(args: List[str],
                         force=force)
 
 
-def make_operation_runserver(args: List[str], database_folder: str
+def make_operation_runserver(args: List[str],
+                             database_folder: str,
+                             content_folder: str,
                              ) -> instances.RunserverCommand:
     """Make server running operation."""
     host = constants.DEFAULT_SERVER_HOST
@@ -178,6 +181,7 @@ def make_operation_runserver(args: List[str], database_folder: str
     return instances.RunserverCommand(
         host=host,
         port=port,
+        content_folder=content_folder,
         database_folder=database_folder,
         template_folder=constants.DEFAULT_TEMPLATE_FOLDER,
         static_folder=constants.DEFAULT_STATIC_FOLDER,

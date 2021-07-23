@@ -4,7 +4,10 @@
             "uuid": "$t_1",
             "realm_uuid": "$source_1.migration_1.r_1",
             "route": "farm",
-            "label": "Farm theme"
+            "label": "Farm theme",
+            "tags": [
+                "farm"
+            ]
         }
     ],
     "groups": [

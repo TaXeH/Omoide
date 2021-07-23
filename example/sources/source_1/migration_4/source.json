@@ -1,0 +1,79 @@
+{
+    "themes": [
+        {
+            "uuid": "$t_1",
+            "realm_uuid": "$source_1.migration_1.r_1",
+            "route": "mice",
+            "label": "Mice theme",
+            "tags": [
+                "mouse",
+                "mice"
+            ]
+        }
+    ],
+    "groups": [
+        {
+            "uuid": "$g_1",
+            "realm_uuid": "$source_1.migration_1.r_1",
+            "theme_uuid": "$t_1",
+            "route": "no_group",
+            "label": "No specific group"
+        }
+    ],
+    "metas": [
+        {
+            "realm_uuid": "$source_1.migration_1.r_1",
+            "theme_uuid": "$t_1",
+            "group_uuid": "$g_1",
+            "author": "owls_flight",
+            "author_url": "https://owls-flight.livejournal.com/",
+            "origin_url": "https://prophotos-ru.livejournal.com/1399425.html",
+            "comment": "",
+            "registered_on": "$today",
+            "registered_by": "$source_1.migration_1.u_1",
+            "hierarchy": "mice",
+            "filenames": [
+                "514173.jpg"
+            ],
+            "tags": [
+                "insect"
+            ]
+        },
+        {
+            "realm_uuid": "$source_1.migration_1.r_1",
+            "theme_uuid": "$t_1",
+            "group_uuid": "$g_1",
+            "author": "owls_flight",
+            "author_url": "https://owls-flight.livejournal.com/",
+            "origin_url": "https://prophotos-ru.livejournal.com/1399425.html",
+            "comment": "",
+            "registered_on": "$today",
+            "registered_by": "$source_1.migration_1.u_1",
+            "hierarchy": "mice",
+            "filenames": [
+                "514169.jpg"
+            ],
+            "tags": [
+                "cozy"
+            ]
+        },
+        {
+            "realm_uuid": "$source_1.migration_1.r_1",
+            "theme_uuid": "$t_1",
+            "group_uuid": "$g_1",
+            "author": "owls_flight",
+            "author_url": "https://owls-flight.livejournal.com/",
+            "origin_url": "https://prophotos-ru.livejournal.com/1399425.html",
+            "comment": "",
+            "registered_on": "$today",
+            "registered_by": "$source_1.migration_1.u_1",
+            "hierarchy": "mice",
+            "filenames": [
+                "514181.jpg"
+            ],
+            "tags": [
+                "climb"
+            ]
+        }
+    ]
+}

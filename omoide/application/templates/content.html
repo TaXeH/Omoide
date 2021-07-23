@@ -8,10 +8,10 @@
     <div class="content">
         {% for meta_uuid in paginator %}
             <div class="envelope">
-                <a href="{{ url_for('preview', realm_route=realm_route, theme_route=theme_route, group_route=group_route, meta_uuid=meta_uuid) + '?q=' + query }}">
-                    <img src="/content/{{ index_thumbnails.get(meta_uuid) }}"
+{#                <a href="{{ url_for('preview', realm_route=realm_route, theme_route=theme_route, group_route=group_route, meta_uuid=meta_uuid) + '?q=' + query }}">#}
+                    <img src="/content{{ index_thumbnails.get(meta_uuid) }}"
                          alt="{{ meta_uuid.original_name }}"/>
-                </a>
+{#                </a>#}
             </div>
         {% endfor %}
     </div>

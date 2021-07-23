@@ -45,6 +45,10 @@ def act(command: commands.SyncCommand,
         branch_folder = filesystem.join(command.storage_folder, branch)
         branch_db_file = filesystem.join(branch_folder,
                                          constants.BRANCH_DB_FILE_NAME)
+
+        if filesystem.exists(branch_db_file) and command.force:
+            filesystem.delete_file(branch_db_file)
+
         needs_schema = filesystem.not_exists(branch_db_file)
         branch_db = operations.create_database(
             folder=branch_folder,
@@ -87,9 +91,13 @@ def act(command: commands.SyncCommand,
             synchronize(session_from=session_leaf, session_to=session_branch)
             total_migrations += 1
             stdout.yellow(f'\t{spacer}[{leaf}] Synchronized')
+            leaf_db.dispose()
 
         synchronize(session_from=session_branch, session_to=session_root)
         total_migrations += 1
         stdout.yellow(f'\t[{branch}] Synchronized')
+        branch_db.dispose()
+
+    root_db.dispose()
 
     return total_migrations

@@ -23,6 +23,7 @@
                     "values": [
                         "mouse",
                         "gerbil",
+                        "gerbils",
                         "mice"
                     ]
                 }
@@ -36,6 +37,9 @@
                         "scary"
                     ]
                 }
+            ],
+            "tags": [
+                "gerbil"
             ]
         }
     ],

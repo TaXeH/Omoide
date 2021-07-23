@@ -572,7 +572,14 @@
         }
     ],
     "tags_realms": [],
-    "tags_themes": [],
+    "tags_themes": [
+        {
+            "revision": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "last_update": "2021-07-17 00:00:00",
+            "theme_uuid": "t_b4754afc-b194-4317-9367-6ed89ae3498b",
+            "value": "gerbil"
+        }
+    ],
     "tags_groups": [
         {
             "revision": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -646,6 +653,12 @@
             "last_update": "2021-07-17 00:00:00",
             "synonym_uuid": "s_c962e91c-3894-4e4f-9eb6-3f06e9718340",
             "value": "gerbil"
+        },
+        {
+            "revision": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "last_update": "2021-07-17 00:00:00",
+            "synonym_uuid": "s_c962e91c-3894-4e4f-9eb6-3f06e9718340",
+            "value": "gerbils"
         },
         {
             "revision": "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",

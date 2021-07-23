@@ -1,0 +1,56 @@
+{
+    "metas": [
+        {
+            "realm_uuid": "$source_1.migration_1.r_1",
+            "theme_uuid": "$source_1.migration_1.t_3",
+            "group_uuid": "$source_1.migration_1.g_3",
+            "author": "ErikTjernlund",
+            "author_url": "https://www.deviantart.com/eriktjernlund",
+            "origin_url": "https://www.deviantart.com/eriktjernlund/art/What-s-happening-to-me-268150219",
+            "comment": "Blacktail",
+            "registered_on": "$today",
+            "registered_by": "$source_1.migration_1.u_1",
+            "hierarchy": "gerbils",
+            "tags": [
+                "epilepsy"
+            ],
+            "filenames": [
+                "what_s_happening_to_me_by_eriktjernlund_d4fne17.jpg"
+            ]
+        },
+        {
+            "realm_uuid": "$source_1.migration_1.r_1",
+            "theme_uuid": "$source_1.migration_1.t_3",
+            "group_uuid": "$source_1.migration_1.g_3",
+            "author": "Sabrina Blechinger",
+            "author_url": "https://www.flickr.com/photos/bulletgirl/",
+            "origin_url": "https://www.flickr.com/photos/bulletgirl/6917711433/in/pool-44424503@N00",
+            "comment": "",
+            "registered_on": "$today",
+            "registered_by": "$source_1.migration_1.u_1",
+            "hierarchy": "gerbils",
+            "tags": [
+            ],
+            "filenames": [
+                "6917711433_65ebed5e8f_o.jpg"
+            ]
+        },
+        {
+            "realm_uuid": "$source_1.migration_1.r_1",
+            "theme_uuid": "$source_1.migration_1.t_3",
+            "group_uuid": "$source_1.migration_1.g_3",
+            "author": "Mitchell Tuffill",
+            "author_url": "https://www.flickr.com/photos/97772644@N07/",
+            "origin_url": "https://www.flickr.com/photos/97772644@N07/47229809861/in/pool-44424503@N00/",
+            "comment": "",
+            "registered_on": "$today",
+            "registered_by": "$source_1.migration_1.u_1",
+            "hierarchy": "gerbils",
+            "tags": [
+            ],
+            "filenames": [
+                "47229809861_e54730642f_o.jpg"
+            ]
+        }
+    ]
+}
