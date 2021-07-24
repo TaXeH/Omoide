@@ -20,7 +20,7 @@
         <div class="limited_width">
             <div class="buttons_block">
                 {% if meta.previous %}
-                    <a href="/preview/{{ realm_route }}/{{ theme_route }}/{{ group_route }}/{{ meta.previous }}"
+                    <a href="/preview/{{ meta.previous }}"
                        class="cls_button">Previous</a>
                 {% else %}
                     <a class="spacer">&nbsp;</a>
@@ -29,7 +29,7 @@
                 <span class="spacer">&nbsp;</span>
 
                 {% if meta.next_record %}
-                    <a href="/preview/{{ realm_route }}/{{ theme_route }}/{{ group_route }}/{{ meta.next }}"
+                    <a href="/preview/{{ meta.next }}"
                        class="cls_button">Next</a>
                 {% else %}
                     <a class="spacer">&nbsp;</a>
@@ -41,8 +41,8 @@
     <div class="preview_block">
 
         <div>
-            <a href="/content/{{ meta.path_to_content }}">
-                <img src="/content/{{ meta.path_to_preview }}"
+            <a href="{{ url_for('serve_content', filename=meta.path_to_content) }}">
+                <img src="{{ url_for('serve_content', filename=meta.path_to_preview) }}"
                      alt="Click here for full resolution"/>
             </a>
         </div>

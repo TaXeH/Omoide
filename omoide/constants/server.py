@@ -2,6 +2,7 @@
 
 """Constant values.
 """
+VERSION = '2021-07-24'
 
 DEFAULT_SERVER_HOST = '0.0.0.0'
 DEFAULT_SERVER_PORT = 8000

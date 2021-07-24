@@ -3,7 +3,7 @@
 """Fully processed user search request.
 """
 from itertools import chain
-from typing import FrozenSet, NamedTuple, Dict, List
+from typing import Set, NamedTuple, Dict, List
 
 from omoide import constants
 
@@ -11,10 +11,10 @@ from omoide import constants
 class Query(NamedTuple):
     """Fully processed user search request.
     """
-    and_: FrozenSet[str]
-    or_: FrozenSet[str]
-    not_: FrozenSet[str]
-    flags: FrozenSet[str]
+    and_: Set[str]
+    or_: Set[str]
+    not_: Set[str]
+    flags: Set[str]
 
     def __str__(self) -> str:
         """Reconstruct query from known arguments."""
@@ -36,7 +36,7 @@ class Query(NamedTuple):
     def as_keywords(self) -> Dict[str, List[str]]:
         """Return sorted collection of internal keywords."""
 
-        def _str(attribute: str, collection: frozenset) -> List[str]:
+        def _str(attribute: str, collection: set) -> List[str]:
             """Shorthand construction."""
             value = getattr(constants, attribute)
             return [f'{value} {x}' for x in sorted(collection)]

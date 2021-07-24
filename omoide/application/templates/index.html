@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-{#    <link rel="shortcut icon"#}
-{#          href="{{ url_for('static', filename='favicon.ico') }}">#}
-{##}
+    <link rel="shortcut icon"
+          href="{{ url_for('static', filename='favicon.ico') }}">
     <link type="text/css"
           href="{{ url_for('static', filename='styles.css') }}"
           rel="stylesheet">
@@ -13,30 +12,26 @@
 <body>
 
 <div class="flex_vertical">
-    <form method="post"
-{#          action="{{ url_for('index_all', directory=directory) }}"#}
-    >
+    <form method="post" action="{{ url_for('search') }}">
         <div class="query_container">
-{#            <a href="{{ url_for('index_all', directory=directory) }}"#}
-{#               class="cls_button">Home</a>#}
+            <a href="{{ url_for('search') }}" class="cls_button">Home</a>
 
             <label for="query">
                 <input name="query"
                        type="search"
-                       value="{{ query_text }}"
+                       value="{{ user_query }}"
                        class="query_input"
-{#                       placeholder="{{ placeholder }}"#}
-                >
+                       placeholder="{{ placeholder }}">
             </label>
 
             <input type="submit" class="cls_button" name="search"
                    value="Search"/>
 
-{#            <a href="{{ url_for('show_tags', directory=directory) }}"#}
-{#               class="cls_button">Tags</a>#}
+            <a href=""
+               class="cls_button">Tags</a>
 
-{#            <a href="{{ url_for('show_help', directory=directory) }}"#}
-{#               class="cls_button">Help</a>#}
+            <a href=""
+               class="cls_button">Help</a>
 
             <span></span>
             <span class="note">{{ note }}</span>

@@ -43,6 +43,7 @@ hr {
     display: flex;
     align-items: center;
     margin: 3px;
+    border: 1px solid red; // FIXME
 }
 
 .one_tag, .one_tag_active {

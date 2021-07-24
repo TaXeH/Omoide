@@ -70,17 +70,17 @@ class QueryBuilder(Generic[QueryType]):
                 # something is wrong with this query
                 # let's return object that can't be found
                 return self.target_type(
-                    and_=frozenset([constants.NEVER_FIND_THIS]),
-                    or_=frozenset(sets['or_']),
-                    not_=frozenset(sets['not_']),
-                    flags=frozenset(sets['flags']),
+                    and_={constants.NEVER_FIND_THIS},
+                    or_=set(sets['or_']),
+                    not_=set(sets['not_']),
+                    flags=set(sets['flags']),
                 )
 
             self.update_sets(operator, word, sets)
 
         return self.target_type(
-            and_=frozenset(sets['and_']),
-            or_=frozenset(sets['or_']),
-            not_=frozenset(sets['not_']),
-            flags=frozenset(sets['flags'])
+            and_=set(sets['and_']),
+            or_=set(sets['or_']),
+            not_=set(sets['not_']),
+            flags=set(sets['flags'])
         )

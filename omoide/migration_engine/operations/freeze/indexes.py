@@ -1,9 +1,16 @@
+# -*- coding: utf-8 -*-
+"""Fast lookup tables.
+
+Gets loaded on start of the application and
+helps limiting amount of database requests.
+"""
 from sqlalchemy.orm import Session
 
 from omoide.database import models
 
 
 def build_indexes(session: Session) -> int:
+    """Create fast lookup tables."""
     new_values = 0
     new_values += build_index_tags(session)
     new_values += build_index_permissions(session)
@@ -12,6 +19,7 @@ def build_indexes(session: Session) -> int:
 
 
 def build_index_tags(session: Session) -> int:
+    """Create indexes for tags."""
     new_values = 0
 
     for meta in session.query(models.Meta).all():
@@ -53,6 +61,7 @@ def build_index_tags(session: Session) -> int:
 
 
 def build_index_permissions(session: Session) -> int:
+    """Create indexes for permissions."""
     new_values = 0
 
     for realm in session.query(models.Realm).all():
@@ -127,21 +136,13 @@ def build_index_permissions(session: Session) -> int:
 
 
 def build_index_thumbnails(session: Session) -> int:
+    """Create simplified table for thumbnail information."""
     new_values = 0
-    # FIXME
+
     for meta in session.query(models.Meta).all():
-        realm_route = meta.group.theme.realm.route
-        theme_route = meta.group.theme.route
-        group_route = meta.group.route
-
-        path_to_thumbnail = (
-            f'/thumbnails/{realm_route}/{theme_route}'
-            f'/{group_route}/{meta.uuid}.{meta.original_extension}'
-        )
-
         value = models.IndexThumbnails(
             meta_uuid=meta.uuid,
-            path_to_thumbnail=path_to_thumbnail,
+            path_to_thumbnail=meta.path_to_thumbnail,
         )
 
         session.add(value)

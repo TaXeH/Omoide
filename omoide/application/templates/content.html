@@ -3,19 +3,18 @@
 
 {% block content %}
 
-    {#    {{ pagination(paginator, rewrite_query_for_paging, realm, theme, group, query) }}#}
+    {{ pagination(paginator, web_query) }}
 
     <div class="content">
-        {% for meta_uuid in paginator %}
+        {% for uuid in paginator %}
             <div class="envelope">
-{#                <a href="{{ url_for('preview', realm_route=realm_route, theme_route=theme_route, group_route=group_route, meta_uuid=meta_uuid) + '?q=' + query }}">#}
-                    <img src="/content{{ index_thumbnails.get(meta_uuid) }}"
-                         alt="{{ meta_uuid.original_name }}"/>
-{#                </a>#}
+                <a href="{{ url_for('preview', uuid=uuid) + web_query|string }}">
+                    <img src="{{ url_for('serve_content', filename=index_thumbnails.get(uuid)) }}" alt=""/>
+                </a>
             </div>
         {% endfor %}
     </div>
 
-    {#    {{ pagination(paginator, rewrite_query_for_paging, realm, theme, group, query) }}#}
+    {{ pagination(paginator, web_query) }}
 
 {% endblock %}

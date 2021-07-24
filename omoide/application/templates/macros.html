@@ -1,10 +1,10 @@
-{% macro pagination(paginator, rewrite_query_for_paging, directory, query) %}
+{% macro pagination(paginator, web_query) %}
     {% if paginator.num_pages > 1 %}
         <div class="pages">
             {% if not paginator.is_fitting %}
                 {% if paginator.has_previous %}
-                    <a href="{{ rewrite_query_for_paging(directory, query, 1) }}">First</a>
-                    <a href="{{ rewrite_query_for_paging(directory, query, paginator.previous_page_number) }}">Previous</a>
+                    <a href="{{ web_query.replace(page=1) }}">First</a>
+                    <a href="{{ web_query.replace(page=paginator.previous_page_number) }}">Previous</a>
                 {% else %}
                     <a>First</a>
                     <a>Previous</a>
@@ -15,17 +15,17 @@
                 {% if page.is_dummy %}
                     <a class="inactive_page">...</a>
                 {% elif page.is_current %}
-                    <a href="{{ rewrite_query_for_paging(directory, query, page.number) }}"
+                    <a href="{{ web_query.replace(page=page.number) }}"
                        class="current_page">{{ page.number }}</a>
                 {% else %}
-                    <a href="{{ rewrite_query_for_paging(directory, query, page.number) }}">{{ page.number }}</a>
+                    <a href="{{ web_query.replace(page=page.number) }}">{{ page.number }}</a>
                 {% endif %}
             {% endfor %}
 
             {% if not paginator.is_fitting %}
                 {% if paginator.has_next %}
-                    <a href="{{ rewrite_query_for_paging(directory, query, paginator.next_page_number) }}">Next</a>
-                    <a href="{{ rewrite_query_for_paging(directory, query, paginator.num_pages) }}">Last</a>
+                    <a href="{{ web_query.replace(page=paginator.next_page_number) }}">Next</a>
+                    <a href="{{ web_query.replace(page=paginator.num_pages) }}">Last</a>
                 {% else %}
                     <a>Next</a>
                     <a>Last</a>
