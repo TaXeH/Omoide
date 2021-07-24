@@ -1,0 +1,80 @@
+[
+    {
+        "uuid": "m_d4079fba-6e8d-4aae-91e5-9cbedf73a50f",
+        "source_filename": "what_s_happening_to_me_by_eriktjernlund_d4fne17.jpg",
+        "target_filename": "m_d4079fba-6e8d-4aae-91e5-9cbedf73a50f.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_3\\public\\gerbils\\no_group",
+        "operations": [
+            {
+                "width": 4288,
+                "height": 2848,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\gerbils\\no_group",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group",
+                "operation_type": "scale"
+            }
+        ]
+    },
+    {
+        "uuid": "m_31e0c75c-ba9e-49c5-aeb3-46c91ecd9d3b",
+        "source_filename": "6917711433_65ebed5e8f_o.jpg",
+        "target_filename": "m_31e0c75c-ba9e-49c5-aeb3-46c91ecd9d3b.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_3\\public\\gerbils\\no_group",
+        "operations": [
+            {
+                "width": 4928,
+                "height": 3264,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\gerbils\\no_group",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group",
+                "operation_type": "scale"
+            }
+        ]
+    },
+    {
+        "uuid": "m_961d96dc-3fcc-4e5d-8cf2-1a984df558aa",
+        "source_filename": "47229809861_e54730642f_o.jpg",
+        "target_filename": "m_961d96dc-3fcc-4e5d-8cf2-1a984df558aa.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_3\\public\\gerbils\\no_group",
+        "operations": [
+            {
+                "width": 3088,
+                "height": 2183,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\gerbils\\no_group",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\gerbils\\no_group",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\gerbils\\no_group",
+                "operation_type": "scale"
+            }
+        ]
+    }
+]

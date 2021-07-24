@@ -1,0 +1,80 @@
+[
+    {
+        "uuid": "m_e84dbb19-c1a9-4958-8bd2-a04c47d45deb",
+        "source_filename": "514173.jpg",
+        "target_filename": "m_e84dbb19-c1a9-4958-8bd2-a04c47d45deb.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_4\\public\\mice\\no_group",
+        "operations": [
+            {
+                "width": 532,
+                "height": 800,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\mice\\no_group",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\mice\\no_group",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\mice\\no_group",
+                "operation_type": "scale"
+            }
+        ]
+    },
+    {
+        "uuid": "m_dc91fb3a-0fd0-440e-ab0f-897b09ef2f18",
+        "source_filename": "514169.jpg",
+        "target_filename": "m_dc91fb3a-0fd0-440e-ab0f-897b09ef2f18.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_4\\public\\mice\\no_group",
+        "operations": [
+            {
+                "width": 670,
+                "height": 443,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\mice\\no_group",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\mice\\no_group",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\mice\\no_group",
+                "operation_type": "scale"
+            }
+        ]
+    },
+    {
+        "uuid": "m_fcd75141-8f98-4800-b301-af9a3ffb56f7",
+        "source_filename": "514181.jpg",
+        "target_filename": "m_fcd75141-8f98-4800-b301-af9a3ffb56f7.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_4\\public\\mice\\no_group",
+        "operations": [
+            {
+                "width": 533,
+                "height": 800,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\mice\\no_group",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\mice\\no_group",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\mice\\no_group",
+                "operation_type": "scale"
+            }
+        ]
+    }
+]

@@ -1,0 +1,19 @@
+{
+    "variables": {
+        "realms": {},
+        "themes": {},
+        "synonyms": {},
+        "implicit_tags": {},
+        "groups": {},
+        "metas": {},
+        "users": {}
+    },
+    "uuids": [
+        "71807543-097d-4670-9831-6cae3c09de97",
+        "d4079fba-6e8d-4aae-91e5-9cbedf73a50f",
+        "e757cf0a-6faa-4169-9c74-c8516c499d02",
+        "31e0c75c-ba9e-49c5-aeb3-46c91ecd9d3b",
+        "cca75e8b-941a-4223-8471-11e94e241159",
+        "961d96dc-3fcc-4e5d-8cf2-1a984df558aa"
+    ]
+}
