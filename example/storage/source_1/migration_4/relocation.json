@@ -1,8 +1,8 @@
 [
     {
-        "uuid": "m_e84dbb19-c1a9-4958-8bd2-a04c47d45deb",
+        "uuid": "m_63040015-579d-4e5a-8097-22e7d12e8d2a",
         "source_filename": "514173.jpg",
-        "target_filename": "m_e84dbb19-c1a9-4958-8bd2-a04c47d45deb.jpg",
+        "target_filename": "m_63040015-579d-4e5a-8097-22e7d12e8d2a.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_4\\public\\mice\\no_group",
         "operations": [
             {
@@ -26,9 +26,9 @@
         ]
     },
     {
-        "uuid": "m_dc91fb3a-0fd0-440e-ab0f-897b09ef2f18",
+        "uuid": "m_27de72f1-84af-4cd0-9d02-4a200ace2b25",
         "source_filename": "514169.jpg",
-        "target_filename": "m_dc91fb3a-0fd0-440e-ab0f-897b09ef2f18.jpg",
+        "target_filename": "m_27de72f1-84af-4cd0-9d02-4a200ace2b25.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_4\\public\\mice\\no_group",
         "operations": [
             {
@@ -52,9 +52,9 @@
         ]
     },
     {
-        "uuid": "m_fcd75141-8f98-4800-b301-af9a3ffb56f7",
+        "uuid": "m_9844d362-0597-4f34-97df-1cdb100c8ae5",
         "source_filename": "514181.jpg",
-        "target_filename": "m_fcd75141-8f98-4800-b301-af9a3ffb56f7.jpg",
+        "target_filename": "m_9844d362-0597-4f34-97df-1cdb100c8ae5.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_4\\public\\mice\\no_group",
         "operations": [
             {

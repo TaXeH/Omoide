@@ -1,0 +1,27 @@
+{
+    "variables": {
+        "realms": {},
+        "themes": {
+            "theme_farm": "t_9b313f42-fd45-4a1b-bc62-ebe537d6c437"
+        },
+        "synonyms": {},
+        "implicit_tags": {},
+        "groups": {
+            "group_farm": "g_1dd84617-7af7-4356-8ccf-24934ebfba26"
+        },
+        "metas": {},
+        "users": {}
+    },
+    "uuids": [
+        "f3cc47b3-5dcb-402d-8201-9c3ed2b86be4",
+        "923eaa97-0783-4e37-bccd-1282b7342a78",
+        "63ec6c58-3561-48c9-997a-a22b1710f9aa",
+        "4222e387-e224-4a37-a601-b5680b65046b",
+        "d43dd274-92c6-4c09-8aae-f7c5a1ff8d72",
+        "de0cb52e-f5c5-4adc-aa39-fd3558f55531",
+        "a042120f-5cbc-46bb-b8b7-8c771b19158e",
+        "20dd50cc-606b-41f1-a184-7a7724268528",
+        "16082f10-1761-408f-b5dd-d35bec0d653b",
+        "e35759a0-7ad8-4ad8-8603-974853c4fd61"
+    ]
+}

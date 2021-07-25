@@ -1,8 +1,8 @@
 [
     {
-        "uuid": "m_d4079fba-6e8d-4aae-91e5-9cbedf73a50f",
+        "uuid": "m_04d863b9-a62a-4e9e-9be6-eb1d240038e8",
         "source_filename": "what_s_happening_to_me_by_eriktjernlund_d4fne17.jpg",
-        "target_filename": "m_d4079fba-6e8d-4aae-91e5-9cbedf73a50f.jpg",
+        "target_filename": "m_04d863b9-a62a-4e9e-9be6-eb1d240038e8.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_3\\public\\gerbils\\no_group",
         "operations": [
             {
@@ -26,9 +26,9 @@
         ]
     },
     {
-        "uuid": "m_31e0c75c-ba9e-49c5-aeb3-46c91ecd9d3b",
+        "uuid": "m_c607bcbd-9222-40dc-87bc-27a3de3e27dc",
         "source_filename": "6917711433_65ebed5e8f_o.jpg",
-        "target_filename": "m_31e0c75c-ba9e-49c5-aeb3-46c91ecd9d3b.jpg",
+        "target_filename": "m_c607bcbd-9222-40dc-87bc-27a3de3e27dc.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_3\\public\\gerbils\\no_group",
         "operations": [
             {
@@ -52,9 +52,9 @@
         ]
     },
     {
-        "uuid": "m_961d96dc-3fcc-4e5d-8cf2-1a984df558aa",
+        "uuid": "m_521cc6c5-5237-4a18-ac9f-1a08143ee260",
         "source_filename": "47229809861_e54730642f_o.jpg",
-        "target_filename": "m_961d96dc-3fcc-4e5d-8cf2-1a984df558aa.jpg",
+        "target_filename": "m_521cc6c5-5237-4a18-ac9f-1a08143ee260.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_3\\public\\gerbils\\no_group",
         "operations": [
             {

@@ -1,8 +1,8 @@
 [
     {
-        "uuid": "m_ad09e3fe-fcac-4d85-8bbd-efc0aaa9ced5",
+        "uuid": "m_de0cb52e-f5c5-4adc-aa39-fd3558f55531",
         "source_filename": "barn-1081686.jpg",
-        "target_filename": "m_ad09e3fe-fcac-4d85-8bbd-efc0aaa9ced5.jpg",
+        "target_filename": "m_de0cb52e-f5c5-4adc-aa39-fd3558f55531.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
         "operations": [
             {
@@ -26,9 +26,9 @@
         ]
     },
     {
-        "uuid": "m_bd637f73-6011-46ed-8503-46357a0f8db0",
+        "uuid": "m_a042120f-5cbc-46bb-b8b7-8c771b19158e",
         "source_filename": "barn-216372.jpg",
-        "target_filename": "m_bd637f73-6011-46ed-8503-46357a0f8db0.jpg",
+        "target_filename": "m_a042120f-5cbc-46bb-b8b7-8c771b19158e.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
         "operations": [
             {
@@ -52,9 +52,9 @@
         ]
     },
     {
-        "uuid": "m_fc67ad55-afc6-43fe-b73f-c8f3d1a4932f",
+        "uuid": "m_20dd50cc-606b-41f1-a184-7a7724268528",
         "source_filename": "fence-918535.jpg",
-        "target_filename": "m_fc67ad55-afc6-43fe-b73f-c8f3d1a4932f.jpg",
+        "target_filename": "m_20dd50cc-606b-41f1-a184-7a7724268528.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
         "operations": [
             {
@@ -78,9 +78,9 @@
         ]
     },
     {
-        "uuid": "m_53e4ed9a-45f1-4953-a569-50b8f15b55f7",
+        "uuid": "m_16082f10-1761-408f-b5dd-d35bec0d653b",
         "source_filename": "grapes-553463.jpg",
-        "target_filename": "m_53e4ed9a-45f1-4953-a569-50b8f15b55f7.jpg",
+        "target_filename": "m_16082f10-1761-408f-b5dd-d35bec0d653b.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
         "operations": [
             {
@@ -104,9 +104,9 @@
         ]
     },
     {
-        "uuid": "m_fe1415e6-ad46-470b-9bb8-07006f2df1ce",
+        "uuid": "m_e35759a0-7ad8-4ad8-8603-974853c4fd61",
         "source_filename": "rabbit-2409186.jpg",
-        "target_filename": "m_fe1415e6-ad46-470b-9bb8-07006f2df1ce.jpg",
+        "target_filename": "m_e35759a0-7ad8-4ad8-8603-974853c4fd61.jpg",
         "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_2\\public\\farm\\farm",
         "operations": [
             {

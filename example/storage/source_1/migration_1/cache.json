@@ -1,0 +1,59 @@
+{
+    "variables": {
+        "realms": {
+            "realm_public": "r_550a2314-a62d-4998-ada0-a3a714511431"
+        },
+        "themes": {
+            "theme_gerbils": "t_998ded1a-5318-4462-a3a6-efd0b75f8207"
+        },
+        "synonyms": {
+            "synonym_rodents": "s_a9f218f4-f3c7-4b2f-a6a5-9cc05b8e1396"
+        },
+        "implicit_tags": {
+            "implicit_creepy": "i_621d9852-dc21-4ea8-bebd-c145755ae108"
+        },
+        "groups": {
+            "group_browney": "g_fb6b7691-6958-4deb-beef-568c5743cd0b",
+            "group_whitey": "g_4f6722eb-e4b2-45e3-858d-0912873e806a",
+            "group_gerbils_no_group": "g_5b021b1b-3edd-44c8-b644-b95980ae713f"
+        },
+        "metas": {},
+        "users": {
+            "user_igor": "u_c4121b34-67d8-4ec1-a98a-867d86d12f85"
+        }
+    },
+    "uuids": [
+        "9830ff61-0362-4a77-b2ed-c5ac648eb627",
+        "7b1d8588-487d-4c87-9f4d-db88e82762f2",
+        "ae93eb05-ee04-4e87-9988-487d57a85b7d",
+        "0f3790a4-7000-4bf2-bf5f-a561c2bb1fad",
+        "9428d39b-6087-47a8-901b-bc6daff9e341",
+        "085c4b49-5a36-49f1-bb15-08dc110ec5ca",
+        "697e65b3-19b3-460c-b316-18fc6da01d24",
+        "95dedf02-cec5-448c-9d5c-8f4bd880c181",
+        "f633200b-70e8-44cb-8c8c-e51e9f195520",
+        "5a083154-62b2-4767-8dbf-ffc5f7554604",
+        "39dfa598-ce0c-4edc-ab7e-1eb496d31f36",
+        "55893810-4482-4907-b1c2-0b7b94427f54",
+        "6143def8-0a13-4f07-80e9-a31d40efe93b",
+        "1c64a480-2978-4907-8900-673970f84deb",
+        "aa85a5df-1ca0-435f-aa12-2ea37a1546a0",
+        "03b59d18-7422-4742-8a4d-06c1c17cbaed",
+        "18dd091d-fbc3-4406-a4be-5adfde75cdd1",
+        "8e480700-0134-4743-aeec-df9270766a67",
+        "f9ebb3f3-6bdb-4342-8106-922d61b00da8",
+        "e4af7dc8-217e-45cd-825e-f442bd17ce73",
+        "15853a6c-7269-4bde-906f-d00f20dbb808",
+        "f57dee34-e998-4361-bebb-82a5682dd30d",
+        "24743fb7-3d43-4ffa-8f39-cad9ae1877b0",
+        "2234d93c-00b7-46fc-b184-0d2eb6f1d5ca",
+        "4a1a13c5-32f5-48d7-8e0c-b20b358ba8b7",
+        "09ff7d6c-4392-46c7-a914-b3b610527868",
+        "33ce5c90-e7d8-492c-9b96-ab548f14c4e2",
+        "3c81d7a5-7d7a-43bb-abde-3d4bc6e4e458",
+        "ee35824e-27d3-4dac-b9f9-d3a81745a551",
+        "5071e146-c9a8-476a-bd99-0f514c3b310e",
+        "2ed68254-d174-4cfd-9c76-37d6e09f52e4",
+        "a924d48e-df11-48c0-a584-e13645aedeb1"
+    ]
+}
