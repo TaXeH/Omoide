@@ -25,18 +25,15 @@ __all__ = [
 
 def get_prefix(field_name: str, string: str) -> str:
     """Extract prefix from full variable name."""
-    try:
-        _, _, variable = string.split('.')
-    except ValueError:
-        sign = constants.VARIABLE_SIGN
+    if string.startswith(constants.VARIABLE_SIGN):
         raise ValueError(
-            f'Field {field_name} is supposed to contain '
-            f'variable in form {sign}source.leaf.variable, got {string!r}'
+            f'Field {field_name} is not supposed to '
+            f'contain variable at this moment, got {string!r}'
         )
-    return variable[0]
+    return string[0]
 
 
-def ensure_unique(field_name: str, collection: Collection[str]
+def assert_unique(field_name: str, collection: Collection[str]
                   ) -> Optional[NoReturn]:
     """Raise if items are not unique."""
     if len(collection) != len(set(collection)):
@@ -45,16 +42,7 @@ def ensure_unique(field_name: str, collection: Collection[str]
         )
 
 
-def ensure_variable(field_name: str, string: str) -> Optional[NoReturn]:
-    """Raise if string is not some form of variable."""
-    if not str(string).startswith(constants.VARIABLE_SIGN):
-        raise ValueError(
-            f'Field {field_name} is supposed to '
-            f'contain variable name, got {string!r}'
-        )
-
-
-def ensure_has_prefix(field_name: str, string: str,
+def assert_has_prefix(field_name: str, string: str,
                       expected_prefix: str) -> Optional[NoReturn]:
     """Raise if prefix is incorrect."""
     prefix = get_prefix(field_name, string)
@@ -66,7 +54,7 @@ def ensure_has_prefix(field_name: str, string: str,
         )
 
 
-def ensure_equal(var1: str, var2: str) -> Optional[NoReturn]:
+def assert_equal(var1: str, var2: str) -> Optional[NoReturn]:
     """Raise if values differ."""
     if var1 != var2:
         raise ValueError(
@@ -81,7 +69,7 @@ class UniqueTagsMixin:
     @validator('tags')
     def must_be_unique(cls, value):
         """Raise if items are not unique."""
-        ensure_unique('tags', value)
+        assert_unique('tags', value)
         return value
 
 
@@ -92,7 +80,7 @@ class UniquePermissionsMixin:
     @validator('permissions')
     def must_be_unique(cls, value):
         """Raise if items are not unique."""
-        ensure_unique('permissions', value)
+        assert_unique('permissions', value)
         return value
 
 
@@ -103,7 +91,7 @@ class UniqueValuesMixin:
     @validator('values')
     def must_be_unique(cls, value):
         """Raise if items are not unique."""
-        ensure_unique('values', value)
+        assert_unique('values', value)
         return value
 
 
@@ -119,8 +107,7 @@ class Realm(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
     @validator('uuid')
     def must_be_realm(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('uuid', value)
-        ensure_has_prefix('uuid', value, constants.PREFIX_REALM)
+        assert_has_prefix('uuid', value, constants.PREFIX_REALM)
         return value
 
 
@@ -135,8 +122,7 @@ class _NestedField(BaseModel, UniqueValuesMixin):
     @validator('theme_uuid')
     def must_be_theme(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('theme_uuid', value)
-        ensure_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
+        assert_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
         return value
 
 
@@ -147,8 +133,7 @@ class Synonym(_NestedField):
     @validator('uuid')
     def must_be_synonym(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('uuid', value)
-        ensure_has_prefix('uuid', value, constants.PREFIX_SYNONYM)
+        assert_has_prefix('uuid', value, constants.PREFIX_SYNONYM)
         return value
 
 
@@ -159,8 +144,7 @@ class ImplicitTag(_NestedField):
     @validator('uuid')
     def must_be_implicit_tag(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('uuid', value)
-        ensure_has_prefix('uuid', value, constants.PREFIX_IMPLICIT_TAG)
+        assert_has_prefix('uuid', value, constants.PREFIX_IMPLICIT_TAG)
         return value
 
 
@@ -179,15 +163,13 @@ class Theme(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
     @validator('realm_uuid')
     def must_be_realm(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('realm_uuid', value)
-        ensure_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
+        assert_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
         return value
 
     @validator('uuid')
     def must_be_theme(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('uuid', value)
-        ensure_has_prefix('uuid', value, constants.PREFIX_THEME)
+        assert_has_prefix('uuid', value, constants.PREFIX_THEME)
         return value
 
 
@@ -209,15 +191,13 @@ class _BaseEntity(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
     def must_be_user(cls, value):
         """Raise if UUID is incorrect."""
         if value:
-            ensure_variable('registered_by', value)
-            ensure_has_prefix('registered_by', value, constants.PREFIX_USER)
+            assert_has_prefix('registered_by', value, constants.PREFIX_USER)
         return value
 
     @validator('realm_uuid')
     def must_be_realm(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('realm_uuid', value)
-        ensure_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
+        assert_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
         return value
 
 
@@ -232,15 +212,13 @@ class Group(_BaseEntity):
     @validator('uuid')
     def must_be_group(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('uuid', value)
-        ensure_has_prefix('uuid', value, constants.PREFIX_GROUP)
+        assert_has_prefix('uuid', value, constants.PREFIX_GROUP)
         return value
 
     @validator('theme_uuid')
     def must_be_theme(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('theme_uuid', value)
-        ensure_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
+        assert_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
         return value
 
 
@@ -255,28 +233,25 @@ class Meta(_BaseEntity):
     @validator('realm_uuid')
     def must_be_realm(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('realm_uuid', value)
-        ensure_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
+        assert_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
         return value
 
     @validator('theme_uuid')
     def must_be_theme(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('theme_uuid', value)
-        ensure_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
+        assert_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
         return value
 
     @validator('group_uuid')
     def must_be_group(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('group_uuid', value)
-        ensure_has_prefix('group_uuid', value, constants.PREFIX_GROUP)
+        assert_has_prefix('group_uuid', value, constants.PREFIX_GROUP)
         return value
 
     @validator('filenames')
     def must_be_unique(cls, value):
         """Raise if items are not unique."""
-        ensure_unique('filenames', value)
+        assert_unique('filenames', value)
         return value
 
 
@@ -292,8 +267,7 @@ class User(BaseModel, UniquePermissionsMixin):
     @validator('uuid')
     def must_be_user(cls, value):
         """Raise if UUID is incorrect."""
-        ensure_variable('uuid', value)
-        ensure_has_prefix('uuid', value, constants.PREFIX_USER)
+        assert_has_prefix('uuid', value, constants.PREFIX_USER)
         return value
 
 

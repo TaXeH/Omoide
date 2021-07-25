@@ -32,8 +32,8 @@ ALL_PREFIXES_SET = set(ALL_PREFIXES)
 
 VARIABLE_SIGN = '$'
 VARIABLE_SEARCH_WINDOW = 40
-UUID_VARIABLE_PATTERN = r'\$[' + ALL_PREFIXES + r']_\d+'
-UUID_LONG_VARIABLE_PATTERN = r'\$.+\..+\.[' + ALL_PREFIXES + r']_\d+'
+UUID_MAKE_VARIABLE_PATTERN = r'var\(\'(\w+)\',\s+\'(\w+)\'\)'
+UUID_VARIABLE_PATTERN = r'\$\w+'
 
 # search keywords
 RESOLUTION_TINY = 'tiny'

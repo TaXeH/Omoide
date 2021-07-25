@@ -1,7 +1,7 @@
 {
     "realms": [
         {
-            "uuid": "$r_1",
+            "uuid": "var('r', 'realm_public')",
             "route": "public",
             "label": "Public realm",
             "permissions": [
@@ -11,14 +11,14 @@
     ],
     "themes": [
         {
-            "uuid": "$t_3",
-            "realm_uuid": "$r_1",
+            "uuid": "var('t', 'theme_gerbils')",
+            "realm_uuid": "$realm_public",
             "route": "gerbils",
             "label": "Gerbils theme",
             "synonyms": [
                 {
-                    "uuid": "$s_1",
-                    "theme_uuid": "$t_3",
+                    "uuid": "var('s', 'synonym_rodents')",
+                    "theme_uuid": "$theme_gerbils",
                     "label": "Rodents",
                     "values": [
                         "mouse",
@@ -30,8 +30,8 @@
             ],
             "implicit_tags": [
                 {
-                    "uuid": "$i_1",
-                    "theme_uuid": "$t_3",
+                    "uuid": "var('i', 'implicit_creepy')",
+                    "theme_uuid": "$theme_gerbils",
                     "label": "Creepy images",
                     "values": [
                         "scary"
@@ -45,46 +45,46 @@
     ],
     "groups": [
         {
-            "uuid": "$g_1",
-            "realm_uuid": "$r_1",
-            "theme_uuid": "$t_3",
+            "uuid": "var('g', 'group_browney')",
+            "realm_uuid": "$realm_public",
+            "theme_uuid": "$theme_gerbils",
             "route": "browney",
             "label": "Browney mouse",
             "registered_on": "$today",
-            "registered_by": "$u_1",
+            "registered_by": "$user_igor",
             "hierarchy": "gerbils",
             "tags": [
                 "browney"
             ]
         },
         {
-            "uuid": "$g_2",
-            "realm_uuid": "$r_1",
-            "theme_uuid": "$t_3",
+            "uuid": "var('g', 'group_whitey')",
+            "realm_uuid": "$realm_public",
+            "theme_uuid": "$theme_gerbils",
             "route": "whitey",
             "label": "Whitey mouse",
             "registered_on": "$today",
-            "registered_by": "$u_1",
+            "registered_by": "$user_igor",
             "hierarchy": "gerbils",
             "tags": [
                 "whitey"
             ]
         },
         {
-            "uuid": "$g_3",
-            "realm_uuid": "$r_1",
-            "theme_uuid": "$t_3",
+            "uuid": "var('g', 'group_gerbils_no_group')",
+            "realm_uuid": "$realm_public",
+            "theme_uuid": "$theme_gerbils",
             "route": "no_group",
             "label": "No specific group"
         }
     ],
     "metas": [
         {
-            "realm_uuid": "$r_1",
-            "theme_uuid": "$t_3",
-            "group_uuid": "$g_3",
+            "realm_uuid": "$realm_public",
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
             "registered_on": "$today",
-            "registered_by": "$u_1",
+            "registered_by": "$user_igor",
             "hierarchy": "gerbils",
             "filenames": [
                 "adorable-1239417.jpg",
@@ -102,7 +102,7 @@
     ],
     "users": [
         {
-            "uuid": "$u_1",
+            "uuid": "var('u', 'user_igor')",
             "name": "Igor Zyktin",
             "permissions": [
                 "some permission",

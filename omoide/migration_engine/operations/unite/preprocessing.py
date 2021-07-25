@@ -3,14 +3,13 @@
 """Textual preprocessing components.
 """
 import re
-from typing import Union, List, Type
+from typing import Union, List, Type, Tuple
 
 from omoide import constants
 from omoide import infra
+from omoide.migration_engine import classes
 from omoide.migration_engine import persistent, transient, ephemeral
 from omoide.migration_engine.operations import unite
-from omoide.migration_engine import classes
-
 
 CAST_TYPES = Union[
     transient.TagRealm,
@@ -27,37 +26,61 @@ CAST_TYPES = Union[
 ]
 
 
-def preprocess_source(source: str, branch: str, leaf: str) -> str:
+def preprocess_source(text: str, branch: str, leaf: str,
+                      identity_master: unite.IdentityMaster,
+                      uuid_master: unite.UUIDMaster) -> str:
     """Convert template of the sources file into renderable one.
 
     Here we're substituting variables and extending contents.
     """
-    source = apply_global_variables(source)
-    source = extend_variable_names(source, branch, leaf)
-    return source
-
-
-def extend_variable_names(source: str, branch: str, leaf: str) -> str:
-    """Turn local variable names into global ones.
-
-    >>> extend_variable_names('and $r_1 variable', 'X', 'Y')
-    'and $X.Y.r_1 variable'
-    """
-    variables = re.findall(constants.UUID_VARIABLE_PATTERN, source)
-
-    for variable in set(variables):
-        without_sign = variable[1:]
-        extended = f'{constants.VARIABLE_SIGN}{branch}.{leaf}.{without_sign}'
-        source = source.replace(variable, extended)
-
-    return source
+    text = apply_global_variables(text)
+    text = generate_variables(text, branch, leaf, identity_master, uuid_master)
+    text = apply_variables(text, identity_master)
+    return text
 
 
 def apply_global_variables(source: str) -> str:
-    """Substitute global variables in the sources text."""
+    """Substitute global variables in the source text."""
     source = source.replace('$today', persistent.get_today())
     source = source.replace('$now', persistent.get_now())
     return source
+
+
+def generate_variables(text: str, branch: str, leaf: str,
+                       identity_master: unite.IdentityMaster,
+                       uuid_master: unite.UUIDMaster) -> str:
+    """Substitute UUID variables in the source text."""
+    pattern = re.compile(constants.UUID_MAKE_VARIABLE_PATTERN, re.IGNORECASE)
+
+    _to_replace: List[Tuple[str, str]] = []
+
+    for match in re.finditer(pattern, text):
+        uuid_type, variable_name = match.groups()
+        variable_value = identity_master.generate_value(
+            branch=branch,
+            leaf=leaf,
+            uuid_type=uuid_type,
+            variable=variable_name,
+            uuid_master=uuid_master,
+        )
+        _to_replace.append((text[match.start():match.end()], variable_value))
+
+    for pattern, value in _to_replace:
+        text = text.replace(pattern, value)
+
+    return text
+
+
+def apply_variables(text: str, identity_master: unite.IdentityMaster) -> str:
+    """Replace variable names with values."""
+    variables = re.findall(constants.UUID_VARIABLE_PATTERN, text)
+
+    for with_sign in set(variables):
+        variable_name = with_sign[1:]
+        variable_value = identity_master.get_value(variable_name)
+        text = text.replace(with_sign, variable_value)
+
+    return text
 
 
 def cast_all(unit: transient.Unit, unit_field: str, entity_field: str,
@@ -77,94 +100,83 @@ def cast_all(unit: transient.Unit, unit_field: str, entity_field: str,
 
 def do_realms(source: ephemeral.Source,
               unit: transient.Unit,
-              router: unite.Router,
-              identity_master: unite.IdentityMaster,
-              uuid_master: unite.UUIDMaster) -> None:
+              router: unite.Router) -> None:
     """Construct transient entities from ephemeral ones."""
     for ep_realm in source.realms:
-        realm_uuid = identity_master.get_realm_uuid(ep_realm.uuid, uuid_master)
-
         cast_all(unit, 'tags_realms', 'value',
                  ep_realm.tags, transient.TagRealm,
-                 realm_uuid=realm_uuid)
+                 realm_uuid=ep_realm.uuid)
 
         cast_all(unit, 'permissions_realm', 'value',
                  ep_realm.permissions, transient.PermissionRealm,
-                 realm_uuid=realm_uuid)
+                 realm_uuid=ep_realm.uuid)
 
         tr_realm = transient.Realm(revision=persistent.get_revision(),
                                    last_update=persistent.get_now(),
-                                   uuid=realm_uuid,
+                                   uuid=ep_realm.uuid,
                                    route=ep_realm.route,
                                    label=ep_realm.label)
         unit.realms.append(tr_realm)
 
-        router.register_route(realm_uuid, tr_realm.route)
+        router.register_route(ep_realm.uuid, tr_realm.route)
 
 
 def do_themes(source: ephemeral.Source,
               unit: transient.Unit,
-              router: unite.Router,
-              identity_master: unite.IdentityMaster,
-              uuid_master: unite.UUIDMaster) -> None:
+              router: unite.Router) -> None:
     """Construct transient entities from ephemeral ones."""
     revision = persistent.get_revision()
     now = persistent.get_now()
 
     for ep_theme in source.themes:
-        realm_uuid = identity_master.get_realm_uuid(
-            ep_theme.realm_uuid, uuid_master)
-        theme_uuid = identity_master.get_theme_uuid(
-            ep_theme.uuid, uuid_master)
-
         for ep_synonym in ep_theme.synonyms:
-            s_uuid = identity_master.get_synonym_uuid(
-                ep_synonym.uuid, uuid_master)
-
-            ephemeral.ensure_equal(ep_synonym.theme_uuid, ep_theme.uuid)
-            tr_synonym = transient.Synonym(revision=revision,
-                                           last_update=now,
-                                           uuid=s_uuid,
-                                           theme_uuid=theme_uuid,
-                                           label=ep_synonym.label)
+            ephemeral.assert_equal(ep_synonym.theme_uuid, ep_theme.uuid)
+            tr_synonym = transient.Synonym(
+                revision=revision,
+                last_update=now,
+                uuid=ep_synonym.uuid,
+                theme_uuid=ep_synonym.theme_uuid,
+                label=ep_synonym.label,
+            )
             unit.synonyms.append(tr_synonym)
 
             cast_all(unit, 'synonyms_values', 'value',
                      ep_synonym.values, transient.SynonymValue,
-                     synonym_uuid=s_uuid)
+                     synonym_uuid=ep_synonym.uuid)
 
         for ep_itag in ep_theme.implicit_tags:
-            itag_uuid = identity_master.get_implicit_tag_uuid(
-                ep_itag.uuid, uuid_master)
-
-            tr_implicit_tag = transient.ImplicitTag(revision=revision,
-                                                    last_update=now,
-                                                    uuid=itag_uuid,
-                                                    theme_uuid=theme_uuid,
-                                                    label=ep_itag.label)
+            tr_implicit_tag = transient.ImplicitTag(
+                revision=revision,
+                last_update=now,
+                uuid=ep_itag.uuid,
+                theme_uuid=ep_itag.theme_uuid,
+                label=ep_itag.label,
+            )
             unit.implicit_tags.append(tr_implicit_tag)
 
             cast_all(unit, 'implicit_tags_values', 'value',
                      ep_itag.values, transient.ImplicitTagValue,
-                     implicit_tag_uuid=itag_uuid)
+                     implicit_tag_uuid=ep_itag.uuid)
 
         cast_all(unit, 'tags_themes', 'value',
                  ep_theme.tags, transient.TagTheme,
-                 theme_uuid=theme_uuid)
+                 theme_uuid=ep_theme.uuid)
 
         cast_all(unit, 'permissions_themes', 'value',
                  ep_theme.permissions, transient.PermissionTheme,
-                 theme_uuid=theme_uuid)
+                 theme_uuid=ep_theme.uuid)
 
-        tr_theme = transient.Theme(revision=revision,
-                                   last_update=now,
-                                   uuid=theme_uuid,
-                                   realm_uuid=realm_uuid,
-                                   route=ep_theme.route,
-                                   label=ep_theme.label)
+        tr_theme = transient.Theme(
+            revision=revision,
+            last_update=now,
+            uuid=ep_theme.uuid,
+            realm_uuid=ep_theme.realm_uuid,
+            route=ep_theme.route,
+            label=ep_theme.label,
+        )
         unit.themes.append(tr_theme)
 
-        router.register_route(theme_uuid, tr_theme.route)
+        router.register_route(tr_theme.uuid, tr_theme.route)
 
 
 def do_groups(source: ephemeral.Source,
@@ -177,37 +189,25 @@ def do_groups(source: ephemeral.Source,
               renderer: classes.Renderer) -> None:
     """Construct transient entities from ephemeral ones."""
     for ep_group in source.groups:
-        group_uuid = identity_master.get_group_uuid(ep_group.uuid,
-                                                    uuid_master)
-        theme_uuid = identity_master.get_theme_uuid(ep_group.theme_uuid,
-                                                    uuid_master)
-
         cast_all(unit, 'tags_groups', 'value',
                  ep_group.tags, transient.TagGroup,
-                 group_uuid=group_uuid)
+                 group_uuid=ep_group.uuid)
 
         cast_all(unit, 'permissions_groups', 'value',
                  ep_group.permissions, transient.PermissionGroup,
-                 group_uuid=group_uuid)
-
-        if ep_group.registered_by:
-            ep_group.registered_by = identity_master.get_user_uuid(
-                variable=ep_group.registered_by,
-                uuid_master=uuid_master,
-                strict=True,
-            )
+                 group_uuid=ep_group.uuid)
 
         attributes = ep_group.dict()
         attributes.update({
             'revision': persistent.get_revision(),
             'last_update': persistent.get_now(),
-            'uuid': group_uuid,
-            'theme_uuid': theme_uuid,
+            'uuid': ep_group.uuid,
+            'theme_uuid': ep_group.theme_uuid,
         })
 
         tr_group = transient.Group(**attributes)
         unit.groups.append(tr_group)
-        router.register_route(group_uuid, tr_group.route)
+        router.register_route(tr_group.uuid, tr_group.route)
 
         if ep_group.route != constants.NO_GROUP:
             preprocess_group_meta_pack(
@@ -225,7 +225,6 @@ def do_groups(source: ephemeral.Source,
 def do_no_group_metas(source: ephemeral.Source,
                       unit: transient.Unit,
                       router: unite.Router,
-                      identity_master: unite.IdentityMaster,
                       uuid_master: unite.UUIDMaster,
                       filesystem: infra.Filesystem,
                       leaf_folder: str,
@@ -233,7 +232,7 @@ def do_no_group_metas(source: ephemeral.Source,
     """Construct transient entities from ephemeral ones."""
     for meta_pack in source.metas:
         preprocess_no_group_meta_pack(unit, leaf_folder, meta_pack,
-                                      router, identity_master, uuid_master,
+                                      router, uuid_master,
                                       filesystem, renderer)
 
 
@@ -246,15 +245,8 @@ def preprocess_group_meta_pack(unit: transient.Unit,
                                renderer: classes.Renderer,
                                router: unite.Router) -> None:
     """Construct transient entities from ephemeral ones."""
-    realm_uuid = identity_master.get_realm_uuid(
-        group.realm_uuid, uuid_master, strict=True)
-    theme_uuid = identity_master.get_theme_uuid(
-        group.theme_uuid, uuid_master, strict=True)
-    group_uuid = identity_master.get_group_uuid(
-        group.uuid, uuid_master, strict=True)
-
-    realm_route = router.get_route(realm_uuid)
-    theme_route = router.get_route(theme_uuid)
+    realm_route = router.get_route(group.realm_uuid)
+    theme_route = router.get_route(group.theme_uuid)
 
     full_path = filesystem.join(leaf_folder, realm_route,
                                 theme_route, group.route)
@@ -310,9 +302,9 @@ def preprocess_group_meta_pack(unit: transient.Unit,
             revision=persistent.get_revision(),
             last_update=persistent.get_now(),
             uuid=meta_uuid,
-            realm_uuid=realm_uuid,
-            theme_uuid=theme_uuid,
-            group_uuid=group_uuid,
+            realm_uuid=group.realm_uuid,
+            theme_uuid=group.theme_uuid,
+            group_uuid=group.uuid,
             original_filename=name,
             original_extension=ext,
             ordering=i,
@@ -343,21 +335,13 @@ def preprocess_no_group_meta_pack(unit: transient.Unit,
                                   leaf_folder: str,
                                   ep_meta: ephemeral.Meta,
                                   router: unite.Router,
-                                  identity_master: unite.IdentityMaster,
                                   uuid_master: unite.UUIDMaster,
                                   filesystem: infra.Filesystem,
                                   renderer: classes.Renderer) -> None:
     """Construct transient entities from ephemeral ones."""
-    realm_uuid = identity_master.get_realm_uuid(ep_meta.realm_uuid,
-                                                uuid_master, strict=True)
-    theme_uuid = identity_master.get_theme_uuid(ep_meta.theme_uuid,
-                                                uuid_master, strict=True)
-    group_uuid = identity_master.get_group_uuid(ep_meta.group_uuid,
-                                                uuid_master, strict=True)
-
-    realm_route = router.get_route(realm_uuid)
-    theme_route = router.get_route(theme_uuid)
-    group_route = router.get_route(group_uuid)
+    realm_route = router.get_route(ep_meta.realm_uuid)
+    theme_route = router.get_route(ep_meta.theme_uuid)
+    group_route = router.get_route(ep_meta.group_uuid)
 
     full_path = filesystem.join(leaf_folder,
                                 realm_route,
@@ -385,9 +369,9 @@ def preprocess_no_group_meta_pack(unit: transient.Unit,
             revision=persistent.get_revision(),
             last_update=persistent.get_now(),
             uuid=meta_uuid,
-            realm_uuid=realm_uuid,
-            theme_uuid=theme_uuid,
-            group_uuid=group_uuid,
+            realm_uuid=ep_meta.realm_uuid,
+            theme_uuid=ep_meta.theme_uuid,
+            group_uuid=ep_meta.group_uuid,
             original_filename=name,
             original_extension=ext,
             ordering=0,
@@ -414,20 +398,17 @@ def preprocess_no_group_meta_pack(unit: transient.Unit,
                  meta_uuid=meta_uuid)
 
 
-def do_users(source: ephemeral.Source,
-             unit: transient.Unit,
-             identity_master: unite.IdentityMaster,
-             uuid_master: unite.UUIDMaster) -> None:
+def do_users(source: ephemeral.Source, unit: transient.Unit) -> None:
     """Construct transient entities from ephemeral ones."""
     for ep_user in source.users:
-        user_uuid = identity_master.get_user_uuid(ep_user.uuid, uuid_master)
-
         cast_all(unit, 'permissions_users', 'value',
                  ep_user.permissions, transient.PermissionUser,
-                 user_uuid=user_uuid)
+                 user_uuid=ep_user.uuid)
 
-        tr_user = transient.User(revision=persistent.get_revision(),
-                                 last_update=persistent.get_now(),
-                                 uuid=user_uuid,
-                                 name=ep_user.name)
+        tr_user = transient.User(
+            revision=persistent.get_revision(),
+            last_update=persistent.get_now(),
+            uuid=ep_user.uuid,
+            name=ep_user.name,
+        )
         unit.users.append(tr_user)

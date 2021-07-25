@@ -24,8 +24,11 @@ def gather_existing_identities(storage_folder: str,
         cache_path = filesystem.join(leaf_folder, constants.CACHE_FILE_NAME)
         if filesystem.exists(cache_path):
             cache = filesystem.read_json(cache_path)
-            gather_variables_from_cache(cache, identity_master)
+            gather_variables_from_cache(branch, leaf, cache, identity_master)
             gather_uuids_from_cache(cache, uuid_master)
+
+    # variable uuids are not included in queue
+    uuid_master.clear_queue()
 
 
 def gather_routes_from_unit(raw_unit: dict, router: unite.Router) -> None:
@@ -48,9 +51,19 @@ def gather_uuids_from_cache(cache: dict,
     uuid_master.insert_queue(cache.get('uuids', []))
 
 
-def gather_variables_from_cache(cache: dict,
+def gather_variables_from_cache(branch: str, leaf: str, cache: dict,
                                 identity_master: unite.IdentityMaster) -> None:
     """Find all variables in given cache and store them in Identity master."""
-    for fields in cache.get('variables', {}).values():
-        for variable, value in fields.items():
-            identity_master.add_variable(variable, value)
+    uuid_type_by_category = {
+        'realms': constants.PREFIX_REALM,
+        'themes': constants.PREFIX_THEME,
+        'synonyms': constants.PREFIX_SYNONYM,
+        'implicit_tags': constants.PREFIX_IMPLICIT_TAG,
+        'groups': constants.PREFIX_GROUP,
+        'metas': constants.PREFIX_META,
+        'users': constants.PREFIX_USER,
+    }
+    for category, variables in cache.get('variables', {}).items():
+        uuid_type = uuid_type_by_category[category]
+        for name, value in variables.items():
+            identity_master.add_variable(branch, leaf, uuid_type, name, value)

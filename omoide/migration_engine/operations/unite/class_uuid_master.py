@@ -187,9 +187,7 @@ class UUIDMaster:
         prefix = self.get_prefix(uuid)
 
         if prefix not in constants.ALL_PREFIXES_SET:
-            raise ValueError(
-                f'Unknown prefix {prefix!r} for uuid {uuid}'
-            )
+            raise ValueError(f'Unknown prefix {prefix!r} for uuid {uuid}')
 
         storage = self._prefix_to_storage[prefix]
         storage.add(uuid)

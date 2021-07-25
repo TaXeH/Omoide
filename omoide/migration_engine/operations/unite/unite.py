@@ -27,13 +27,11 @@ def act(command: commands.UniteCommand,
     uuid_master = unite.UUIDMaster()
     renderer = classes.Renderer()
 
-    identity.gather_existing_identities(
-        storage_folder=command.storage_folder,
-        router=router,
-        identity_master=identity_master,
-        uuid_master=uuid_master,
-        filesystem=filesystem,
-    )
+    identity.gather_existing_identities(storage_folder=command.storage_folder,
+                                        router=router,
+                                        identity_master=identity_master,
+                                        uuid_master=uuid_master,
+                                        filesystem=filesystem)
 
     walk = infra.walk_sources_from_command(command, filesystem)
 
@@ -51,18 +49,17 @@ def act(command: commands.UniteCommand,
             stdout.cyan(f'\t[{branch}][{leaf}] Unit file already exist')
             continue
 
-        make_unit_in_leaf(
-            command=command,
-            branch=branch,
-            leaf=leaf,
-            leaf_folder=leaf_folder,
-            router=router,
-            identity_master=identity_master,
-            uuid_master=uuid_master,
-            renderer=renderer,
-            filesystem=filesystem,
-            stdout=stdout,
-        )
+        make_unit_in_leaf(command=command,
+                          branch=branch,
+                          leaf=leaf,
+                          leaf_folder=leaf_folder,
+                          router=router,
+                          identity_master=identity_master,
+                          uuid_master=uuid_master,
+                          renderer=renderer,
+                          filesystem=filesystem,
+                          stdout=stdout)
+
         stdout.green(f'\t[{branch}][{leaf}] Created unit file')
         total_new_units += 1
 
@@ -77,16 +74,14 @@ def make_unit_in_leaf(command: commands.UniteCommand, branch: str, leaf: str,
                       filesystem: infra.Filesystem,
                       stdout: infra.STDOut) -> str:
     """Create single unit file."""
-    unit = make_unit(
-        branch=branch,
-        leaf=leaf,
-        leaf_folder=leaf_folder,
-        router=router,
-        identity_master=identity_master,
-        uuid_master=uuid_master,
-        filesystem=filesystem,
-        renderer=renderer
-    )
+    unit = make_unit(branch=branch,
+                     leaf=leaf,
+                     leaf_folder=leaf_folder,
+                     router=router,
+                     identity_master=identity_master,
+                     uuid_master=uuid_master,
+                     filesystem=filesystem,
+                     renderer=renderer)
 
     cache = {
         'variables': identity_master.extract(branch, leaf),
@@ -109,7 +104,9 @@ def make_unit_in_leaf(command: commands.UniteCommand, branch: str, leaf: str,
     return unit_path
 
 
-def make_unit(branch: str, leaf: str, leaf_folder: str,
+def make_unit(branch: str,
+              leaf: str,
+              leaf_folder: str,
               router: unite.Router,
               identity_master: unite.IdentityMaster,
               uuid_master: unite.UUIDMaster,
@@ -118,24 +115,24 @@ def make_unit(branch: str, leaf: str, leaf_folder: str,
     """Combine all updates in big JSON file."""
     source_path = filesystem.join(leaf_folder, constants.SOURCE_FILE_NAME)
     source_raw_text = filesystem.read_file(source_path)
-    source_text = preprocessing.preprocess_source(source_raw_text, branch,
-                                                  leaf)
+    source_text = preprocessing.preprocess_source(
+        text=source_raw_text,
+        branch=branch,
+        leaf=leaf,
+        identity_master=identity_master,
+        uuid_master=uuid_master,
+    )
     source_dict = json.loads(source_text)
     source = ephemeral.Source(**source_dict)
-    unit = transient.Unit()
 
-    preprocessing.do_realms(source, unit, router, identity_master, uuid_master)
-    preprocessing.do_themes(source, unit, router,
-                            identity_master, uuid_master)
+    unit = transient.Unit()
+    preprocessing.do_realms(source, unit, router)
+    preprocessing.do_themes(source, unit, router)
     preprocessing.do_groups(source, unit, router, identity_master,
-                            uuid_master, filesystem, leaf_folder,
-                            renderer)
-    preprocessing.do_no_group_metas(source, unit, router,
-                                    identity_master,
-                                    uuid_master, filesystem,
-                                    leaf_folder, renderer)
-    preprocessing.do_users(source, unit,
-                           identity_master, uuid_master)
+                            uuid_master, filesystem, leaf_folder, renderer)
+    preprocessing.do_no_group_metas(source, unit, router, uuid_master,
+                                    filesystem, leaf_folder, renderer)
+    preprocessing.do_users(source, unit)
 
     return unit
 

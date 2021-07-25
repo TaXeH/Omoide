@@ -1,8 +1,8 @@
 {
     "themes": [
         {
-            "uuid": "$t_1",
-            "realm_uuid": "$source_1.migration_1.r_1",
+            "uuid": "var('t', 'theme_farm')",
+            "realm_uuid": "$realm_public",
             "route": "farm",
             "label": "Farm theme",
             "tags": [
@@ -12,13 +12,13 @@
     ],
     "groups": [
         {
-            "uuid": "$g_1",
-            "realm_uuid": "$source_1.migration_1.r_1",
-            "theme_uuid": "$t_1",
+            "uuid": "var('g', 'group_farm')",
+            "realm_uuid": "$realm_public",
+            "theme_uuid": "$theme_farm",
             "route": "farm",
             "label": "Farm",
             "registered_on": "$today",
-            "registered_by": "$source_1.migration_1.u_1",
+            "registered_by": "$user_igor",
             "hierarchy": "farm"
         }
     ]

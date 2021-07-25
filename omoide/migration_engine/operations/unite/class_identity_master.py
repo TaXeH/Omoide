@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
 """Helper class that is created to work with variables in source files.
 """
-from collections import ChainMap
 from functools import partial
-from typing import Dict
+from typing import Dict, Set, Tuple
 
 from omoide import constants
-from omoide.migration_engine.operations.unite.class_uuid_master import UUIDMaster
+from omoide.migration_engine.operations \
+    .unite.class_uuid_master import UUIDMaster
 
 __all__ = [
     'IdentityMaster',
 ]
+
+ByNamespaceType = Dict[Tuple[str, str, str, str], str]
 
 
 class IdentityMaster:
@@ -18,33 +20,7 @@ class IdentityMaster:
 
     def __init__(self) -> None:
         """Initialize instance."""
-        self._cached_r_uuids: Dict[str, str] = {}
-        self._cached_t_uuids: Dict[str, str] = {}
-        self._cached_s_uuids: Dict[str, str] = {}
-        self._cached_i_uuids: Dict[str, str] = {}
-        self._cached_g_uuids: Dict[str, str] = {}
-        self._cached_m_uuids: Dict[str, str] = {}
-        self._cached_u_uuids: Dict[str, str] = {}
-
-        self._cache = ChainMap(
-            self._cached_r_uuids,
-            self._cached_t_uuids,
-            self._cached_s_uuids,
-            self._cached_i_uuids,
-            self._cached_g_uuids,
-            self._cached_m_uuids,
-            self._cached_u_uuids,
-        )
-
-        self._prefix_to_cache = {
-            constants.PREFIX_REALM: self._cached_r_uuids,
-            constants.PREFIX_THEME: self._cached_t_uuids,
-            constants.PREFIX_SYNONYM: self._cached_s_uuids,
-            constants.PREFIX_IMPLICIT_TAG: self._cached_i_uuids,
-            constants.PREFIX_GROUP: self._cached_g_uuids,
-            constants.PREFIX_META: self._cached_m_uuids,
-            constants.PREFIX_USER: self._cached_u_uuids,
-        }
+        self._cache: Dict[str, str] = {}
 
         self._prefix_to_method = {
             constants.PREFIX_REALM: 'generate_uuid_realm',
@@ -56,80 +32,33 @@ class IdentityMaster:
             constants.PREFIX_USER: 'generate_uuid_user',
         }
 
-    @staticmethod
-    def get_prefix(string: str) -> str:
-        """Return prefix of the variable."""
-        elements = string.split('.')
-        variable = elements[-1].lstrip(constants.VARIABLE_SIGN)
-        return variable[0]
+        self._already_generated: Set[str] = set()
+        self._by_namespace: ByNamespaceType = {}
 
-    def get_uuid_generic(self, variable: str, uuid_master: UUIDMaster,
-                         supposed_prefix: str, strict: bool = False) -> str:
-        """Common method for uuid extraction."""
-        prefix = self.get_prefix(variable)
+    def generate_value(self, branch: str, leaf: str,
+                       uuid_type: str, variable: str,
+                       uuid_master: UUIDMaster) -> str:
+        """Create and store new uuid."""
+        previous_value = self._cache.get(variable)
 
-        if prefix not in constants.ALL_PREFIXES_SET:
+        if previous_value is not None:
+            return previous_value
+
+        if uuid_type not in constants.ALL_PREFIXES_SET:
             raise ValueError(
-                f'Unknown prefix {prefix!r} for variable {variable}'
+                f'Unknown uuid type {uuid_type!r} for variable {variable}'
             )
 
-        if prefix != supposed_prefix:
-            raise ValueError(
-                f'Variable {variable} does not '
-                f'conform prefix {supposed_prefix}'
-            )
+        generator = getattr(uuid_master, self._prefix_to_method[uuid_type])
+        value = generator()
 
-        cache = self._prefix_to_cache[prefix]
-        uuid = cache.get(variable)
+        self._store(branch, leaf, uuid_type, variable, value)
 
-        if uuid is None:
-            if strict:
-                raise KeyError(
-                    f'Variable {variable} in not found '
-                    f'in cache by prefix {prefix}'
-                )
+        return value
 
-            generator = getattr(uuid_master, self._prefix_to_method[prefix])
-            uuid = generator()
-            cache[variable] = uuid
-
-        return uuid
-
-    def get_realm_uuid(self, variable: str, uuid_master: UUIDMaster,
-                       strict: bool = False) -> str:
-        """Get UUID from variable."""
-        return self.get_uuid_generic(variable, uuid_master,
-                                     constants.PREFIX_REALM, strict)
-
-    def get_theme_uuid(self, variable: str, uuid_master: UUIDMaster,
-                       strict: bool = False) -> str:
-        """Get UUID from variable."""
-        return self.get_uuid_generic(variable, uuid_master,
-                                     constants.PREFIX_THEME, strict)
-
-    def get_synonym_uuid(self, variable: str, uuid_master: UUIDMaster,
-                         strict: bool = False) -> str:
-        """Get UUID from variable."""
-        return self.get_uuid_generic(variable, uuid_master,
-                                     constants.PREFIX_SYNONYM, strict)
-
-    def get_implicit_tag_uuid(self, variable: str, uuid_master: UUIDMaster,
-                              strict: bool = False) -> str:
-        """Get UUID from variable."""
-        return self.get_uuid_generic(variable, uuid_master,
-                                     constants.PREFIX_IMPLICIT_TAG, strict)
-
-    def get_group_uuid(self, variable: str, uuid_master: UUIDMaster,
-                       strict: bool = False) -> str:
-        """Get UUID from variable."""
-        return self.get_uuid_generic(variable, uuid_master,
-                                     constants.PREFIX_GROUP, strict)
-
-    def get_user_uuid(self, variable: str, uuid_master: UUIDMaster,
-                      strict: bool = False) -> str:
-        """Get UUID from variable."""
-        return self.get_uuid_generic(variable, uuid_master,
-                                     constants.PREFIX_USER, strict)
+    def get_value(self, variable_name: str) -> str:
+        """Get value by given name."""
+        return self._cache[variable_name]
 
     def extract(self, branch: str, leaf: str) -> Dict[str, Dict[str, str]]:
         """Serialize to a dictionary.
@@ -138,39 +67,47 @@ class IdentityMaster:
         """
         selector = partial(self.select_by_branch, branch, leaf)
         return {
-            'realms': selector(self._cached_r_uuids),
-            'themes': selector(self._cached_t_uuids),
-            'synonyms': selector(self._cached_s_uuids),
-            'implicit_tags': selector(self._cached_i_uuids),
-            'groups': selector(self._cached_g_uuids),
-            'metas': selector(self._cached_m_uuids),
-            'users': selector(self._cached_u_uuids),
+            'realms': selector(constants.PREFIX_REALM, self._by_namespace),
+            'themes': selector(constants.PREFIX_THEME, self._by_namespace),
+            'synonyms': selector(constants.PREFIX_SYNONYM, self._by_namespace),
+            'implicit_tags': selector(constants.PREFIX_IMPLICIT_TAG,
+                                      self._by_namespace),
+            'groups': selector(constants.PREFIX_GROUP, self._by_namespace),
+            'metas': selector(constants.PREFIX_META, self._by_namespace),
+            'users': selector(constants.PREFIX_USER, self._by_namespace),
         }
 
     @staticmethod
-    def select_by_branch(branch: str, leaf: str,
-                         storage: Dict[str, str]) -> Dict[str, str]:
+    def select_by_branch(target_branch: str, target_leaf: str,
+                         target_uuid_type: str, storage: ByNamespaceType
+                         ) -> Dict[str, str]:
         """Select only variables of given branch/leaf"""
         return {
-            variable: value
-            for variable, value in storage.items()
-            if variable.startswith(f'{constants.VARIABLE_SIGN}{branch}.{leaf}')
+            name: value
+            for (branch, leaf, uuid_type, name), value in storage.items()
+            if all([branch == target_branch,
+                    leaf == target_leaf,
+                    uuid_type == target_uuid_type])
         }
 
-    def add_variable(self, variable: str, value: str) -> None:
+    def add_variable(self, branch: str, leaf: str,
+                     uuid_type: str, variable: str, value: str) -> None:
         """Add external variable to the storage."""
-        prefix = self.get_prefix(variable)
-
-        if prefix not in constants.ALL_PREFIXES_SET:
+        if uuid_type not in constants.ALL_PREFIXES_SET:
             raise ValueError(
-                f'Unknown prefix {prefix!r} for variable {variable}'
+                f'Unknown uuid type {uuid_type!r} for variable {variable!r}'
             )
 
         if value.startswith(constants.VARIABLE_SIGN):
             raise ValueError(
-                f'Variable {variable} should '
-                f'contain actual value, not {value}'
+                f'Variable {variable!r} should '
+                f'contain actual value, not {value!r}'
             )
 
-        cache = self._prefix_to_cache[prefix]
-        cache[variable] = value
+        self._store(branch, leaf, uuid_type, variable, value)
+
+    def _store(self, branch: str, leaf: str,
+               uuid_type: str, name: str, value: str) -> None:
+        """Add value to inner storages."""
+        self._cache[name] = value
+        self._by_namespace[(branch, leaf, uuid_type, name)] = value

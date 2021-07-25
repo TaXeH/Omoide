@@ -1,15 +1,15 @@
 {
     "metas": [
         {
-            "realm_uuid": "$source_1.migration_1.r_1",
-            "theme_uuid": "$source_1.migration_1.t_3",
-            "group_uuid": "$source_1.migration_1.g_3",
+            "realm_uuid": "$realm_public",
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
             "author": "ErikTjernlund",
             "author_url": "https://www.deviantart.com/eriktjernlund",
             "origin_url": "https://www.deviantart.com/eriktjernlund/art/What-s-happening-to-me-268150219",
             "comment": "Blacktail",
             "registered_on": "$today",
-            "registered_by": "$source_1.migration_1.u_1",
+            "registered_by": "$user_igor",
             "hierarchy": "gerbils",
             "tags": [
                 "epilepsy"
@@ -19,15 +19,15 @@
             ]
         },
         {
-            "realm_uuid": "$source_1.migration_1.r_1",
-            "theme_uuid": "$source_1.migration_1.t_3",
-            "group_uuid": "$source_1.migration_1.g_3",
+            "realm_uuid": "$realm_public",
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
             "author": "Sabrina Blechinger",
             "author_url": "https://www.flickr.com/photos/bulletgirl/",
             "origin_url": "https://www.flickr.com/photos/bulletgirl/6917711433/in/pool-44424503@N00",
             "comment": "",
             "registered_on": "$today",
-            "registered_by": "$source_1.migration_1.u_1",
+            "registered_by": "$user_igor",
             "hierarchy": "gerbils",
             "tags": [
             ],
@@ -36,15 +36,15 @@
             ]
         },
         {
-            "realm_uuid": "$source_1.migration_1.r_1",
-            "theme_uuid": "$source_1.migration_1.t_3",
-            "group_uuid": "$source_1.migration_1.g_3",
+            "realm_uuid": "$realm_public",
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
             "author": "Mitchell Tuffill",
             "author_url": "https://www.flickr.com/photos/97772644@N07/",
             "origin_url": "https://www.flickr.com/photos/97772644@N07/47229809861/in/pool-44424503@N00/",
             "comment": "",
             "registered_on": "$today",
-            "registered_by": "$source_1.migration_1.u_1",
+            "registered_by": "$user_igor",
             "hierarchy": "gerbils",
             "tags": [
             ],
