@@ -9,16 +9,11 @@ import pytest
 from omoide import constants
 from omoide import commands
 
-parse_arguments = partial(commands.parse_arguments,
-                          sources_folder=None,
-                          storage_folder=None,
-                          content_folder=None)
-
 
 def test_unite():
-    cmd1 = parse_arguments(['unite'])
-    cmd2 = parse_arguments(['unite', 'all'])
-    cmd3 = parse_arguments(['unite', 'all', 'all'])
+    cmd1 = commands.parse_arguments(['unite'])
+    cmd2 = commands.parse_arguments(['unite', 'all'])
+    cmd3 = commands.parse_arguments(['unite', 'all', 'all'])
 
     assert cmd1 == cmd2 == cmd3
     assert isinstance(cmd1, commands.FilesRelatedCommand)
@@ -230,7 +225,7 @@ def test_unite():
 #                                      None)
 #
 #
-# def test_bad_command():
-#     msg = 'Unknown command: wtf'
-#     with pytest.raises(ValueError, match=msg):
-#         command_line.parse_arguments(['wtf'], None, None)
+def test_bad_command():
+    msg = r"Unknown command: 'wtf'"
+    with pytest.raises(ValueError, match=msg):
+        commands.parse_arguments(['wtf'])

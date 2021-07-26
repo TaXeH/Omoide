@@ -4,17 +4,17 @@
 
 
 {% block content %}
-{#    <script>#}
-{#        function copy(text) {#}
-{#            let input = document.createElement('input');#}
-{#            input.setAttribute('value', text);#}
-{#            document.body.appendChild(input);#}
-{#            input.select();#}
-{#            let result = document.execCommand('copy');#}
-{#            document.body.removeChild(input);#}
-{#            return result;#}
-{#        }#}
-{#    </script>#}
+    {#    <script>#}
+    {#        function copy(text) {#}
+    {#            let input = document.createElement('input');#}
+    {#            input.setAttribute('value', text);#}
+    {#            document.body.appendChild(input);#}
+    {#            input.select();#}
+    {#            let result = document.execCommand('copy');#}
+    {#            document.body.removeChild(input);#}
+    {#            return result;#}
+    {#        }#}
+    {#    </script>#}
 
     {% if meta.next or meta.previous %}
         <div class="limited_width">
@@ -71,13 +71,12 @@
                 <tr>
                     <th colspan="2">Tags</th>
                 </tr>
-
                 <tr>
                     <td colspan="2">
                         <ol>
-                            {% for tag in meta.tags %}
+                            {% for tag in tags %}
                                 <li>
-                                    <a href="/{{ realm_route }}/{{ theme_route }}/{{ group_route }}/?q={{ tag.value }}">{{ tag.value }}</a>
+                                    <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}">{{ tag }}</a>
                                 </li>
                             {% endfor %}
                         </ol>

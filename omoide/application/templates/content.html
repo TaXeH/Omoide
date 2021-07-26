@@ -6,10 +6,13 @@
     {{ pagination(paginator, web_query) }}
 
     <div class="content">
-        {% for uuid in paginator %}
+        {% for meta in paginator %}
             <div class="envelope">
-                <a href="{{ url_for('preview', uuid=uuid) + web_query|string }}">
-                    <img src="{{ url_for('serve_content', filename=index_thumbnails.get(uuid)) }}" alt=""/>
+                <a href="{{ url_for('preview',
+                                    uuid=meta.uuid) + web_query|string }}">
+                    <img src="{{ url_for('serve_content',
+                                         filename=meta.path_to_thumbnail) }}"
+                         alt=""/>
                 </a>
             </div>
         {% endfor %}

@@ -1,9 +1,10 @@
 from collections import defaultdict
-from typing import Optional, FrozenSet, Dict, Tuple, List
+from typing import Optional
 
 from sqlalchemy.orm import Session
 
 from omoide import constants
+from omoide.application.search.class_index import ShallowMeta, Index
 from omoide.database import models
 
 
@@ -55,26 +56,31 @@ def get_meta(session: Session,
         .where(models.Meta.uuid == meta_uuid).one()
 
 
-def get_all_metas(session: Session):
-    return session.query(models.Meta).all()
+def get_index(session: Session) -> Index:
+    metas = list(session.query(models.IndexMetas).order_by('number').all())
+    all_metas = [
+        ShallowMeta(x.meta_uuid, x.number, x.path_to_thumbnail)
+        for x in metas
+    ]
 
-
-def get_index_thumbnails(session: Session) -> Dict[str, str]:
-    index = {}
-    for each in session.query(models.IndexThumbnails).all():
-        index[each.meta_uuid] = each.path_to_thumbnail
-    return index
-
-
-def get_index_tags(session: Session) -> Dict[str, FrozenSet[str]]:
-    index = defaultdict(set)
+    by_tags = defaultdict(set)
     for each in session.query(models.IndexTags).all():
-        index[each.tag].add(each.uuid)
-    return {tag: frozenset(uuids) for tag, uuids in index.items()}
+        by_tags[each.tag].add(each.uuid)
 
+    by_permissions = defaultdict(set)
+    for each in session.query(models.IndexPermissions).all():
+        by_permissions[each.permission].add(each.uuid)
 
-def get_index_all(session: Session) -> List[Tuple[int, str]]:
-    all_uuids = []
-    for i, meta in enumerate(session.query(models.Meta).all()):
-        all_uuids.append((i, meta.uuid))
-    return all_uuids
+    index = Index(
+        all_metas=all_metas,
+        by_tags={
+            tag: frozenset(uuids)
+            for tag, uuids in by_tags.items()
+        },
+        by_permission={
+            permission: frozenset(uuids)
+            for permission, uuids in by_permissions.items()
+        },
+    )
+
+    return index

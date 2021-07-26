@@ -14,8 +14,8 @@ from omoide import utils
 from omoide.application import appearance
 from omoide.application import database
 from omoide.application import search as search_helpers
-from omoide.application.search.class_paginator import Paginator
 from omoide.application.search import search_routine
+from omoide.application.search.class_paginator import Paginator
 
 
 def create_app(command: commands.RunserverCommand,
@@ -30,9 +30,7 @@ def create_app(command: commands.RunserverCommand,
     query_builder = search_helpers.QueryBuilder(search_helpers.Query)
 
     _session = Session()
-    index_thumbnails = database.get_index_thumbnails(_session)
-    index_tags = database.get_index_tags(_session)
-    index_all = database.get_index_all(_session)
+    search_index = database.get_index(_session)
     _session.close()
 
     @app.context_processor
@@ -77,34 +75,34 @@ def create_app(command: commands.RunserverCommand,
             return flask.redirect(flask.url_for('search') + str(web_query))
 
         start = time.perf_counter()
-        session = Session()
+        # session = Session()
         user_query = web_query.get('q')
         current_page = int(web_query.get('page', '1'))
 
         query = query_builder.from_query(user_query)
 
-        realm_route = web_query.get('realm_route', constants.ALL_REALMS)
-        if realm_route and realm_route != constants.ALL_REALMS:
-            realm_uuid = database.get_realm_uuid(session,
-                                                 realm_route) or abort(404)
-            query.and_.add(realm_uuid)
-
-        theme_route = web_query.get('theme_route', constants.ALL_THEMES)
-        if theme_route and theme_route != constants.ALL_THEMES:
-            theme_uuid = database.get_theme_uuid(session,
-                                                 theme_route) or abort(404)
-            query.and_.add(theme_uuid)
-
-        group_route = web_query.get('group_route', constants.ALL_GROUPS)
-        if group_route and group_route != constants.ALL_GROUPS:
-            group_uuid = database.get_group_uuid(session,
-                                                 group_route) or abort(404)
-            query.and_.add(group_uuid)
+        # realm_route = web_query.get('realm_route', constants.ALL_REALMS)
+        # if realm_route and realm_route != constants.ALL_REALMS:
+        #     realm_uuid = database.get_realm_uuid(session,
+        #                                          realm_route) or abort(404)
+        #     query.and_.add(realm_uuid)
+        #
+        # theme_route = web_query.get('theme_route', constants.ALL_THEMES)
+        # if theme_route and theme_route != constants.ALL_THEMES:
+        #     theme_uuid = database.get_theme_uuid(session,
+        #                                          theme_route) or abort(404)
+        #     query.and_.add(theme_uuid)
+        #
+        # group_route = web_query.get('group_route', constants.ALL_GROUPS)
+        # if group_route and group_route != constants.ALL_GROUPS:
+        #     group_uuid = database.get_group_uuid(session,
+        #                                          group_route) or abort(404)
+        #     query.and_.add(group_uuid)
 
         if query:
-            uuids = search_routine.find_records(query, 10, index_tags)
+            uuids = search_routine.find_records(query, search_index, 10)
         else:
-            uuids = search_routine.random_records(10, index_all)
+            uuids = search_routine.random_records(search_index, 10)
 
         paginator = Paginator(
             sequence=uuids,
@@ -120,7 +118,6 @@ def create_app(command: commands.RunserverCommand,
             'paginator': paginator,
             'user_query': user_query,
             'web_query': web_query,
-            'index_thumbnails': index_thumbnails,
             'note': note,
             'placeholder': '___',
             # 'placeholder': utils_browser.get_placeholder(current_theme),
@@ -132,9 +129,17 @@ def create_app(command: commands.RunserverCommand,
         """Show description for a single record."""
         session = Session()
         meta = database.get_meta(session, uuid) or abort(404)
-
+        web_query = search_helpers.WebQuery.from_request(request.args)
+        tags = {
+            *[x.value for x in meta.group.theme.realm.tags],
+            *[x.value for x in meta.group.theme.tags],
+            *[x.value for x in meta.group.tags],
+            *[x.value for x in meta.tags],
+        }
         context = {
             'meta': meta,
+            'web_query': web_query,
+            'tags': sorted(tags),
         }
         return flask.render_template('preview.html', **context)
 

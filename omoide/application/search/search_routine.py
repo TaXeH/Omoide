@@ -3,24 +3,22 @@
 """Actual search operations.
 """
 import random
-from typing import List, Dict, FrozenSet, Tuple
+from typing import List
 
+from omoide.application.search.class_index import ShallowMeta, Index
 from omoide.application.search.class_query import Query
 
 
-def random_records(amount: int, index_all: List[Tuple[int, str]]) -> List[str]:
-    """"""
-    # note that size of the repository in some cases might be smaller
+def random_records(index: Index, amount: int) -> List[ShallowMeta]:
+    """Select random X records from index."""
+    # note that size of the index in some cases might be smaller
     # than amount and random.sample will throw and exception
-    adequate_amount = min(amount, len(index_all))
-    chosen_records = random.sample(index_all, adequate_amount)
-    chosen_records.sort(key=lambda x: x[0])
-
-    return [x[1] for x in chosen_records]
+    adequate_amount = min(amount, len(index))
+    chosen_records = random.sample(index.all_metas, adequate_amount)
+    return chosen_records
 
 
-def find_records(query: Query, amount: int,
-                 index_tags: Dict[str, FrozenSet[str]]) -> List[str]:
+def find_records(query: Query, index: Index, amount: int) -> List[ShallowMeta]:
     """Return all records, that match to a given query."""
     # target_uuids = set()
     #
@@ -79,15 +77,27 @@ def find_records(query: Query, amount: int,
 
     # chosen_records.sort(key=core.core_utils.meta_sorter,
     #                     reverse=constants.FLAG_DESC in query.flags)
-    uuids = set()
 
-    for tag in query.and_:
-        uuids.update(index_tags.get(tag, []))
-
+    or_ = set()
     for tag in query.or_:
-        uuids.update(index_tags.get(tag, []))
+        with_tag = index.get_by_tag(tag)
+        or_ = or_.union(with_tag)
 
+    if query.and_:
+        and_ = index.all_uuids
+        for tag in query.and_:
+            with_tag = index.get_by_tag(tag)
+            and_ = and_.intersection(with_tag)
+    else:
+        and_ = set()
+
+    not_ = set()
     for tag in query.not_:
-        uuids = uuids - index_tags.get(tag, set())
+        with_tag = index.get_by_tag(tag)
+        not_ = not_.union(with_tag)
 
-    return list(uuids)
+    chosen_uuids = (or_ | and_) - not_
+    chosen_meta = [index.by_uuid[x] for x in chosen_uuids]
+    chosen_meta.sort(key=lambda meta: meta.number)
+
+    return chosen_meta
