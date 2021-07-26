@@ -10,7 +10,7 @@ from omoide.database import common
 __alL__ = [
     'IndexTags',
     'IndexPermissions',
-    'IndexThumbnails',
+    'IndexMetas',
 ]
 
 
@@ -52,13 +52,13 @@ class IndexPermissions(common.Base):
                      nullable=False, unique=False)
 
 
-class IndexThumbnails(common.Base):
-    """Index for thumbnail info.
+class IndexMetas(common.Base):
+    """Index for metas.
 
-    Fast access to the thumbnail info without need to go to the database.
+    Fast access to the basic meta information.
     Gets loaded at the application start and never queried after.
     """
-    __tablename__ = 'index_thumbnails'
+    __tablename__ = 'index_metas'
 
     # primary and foreign keys
     meta_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
@@ -66,4 +66,5 @@ class IndexThumbnails(common.Base):
                           primary_key=True, nullable=False,
                           unique=True, index=True)
     # fields
+    number = sa.Column(sa.Integer, nullable=False)
     path_to_thumbnail = sa.Column(sa.Text, nullable=False)

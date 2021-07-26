@@ -8,14 +8,52 @@ from sqlalchemy.orm import Session
 
 from omoide.database import models
 
+_META_REALMS_CACHE = {}
+_META_THEMES_CACHE = {}
+_META_GROUPS_CACHE = {}
+
 
 def build_indexes(session: Session) -> int:
     """Create fast lookup tables."""
     new_values = 0
     new_values += build_index_tags(session)
     new_values += build_index_permissions(session)
-    new_values += build_index_thumbnails(session)
+    new_values += build_index_meta(session)
+    # TODO - add search enhancements
     return new_values
+
+
+def lazy_get_realm(meta: models.Meta) -> models.Realm:
+    """Lazy return Realm or go to database for it."""
+    value = _META_REALMS_CACHE.get(meta.uuid)
+
+    if value is None:
+        value = meta.group.theme.realm
+        _META_REALMS_CACHE[meta.uuid] = value
+
+    return value
+
+
+def lazy_get_theme(meta: models.Meta) -> models.Theme:
+    """Lazy return Theme or go to database for it."""
+    value = _META_THEMES_CACHE.get(meta.uuid)
+
+    if value is None:
+        value = meta.group.theme
+        _META_THEMES_CACHE[meta.uuid] = value
+
+    return value
+
+
+def lazy_get_group(meta: models.Meta) -> models.Group:
+    """Lazy return Group or go to database for it."""
+    value = _META_GROUPS_CACHE.get(meta.uuid)
+
+    if value is None:
+        value = meta.group
+        _META_GROUPS_CACHE[meta.uuid] = value
+
+    return value
 
 
 def build_index_tags(session: Session) -> int:
@@ -23,37 +61,21 @@ def build_index_tags(session: Session) -> int:
     new_values = 0
 
     for meta in session.query(models.Meta).all():
-        for tag in meta.tags:
-            value = models.IndexTags(
-                tag=tag.value,
-                uuid=meta.uuid,
-            )
-            session.add(value)
-            new_values += 1
+        realm = lazy_get_realm(meta)
+        theme = lazy_get_theme(meta)
+        group = lazy_get_group(meta)
 
-        for tag in meta.group.theme.realm.tags:
-            value = models.IndexTags(
-                tag=tag.value,
-                uuid=meta.uuid,
-            )
-            session.add(value)
-            new_values += 1
+        all_tags = {
+            *(x.value for x in realm.tags),
+            *(x.value for x in theme.tags),
+            *(x.value for x in group.tags),
+            *(x.value for x in meta.tags),
+        }
+        new_values += len(all_tags)
 
-        for tag in meta.group.theme.tags:
-            value = models.IndexTags(
-                tag=tag.value,
-                uuid=meta.uuid,
-            )
+        for tag in all_tags:
+            value = models.IndexTags(tag=tag, uuid=meta.uuid)
             session.add(value)
-            new_values += 1
-
-        for tag in meta.group.tags:
-            value = models.IndexTags(
-                tag=tag.value,
-                uuid=meta.uuid,
-            )
-            session.add(value)
-            new_values += 1
 
     session.commit()
 
@@ -64,89 +86,42 @@ def build_index_permissions(session: Session) -> int:
     """Create indexes for permissions."""
     new_values = 0
 
-    for realm in session.query(models.Realm).all():
-        for permission in realm.permissions:
-            value = models.IndexTags(
-                tag=permission.value,
-                uuid=realm.uuid,
-            )
-            session.add(value)
-            new_values += 1
-
-    session.commit()
-
-    for theme in session.query(models.Theme).all():
-        for permission in theme.permissions:
-            value = models.IndexTags(
-                tag=permission.value,
-                uuid=theme.uuid,
-            )
-            session.add(value)
-            new_values += 1
-
-    session.commit()
-
-    for group in session.query(models.Group).all():
-        for permission in group.permissions:
-            value = models.IndexTags(
-                tag=permission.value,
-                uuid=group.uuid,
-            )
-            session.add(value)
-            new_values += 1
-
-    session.commit()
-
     for meta in session.query(models.Meta).all():
-        for permission in meta.permissions:
-            value = models.IndexTags(
-                tag=permission.value,
-                uuid=meta.uuid,
-            )
-            session.add(value)
-            new_values += 1
+        realm = lazy_get_realm(meta)
+        theme = lazy_get_theme(meta)
+        group = lazy_get_group(meta)
 
-        for permission in meta.group.theme.realm.permissions:
-            value = models.IndexTags(
-                tag=permission.value,
-                uuid=meta.uuid,
-            )
-            session.add(value)
-            new_values += 1
+        all_permissions = {
+            *(x.value for x in realm.permissions),
+            *(x.value for x in theme.permissions),
+            *(x.value for x in group.permissions),
+            *(x.value for x in meta.permissions),
+        }
+        new_values += len(all_permissions)
 
-        for permission in meta.group.theme.permissions:
-            value = models.IndexTags(
-                tag=permission.value,
-                uuid=meta.uuid,
-            )
+        for tag in all_permissions:
+            value = models.IndexPermissions(permission=tag, uuid=meta.uuid)
             session.add(value)
-            new_values += 1
-
-        for permission in meta.group.permissions:
-            value = models.IndexTags(
-                tag=permission.value,
-                uuid=meta.uuid,
-            )
-            session.add(value)
-            new_values += 1
 
     session.commit()
 
     return new_values
 
 
-def build_index_thumbnails(session: Session) -> int:
+def build_index_meta(session: Session) -> int:
     """Create simplified table for thumbnail information."""
-    new_values = 0
+    all_metas = list(session.query(models.Meta).all())
+    new_values = len(all_metas)
 
-    for meta in session.query(models.Meta).all():
-        value = models.IndexThumbnails(
-            meta_uuid=meta.uuid,
-            path_to_thumbnail=meta.path_to_thumbnail,
+    all_metas.sort(key=lambda meta: (meta.hierarchy, meta.ordering))
+
+    for i, each_meta in enumerate(all_metas):
+        value = models.IndexMetas(
+            meta_uuid=each_meta.uuid,
+            number=i,
+            path_to_thumbnail=each_meta.path_to_thumbnail,
         )
-
         session.add(value)
-        new_values += 1
 
     session.commit()
 

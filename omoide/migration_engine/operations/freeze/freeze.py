@@ -29,38 +29,36 @@ def act(command: commands.FreezeCommand,
         folder=command.storage_folder,
         filename=constants.ROOT_DB_FILE_NAME,
         filesystem=filesystem,
-        stdout=stdout,
         echo=False,
     )
 
-    static_filename = constants.STATIC_DB_FILE_NAME.format(
+    db_filename = constants.STATIC_DB_FILE_NAME.format(
         today=persistent.get_today()
     )
-    static_db_path = filesystem.join(command.database_folder, static_filename)
+    db_path = filesystem.join(command.database_folder, db_filename)
 
-    if filesystem.exists(static_db_path):
-        stdout.yellow(f'Deleting old target database: {static_db_path}')
-        filesystem.delete_file(static_db_path)
+    if filesystem.exists(db_path):
+        stdout.yellow(f'Deleting old target database: {db_path}')
+        filesystem.delete_file(db_path)
 
-    needs_schema = filesystem.not_exists(static_db_path)
-    static_db = operations.create_database(
+    needs_schema = filesystem.not_exists(db_path)
+    database = operations.create_database(
         folder=command.database_folder,
-        filename=static_filename,
+        filename=db_filename,
         filesystem=filesystem,
-        stdout=stdout,
         echo=False,
     )
     if needs_schema:
-        operations.create_scheme(static_db, stdout)
+        operations.create_scheme(database)
 
     SessionRoot = sessionmaker(bind=root_db)
     session_root = SessionRoot()
 
-    SessionStatic = sessionmaker(bind=static_db)
-    session_static = SessionStatic()
+    SessionDb = sessionmaker(bind=database)
+    session_db = SessionDb()
 
-    operations.synchronize(session_root, session_static)
-    build_indexes(session_static)
+    operations.synchronize(session_root, session_db)
+    build_indexes(session_db)
 
     root_db.dispose()
-    static_db.dispose()
+    database.dispose()
