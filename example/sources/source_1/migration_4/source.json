@@ -74,6 +74,21 @@
             "tags": [
                 "climb"
             ]
+        },
+        {
+            "realm_uuid": "$realm_public",
+            "theme_uuid": "$theme_mice",
+            "group_uuid": "$group_mice_no_group",
+            "author": "Caroline Cottrell",
+            "registered_on": "$today",
+            "registered_by": "$user_igor",
+            "hierarchy": "mice",
+            "filenames": [
+                "E7FcYUEXMAIDpNv.jpg"
+            ],
+            "tags": [
+                "berries"
+            ]
         }
     ]
 }

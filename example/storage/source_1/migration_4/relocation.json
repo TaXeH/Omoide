@@ -76,5 +76,31 @@
                 "operation_type": "scale"
             }
         ]
+    },
+    {
+        "uuid": "m_b2446670-c7b2-4f6b-b8bd-bf1c8b570d15",
+        "source_filename": "E7FcYUEXMAIDpNv.jpg",
+        "target_filename": "m_b2446670-c7b2-4f6b-b8bd-bf1c8b570d15.jpg",
+        "folder_from": "D:\\PycharmProjects\\Omoide\\example\\sources\\source_1\\migration_4\\public\\mice\\no_group",
+        "operations": [
+            {
+                "width": 1024,
+                "height": 683,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\content\\public\\mice\\no_group",
+                "operation_type": "copy"
+            },
+            {
+                "width": 1024,
+                "height": 1024,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\preview\\public\\mice\\no_group",
+                "operation_type": "scale"
+            },
+            {
+                "width": 384,
+                "height": 384,
+                "folder_to": "D:\\PycharmProjects\\Omoide\\example\\content\\thumbnails\\public\\mice\\no_group",
+                "operation_type": "scale"
+            }
+        ]
     }
 ]
