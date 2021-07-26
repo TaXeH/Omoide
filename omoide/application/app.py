@@ -15,6 +15,7 @@ from omoide.application import appearance
 from omoide.application import database
 from omoide.application import search as search_helpers
 from omoide.application.search.class_paginator import Paginator
+from omoide.application.search import search_routine
 
 
 def create_app(command: commands.RunserverCommand,
@@ -30,6 +31,8 @@ def create_app(command: commands.RunserverCommand,
 
     _session = Session()
     index_thumbnails = database.get_index_thumbnails(_session)
+    index_tags = database.get_index_tags(_session)
+    index_all = database.get_index_all(_session)
     _session.close()
 
     @app.context_processor
@@ -99,23 +102,14 @@ def create_app(command: commands.RunserverCommand,
             query.and_.add(group_uuid)
 
         if query:
-            # FIXME
-            uuids = [x.uuid for x in database.get_all_metas(session)]
-        #     chosen_metarecords, hidden = utils_core.select_records(
-        #         theme=current_theme,
-        #         repository=repository,
-        #         query=query,
-        #     )
+            uuids = search_routine.find_records(query, 10, index_tags)
         else:
-            # FIXME
-            # uuids = search_helpers \
-            #     .search_routine.find_random_records(query=query, amount=20)
-            uuids = [x.uuid for x in database.get_all_metas(session)]
+            uuids = search_routine.random_records(10, index_all)
 
         paginator = Paginator(
             sequence=uuids,
             current_page=current_page,
-            items_per_page=50,  # FIXME
+            items_per_page=10,  # FIXME
         )
 
         duration = time.perf_counter() - start

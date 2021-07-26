@@ -1,4 +1,5 @@
-from typing import Optional
+from collections import defaultdict
+from typing import Optional, FrozenSet, Dict, Tuple, List
 
 from sqlalchemy.orm import Session
 
@@ -58,8 +59,22 @@ def get_all_metas(session: Session):
     return session.query(models.Meta).all()
 
 
-def get_index_thumbnails(session: Session):
+def get_index_thumbnails(session: Session) -> Dict[str, str]:
     index = {}
     for each in session.query(models.IndexThumbnails).all():
         index[each.meta_uuid] = each.path_to_thumbnail
     return index
+
+
+def get_index_tags(session: Session) -> Dict[str, FrozenSet[str]]:
+    index = defaultdict(set)
+    for each in session.query(models.IndexTags).all():
+        index[each.tag].add(each.uuid)
+    return {tag: frozenset(uuids) for tag, uuids in index.items()}
+
+
+def get_index_all(session: Session) -> List[Tuple[int, str]]:
+    all_uuids = []
+    for i, meta in enumerate(session.query(models.Meta).all()):
+        all_uuids.append((i, meta.uuid))
+    return all_uuids
