@@ -1,0 +1,50 @@
+{% from "macros.html" import pagination %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="shortcut icon"
+          href="{{ url_for('static', filename='favicon.ico') }}">
+    <link type="text/css"
+          href="{{ url_for('static', filename='base.css') }}"
+          rel="stylesheet">
+    <link type="text/css"
+          href="{{ url_for('static', filename='search.css') }}"
+          rel="stylesheet">
+    {% block head %}{% endblock %}
+    <title>{{ title }}</title>
+</head>
+<body>
+
+<div>
+    <form method="post" action="{{ url_for('search') }}">
+        <div class="query_container">
+            <a href="{{ url_for('search') }}" class="button">Home</a>
+
+            <label for="query">
+                <input name="query"
+                       type="search"
+                       value="{{ user_query }}"
+                       class="query_input"
+                       placeholder="{{ placeholder }}">
+            </label>
+
+            <input type="submit"
+                   class="button"
+                   name="search"
+                   value="Search"/>
+
+            <a href="{{ url_for('navigation') }}" class="button">Navigation</a>
+
+            <span></span>
+            <span class="note">{{ note }}</span>
+        </div>
+    </form>
+</div>
+
+<hr>
+
+{% block body %}{% endblock %}
+
+</body>
+</html>

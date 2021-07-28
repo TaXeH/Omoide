@@ -37,9 +37,9 @@ def create_app(command: commands.RunserverCommand,
     def common_names():
         """Populate context with common names."""
         return {
-            # 'title': config['title'],
+            'title': 'Title',
             'note': f'Version: {constants.VERSION}',
-            # 'injection': config['injection'],
+            'injection': '',
             'byte_count_to_text': utils.byte_count_to_text,
         }
 
@@ -57,13 +57,7 @@ def create_app(command: commands.RunserverCommand,
     @app.route('/')
     def index():
         """Entry page."""
-        web_query = search_helpers.WebQuery.from_request(
-            request_args=request.args,
-            realm_route=constants.ALL_REALMS,
-            theme_route=constants.ALL_THEMES,
-            group_route=constants.ALL_GROUPS,
-        )
-        return flask.redirect(flask.url_for('search') + str(web_query))
+        return flask.render_template('index.html')
 
     @app.route('/search', methods=['GET', 'POST'])
     def search():
@@ -100,14 +94,14 @@ def create_app(command: commands.RunserverCommand,
         #     query.and_.add(group_uuid)
 
         if query:
-            uuids = search_routine.find_records(query, search_index, 10)
+            uuids = search_routine.find_records(query, search_index, 50)
         else:
-            uuids = search_routine.random_records(search_index, 10)
+            uuids = search_routine.random_records(search_index, 50)
 
         paginator = Paginator(
             sequence=uuids,
             current_page=current_page,
-            items_per_page=10,  # FIXME
+            items_per_page=50,  # FIXME
         )
 
         duration = time.perf_counter() - start
@@ -122,7 +116,7 @@ def create_app(command: commands.RunserverCommand,
             'placeholder': '___',
             # 'placeholder': utils_browser.get_placeholder(current_theme),
         }
-        return flask.render_template('content.html', **context)
+        return flask.render_template('search.html', **context)
 
     @app.route('/preview/<uuid>')
     def preview(uuid: str):
@@ -142,6 +136,25 @@ def create_app(command: commands.RunserverCommand,
             'tags': sorted(tags),
         }
         return flask.render_template('preview.html', **context)
+
+    @app.route('/navigation')
+    def navigation():
+        """Show selects for realm/theme."""
+        # session = Session()
+        # meta = database.get_meta(session, uuid) or abort(404)
+        # web_query = search_helpers.WebQuery.from_request(request.args)
+        # tags = {
+        #     *[x.value for x in meta.group.theme.realm.tags],
+        #     *[x.value for x in meta.group.theme.tags],
+        #     *[x.value for x in meta.group.tags],
+        #     *[x.value for x in meta.tags],
+        # }
+        # context = {
+        #     'meta': meta,
+        #     'web_query': web_query,
+        #     'tags': sorted(tags),
+        # }
+        return flask.render_template('navigation.html')
 
     @app.errorhandler(404)
     def page_not_found(exc):

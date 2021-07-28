@@ -1,0 +1,76 @@
+:root {
+    --background-main: #2e3035;
+    --background-envelope: #474a51;
+    --font-color: #a7a7a7;
+
+    --min_width: 800px;
+    --max_width: 1500px;
+    --just_white: #ffffff;
+    --almost_white: #cdcdcd;
+    --darky: #1B1D1F;
+    --bright_blue: #8383f8;
+    --pale_blue: #7676ac;
+    --brightey: #f0d7a6;
+}
+
+html, body {
+    background-color: var(--background-main);
+    height: 100%;
+    font-size: 16pt;
+    font-family: Tahoma, Verdana, Segoe, sans-serif;
+    color: var(--font-color);
+    padding: 0;
+    margin: 0;
+}
+
+hr {
+    border: 0;
+    height: 1px;
+    background-image: linear-gradient(to right, rgba(0, 0, 0, 0),
+    rgba(117, 116, 116, 0.75), rgba(0, 0, 0, 0));
+}
+
+input {
+    color: black;
+    font-size: 16pt;
+    padding: 5px;
+    width: 100%;
+    border-radius: 3px;
+}
+
+.button {
+    text-align: center;
+    background-color: var(--darky);
+    padding: 5px;
+    display: inline-block;
+    text-decoration: none;
+    color: var(--just_white);
+    border: none;
+}
+
+.button:hover {
+    color: var(--darky);
+    background-color: var(--pale_blue);
+}
+
+a {
+    display: inline-block;
+}
+
+a:link {
+    color: var(--just_white);
+    text-decoration: none;
+}
+
+a:visited {
+    color: var(--just_white);
+}
+
+a:hover {
+    color: var(--brightey);
+}
+
+a:active {
+    color: var(--brightey);
+}
+
