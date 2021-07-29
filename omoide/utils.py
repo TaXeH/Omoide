@@ -91,7 +91,7 @@ def sep_digits(number: Union[int, float, str], precision: int = 2) -> str:
             result = '{:,}'.format(value).replace(',', ' ')
 
         if '.' in result:
-            tail = result.rsplit('.')[-1]
+            tail = result.rsplit('.', maxsplit=1)[-1]
             result += '0' * (precision - len(tail))
 
     else:

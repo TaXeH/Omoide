@@ -1,7 +1,66 @@
 {% extends "base_search.html" %}
 
+{% block head %}
+    <link type="text/css"
+          href="{{ url_for('static', filename='navigation.css') }}"
+          rel="stylesheet">
+{% endblock %}
+
 {% block body %}
 
-hello
+    <div class="text_zone">
+        <p>Total items: {{ stats['Total items'] }}</p>
+        <p>Total size: {{ stats['Total size'] }}</p>
+        <p>Oldest item: {{ stats['Oldest item'] }}</p>
+        <p>Newest item: {{ stats['Newest item'] }}</p>
+        <p>Total tags: {{ stats['Total tags'] }}</p>
+    </div>
+
+    <br>
+
+    <div style="max-width: 500px; margin: auto">
+        {% for style, uuid, label in graph %}
+            <div>
+                <div class="{{ style }}">{{ label }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {#-----------------------------------------------------------------------#}
+    <div class="zone">
+        <h1>Tags by frequency</h1>
+    </div>
+    {#-----------------------------------------------------------------------#}
+
+    <div class="text_zone">
+        <div class="content">
+            {% for tag, times in tags_by_frequency %}
+                <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}"
+                   class="one_tag">{{ tag }} x {{ times }}</a>
+            {% endfor %}
+        </div>
+    </div>
+
+    {#-----------------------------------------------------------------------#}
+    <div class="zone">
+        <h1>Tags by alphabet</h1>
+    </div>
+    {#-----------------------------------------------------------------------#}
+
+    <div class="text_zone">
+        <div class="content">
+            {% for letter, tags in tags_by_alphabet %}
+                <ul>
+                    <li><p>{{ letter|upper }}</p></li>
+                    {% for tag in tags %}
+                        <li>
+                            <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}">
+                                {{ tag }}</a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
 
 {% endblock %}

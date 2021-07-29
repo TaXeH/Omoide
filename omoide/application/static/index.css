@@ -16,3 +16,10 @@
 .welcoming_span {
     font-size: 0.8em;
 }
+
+.welcoming_grid {
+    margin: 10px;
+    display: grid;
+    grid-template-columns: 5fr 1fr;
+    grid-column-gap: 20px;
+}

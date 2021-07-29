@@ -17,12 +17,16 @@
 <div class="welcoming_div">
     <span class="welcoming_title">&lt;Omoide&gt;</span>
     <form method="post" action="{{ url_for('search') }}">
-        <label for="query">
-            <input name="query" type="search">
-        </label>
+        <div class="welcoming_grid">
+            <label for="query">
+                <input name="query" type="search" autofocus>
+            </label>
 
-        <input type="submit" class="button" name="search"
-               value="Search"/>
+            <input type="submit" class="button" name="search"
+                   value="Search" autofocus/>
+
+            <span class="note">{{ note }}</span>
+        </div>
     </form>
     <br>
     <span class="welcoming_span">

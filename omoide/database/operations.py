@@ -29,8 +29,6 @@ def drop_database(sources_folder: str, filename: str,
         filesystem.delete_file(path)
     except FileNotFoundError:
         pass
-    except OSError:
-        raise
     else:
         dropped = True
 

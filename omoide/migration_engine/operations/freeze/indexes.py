@@ -6,6 +6,7 @@ helps limiting amount of database requests.
 """
 from sqlalchemy.orm import Session
 
+from omoide import infra
 from omoide.database import models
 
 _META_REALMS_CACHE = {}
@@ -13,12 +14,12 @@ _META_THEMES_CACHE = {}
 _META_GROUPS_CACHE = {}
 
 
-def build_indexes(session: Session) -> int:
+def build_indexes(session: Session, stdout: infra.STDOut) -> int:
     """Create fast lookup tables."""
     new_values = 0
-    new_values += build_index_tags(session)
-    new_values += build_index_permissions(session)
-    new_values += build_index_meta(session)
+    new_values += build_index_tags(session, stdout)
+    new_values += build_index_permissions(session, stdout)
+    new_values += build_index_meta(session, stdout)
     # TODO - add search enhancements
     return new_values
 
@@ -56,8 +57,9 @@ def lazy_get_group(meta: models.Meta) -> models.Group:
     return value
 
 
-def build_index_tags(session: Session) -> int:
+def build_index_tags(session: Session, stdout: infra.STDOut) -> int:
     """Create indexes for tags."""
+    stdout.print('\tBuilding index for tags')
     new_values = 0
 
     for meta in session.query(models.Meta).all():
@@ -82,8 +84,9 @@ def build_index_tags(session: Session) -> int:
     return new_values
 
 
-def build_index_permissions(session: Session) -> int:
+def build_index_permissions(session: Session, stdout: infra.STDOut) -> int:
     """Create indexes for permissions."""
+    stdout.print('\tBuilding index for permissions')
     new_values = 0
 
     for meta in session.query(models.Meta).all():
@@ -108,8 +111,10 @@ def build_index_permissions(session: Session) -> int:
     return new_values
 
 
-def build_index_meta(session: Session) -> int:
+def build_index_meta(session: Session, stdout: infra.STDOut) -> int:
     """Create simplified table for thumbnail information."""
+    stdout.print('\tBuilding index for metas')
+
     all_metas = list(session.query(models.Meta).all())
     new_values = len(all_metas)
 

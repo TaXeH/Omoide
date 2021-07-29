@@ -1,5 +1,6 @@
 :root {
     --background-main: #2e3035;
+    --background-dark: #1a1b1d;
     --background-envelope: #474a51;
     --font-color: #a7a7a7;
 
@@ -15,6 +16,8 @@
 
 html, body {
     background-color: var(--background-main);
+    background-image: linear-gradient(var(--background-main), var(--background-dark));
+    background-attachment: fixed;
     height: 100%;
     font-size: 16pt;
     font-family: Tahoma, Verdana, Segoe, sans-serif;
@@ -36,6 +39,10 @@ input {
     padding: 5px;
     width: 100%;
     border-radius: 3px;
+}
+
+textarea:focus, input:focus {
+    outline: none;
 }
 
 .button {
@@ -74,3 +81,8 @@ a:active {
     color: var(--brightey);
 }
 
+.note {
+    margin-top: 5px;
+    font-size: 12pt;
+    text-align: left;
+}

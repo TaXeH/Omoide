@@ -207,7 +207,7 @@ def perform_freeze(command: commands.FreezeCommand,
         filesystem=filesystem,
         stdout=stdout,
     )
-    stdout.magenta(f'Successfully created static database')
+    stdout.magenta('Successfully created static database')
 
 
 def perform_runserver(command: commands.RunserverCommand,

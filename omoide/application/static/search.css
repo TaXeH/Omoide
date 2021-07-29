@@ -5,6 +5,13 @@
     grid-column-gap: 20px;
 }
 
+.envelope_container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
 .envelope {
     overflow: hidden;
     border-radius: 3px;
@@ -16,11 +23,7 @@
     padding: 0;
 }
 
-.note {
-    margin-top: 5px;
-    font-size: 12pt;
-}
-
 img {
     display: block;
+    /*min-width: 384px;*/
 }

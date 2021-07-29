@@ -26,13 +26,13 @@
                        type="search"
                        value="{{ user_query }}"
                        class="query_input"
-                       placeholder="{{ placeholder }}">
+                       placeholder="{{ placeholder }}" autofocus>
             </label>
 
             <input type="submit"
                    class="button"
                    name="search"
-                   value="Search"/>
+                   value="Search" autofocus/>
 
             <a href="{{ url_for('navigation') }}" class="button">Navigation</a>
 
@@ -45,6 +45,8 @@
 <hr>
 
 {% block body %}{% endblock %}
+
+<!--{{ injection|safe }}-->
 
 </body>
 </html>

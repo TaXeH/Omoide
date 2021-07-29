@@ -34,13 +34,13 @@ def walk(folder: str, filesystem: infra.Filesystem, branch: str = 'all',
          leaf: str = 'all') -> Iterator[Tuple[str, str, str]]:
     """Iterate on nested folders."""
     for current_branch in filesystem.list_folders(folder):
-        if branch != 'all' and branch != current_branch:
+        if branch not in ('all', current_branch):
             continue
 
         branch_folder = filesystem.join(folder, current_branch)
         for current_leaf in filesystem.list_folders(branch_folder):
 
-            if leaf != 'all' and leaf != current_leaf:
+            if leaf not in ('all', current_leaf):
                 continue
 
             leaf_folder = filesystem.join(branch_folder, current_leaf)

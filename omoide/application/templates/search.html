@@ -1,17 +1,11 @@
 {% extends "base_search.html" %}
 {% from "macros.html" import pagination %}
 
-{% block head %}
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='flexmasonry.css') }}">
-{% endblock %}
-
-
 {% block body %}
 
 {{ pagination(paginator, web_query) }}
 
-<div class="grid">
+<div class="envelope_container">
     {% for meta in paginator %}
         <div>
             <div class="envelope">
@@ -25,8 +19,5 @@
 </div>
 
 {{ pagination(paginator, web_query) }}
-
-<script src="{{ url_for('static', filename='flexmasonry.js') }}"></script>
-<script src="{{ url_for('static', filename='code.js') }}"></script>
 
 {% endblock %}

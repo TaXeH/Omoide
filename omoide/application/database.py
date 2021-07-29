@@ -1,3 +1,4 @@
+import json
 from collections import defaultdict
 from typing import Optional
 
@@ -84,3 +85,20 @@ def get_index(session: Session) -> Index:
     )
 
     return index
+
+
+def get_graph(session: Session) -> dict:
+    text = session.query(models.Helper).where(
+        models.Helper.key == 'graph').one().value
+    return json.loads(text)
+
+
+def get_stats(session: Session, current_realm: str,
+              current_theme: str) -> dict:
+    key = f'stats__{current_realm}__{current_theme}'
+    item = session.query(models.Helper).where(
+        models.Helper.key == key).first()
+    if item is None:
+        return {}
+
+    return json.loads(item.value)

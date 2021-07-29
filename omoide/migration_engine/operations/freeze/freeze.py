@@ -11,7 +11,8 @@ from omoide import constants
 from omoide import infra
 from omoide.migration_engine import persistent
 from omoide.database import operations
-from omoide.migration_engine.operations.freeze.indexes import build_indexes
+from omoide.migration_engine.operations.freeze import indexes
+from omoide.migration_engine.operations.freeze import helpers
 
 
 def act(command: commands.FreezeCommand,
@@ -58,7 +59,8 @@ def act(command: commands.FreezeCommand,
     session_db = SessionDb()
 
     operations.synchronize(session_root, session_db)
-    build_indexes(session_db)
+    indexes.build_indexes(session_db, stdout)
+    helpers.build_helpers(session_db, stdout)
 
     root_db.dispose()
     database.dispose()
