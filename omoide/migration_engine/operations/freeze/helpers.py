@@ -73,15 +73,13 @@ def construct_entities_graph(session: Session, stdout: infra.STDOut) -> int:
         sub_graph = {}
         for theme in realm.themes:
             sub_graph[theme.uuid] = {
-                'uuid': theme.uuid,
                 'label': theme.label,
-                'groups': sorted(x.label for x in theme.groups)
+                'elements': {x.uuid: {'label': x.label} for x in theme.groups}
             }
 
         graph[realm.uuid] = {
-            'uuid': realm.uuid,
             'label': realm.label,
-            'themes': sub_graph
+            'elements': sub_graph
         }
 
     new_helper = models.Helper(

@@ -10,6 +10,7 @@ from omoide import infra
 from omoide.database import operations
 
 
+# pylint: disable=too-many-locals
 def act(command: commands.MigrateCommand,
         filesystem: infra.Filesystem,
         stdout: infra.STDOut,
@@ -45,7 +46,6 @@ def act(command: commands.MigrateCommand,
             folder=leaf_folder,
             filename=constants.LEAF_DB_FILE_NAME,
             filesystem=filesystem,
-            stdout=stdout,
             echo=echo,
         )
 

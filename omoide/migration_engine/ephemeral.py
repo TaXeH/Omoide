@@ -66,6 +66,7 @@ def assert_equal(var1: str, var2: str) -> Optional[NoReturn]:
 class UniqueTagsMixin:
     """Mixin that checks uniqueness."""
 
+    # pylint: disable=no-self-use
     @validator('tags')
     def must_be_unique(cls, value):
         """Raise if items are not unique."""

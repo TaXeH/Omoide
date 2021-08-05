@@ -2,4 +2,4 @@
 ignore-patterns=test_.*?py
 
 [MESSAGES CONTROL]
-disable=too-few-public-methods,import-error,missing-module-docstring,too-many-arguments,fixme,no-self-argument,global-statement,too-many-instance-attributes
+disable=too-few-public-methods,import-error,missing-module-docstring,too-many-arguments,fixme,no-self-argument,global-statement,too-many-instance-attributes,no-self-use,duplicate-code

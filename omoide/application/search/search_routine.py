@@ -20,6 +20,7 @@ def random_records(index: Index, amount: int) -> List[ShallowMeta]:
 
 def find_records(query: Query, index: Index, amount: int) -> List[ShallowMeta]:
     """Return all records, that match to a given query."""
+    assert amount  # FIXME
     # target_uuids = set()
     #
     # if query:

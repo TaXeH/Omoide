@@ -11,6 +11,7 @@ from omoide.database import operations
 from omoide.database.operations import synchronize
 
 
+# pylint: disable=too-many-locals
 def act(command: commands.SyncCommand,
         filesystem: infra.Filesystem,
         stdout: infra.STDOut) -> int:
@@ -35,7 +36,7 @@ def act(command: commands.SyncCommand,
     if needs_schema:
         operations.create_scheme(root_db)
 
-    SessionRoot = sessionmaker(bind=root_db)
+    SessionRoot = sessionmaker(bind=root_db)  # pylint: disable=invalid-name
     session_root = SessionRoot()
 
     total_migrations = 0
@@ -62,6 +63,7 @@ def act(command: commands.SyncCommand,
         if needs_schema:
             operations.create_scheme(branch_db)
 
+        # pylint: disable=invalid-name
         SessionBranch = sessionmaker(bind=branch_db)
         session_branch = SessionBranch()
 
@@ -107,7 +109,7 @@ def sync_leaf(leaf_folder: str, leaf: str, session_branch: Session,
         filesystem=filesystem,
         echo=False,
     )
-    SessionLeaf = sessionmaker(bind=leaf_db)
+    SessionLeaf = sessionmaker(bind=leaf_db)  # pylint: disable=invalid-name
     session_leaf = SessionLeaf()
 
     synchronize(session_from=session_leaf, session_to=session_branch)

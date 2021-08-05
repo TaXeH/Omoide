@@ -10,6 +10,7 @@ from omoide import infra
 from omoide.migration_engine import transient, classes
 
 
+# pylint: disable=too-many-locals
 def act(command: commands.MakeRelocationsCommand,
         filesystem: infra.Filesystem,
         stdout: infra.STDOut) -> int:

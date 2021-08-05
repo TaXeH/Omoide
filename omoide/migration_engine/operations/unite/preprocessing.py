@@ -11,7 +11,7 @@ from omoide.migration_engine import classes
 from omoide.migration_engine import persistent, transient, ephemeral
 from omoide.migration_engine.operations import unite
 
-CAST_TYPES = Union[
+CastTypes = Union[
     transient.TagRealm,
     transient.TagTheme,
     transient.TagGroup,
@@ -84,7 +84,7 @@ def apply_variables(text: str, identity_master: unite.IdentityMaster) -> str:
 
 
 def cast_all(unit: transient.Unit, unit_field: str, entity_field: str,
-             sequence: List[str], target_type: Type[CAST_TYPES], **kwargs):
+             sequence: List[str], target_type: Type[CastTypes], **kwargs):
     """Conversion of a collection of simple textual fields."""
     attribute = getattr(unit, unit_field)
 
@@ -215,7 +215,6 @@ def do_groups(source: ephemeral.Source,
                 leaf_folder,
                 ep_group,
                 uuid_master,
-                identity_master,
                 filesystem,
                 renderer,
                 router
@@ -236,11 +235,11 @@ def do_no_group_metas(source: ephemeral.Source,
                                       filesystem, renderer)
 
 
+# pylint: disable=too-many-locals
 def preprocess_group_meta_pack(unit: transient.Unit,
                                leaf_folder: str,
                                group: ephemeral.Group,
                                uuid_master: unite.UUIDMaster,
-                               identity_master: unite.IdentityMaster,
                                filesystem: infra.Filesystem,
                                renderer: classes.Renderer,
                                router: unite.Router) -> None:
@@ -267,9 +266,8 @@ def preprocess_group_meta_pack(unit: transient.Unit,
     for i, ((name, ext), uuid) in enumerate(zip(filenames, uuids), start=1):
         file_path = filesystem.join(full_path, f'{name}.{ext}')
         media_info = renderer.analyze(file_path, ext)
-        meta_uuid = uuid_master.generate_uuid_meta()
 
-        meta_filename = f'{meta_uuid}.{ext}'
+        meta_filename = f'{uuid}.{ext}'
         common = f'{realm_route}/{theme_route}/{group.route}/{meta_filename}'
 
         path_to_content = (
@@ -301,7 +299,7 @@ def preprocess_group_meta_pack(unit: transient.Unit,
         tr_meta = transient.Meta(
             revision=persistent.get_revision(),
             last_update=persistent.get_now(),
-            uuid=meta_uuid,
+            uuid=uuid,
             realm_uuid=group.realm_uuid,
             theme_uuid=group.theme_uuid,
             group_uuid=group.uuid,
@@ -324,13 +322,14 @@ def preprocess_group_meta_pack(unit: transient.Unit,
 
         cast_all(unit, 'tags_metas', 'value',
                  group.tags, transient.TagMeta,
-                 meta_uuid=meta_uuid)
+                 meta_uuid=uuid)
 
         cast_all(unit, 'permissions_metas', 'value',
                  group.permissions, transient.PermissionMeta,
-                 meta_uuid=meta_uuid)
+                 meta_uuid=uuid)
 
 
+# pylint: disable=too-many-locals
 def preprocess_no_group_meta_pack(unit: transient.Unit,
                                   leaf_folder: str,
                                   ep_meta: ephemeral.Meta,
@@ -356,9 +355,8 @@ def preprocess_no_group_meta_pack(unit: transient.Unit,
         name, ext = filesystem.split_extension(filename)
         file_path = filesystem.join(full_path, filename)
         media_info = renderer.analyze(file_path, ext)
-        meta_uuid = uuid_master.generate_uuid_meta()
 
-        meta_filename = f'{meta_uuid}.{ext}'
+        meta_filename = f'{uuid}.{ext}'
         common = f'{realm_route}/{theme_route}/{group_route}/{meta_filename}'
 
         path_to_content = f'/content/{common}'
@@ -368,7 +366,7 @@ def preprocess_no_group_meta_pack(unit: transient.Unit,
         tr_meta = transient.Meta(
             revision=persistent.get_revision(),
             last_update=persistent.get_now(),
-            uuid=meta_uuid,
+            uuid=uuid,
             realm_uuid=ep_meta.realm_uuid,
             theme_uuid=ep_meta.theme_uuid,
             group_uuid=ep_meta.group_uuid,
@@ -391,11 +389,11 @@ def preprocess_no_group_meta_pack(unit: transient.Unit,
 
         cast_all(unit, 'tags_metas', 'value',
                  ep_meta.permissions, transient.TagMeta,
-                 meta_uuid=meta_uuid)
+                 meta_uuid=uuid)
 
         cast_all(unit, 'permissions_metas', 'value',
                  ep_meta.permissions, transient.PermissionMeta,
-                 meta_uuid=meta_uuid)
+                 meta_uuid=uuid)
 
 
 def do_users(source: ephemeral.Source, unit: transient.Unit) -> None:

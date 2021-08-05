@@ -66,6 +66,7 @@ def act(command: commands.UniteCommand,
     return total_new_units
 
 
+# pylint: disable=too-many-locals
 def make_unit_in_leaf(command: commands.UniteCommand, branch: str, leaf: str,
                       leaf_folder: str, router: unite.Router,
                       identity_master: unite.IdentityMaster,

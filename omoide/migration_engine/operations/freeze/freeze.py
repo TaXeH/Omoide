@@ -52,10 +52,10 @@ def act(command: commands.FreezeCommand,
     if needs_schema:
         operations.create_scheme(database)
 
-    SessionRoot = sessionmaker(bind=root_db)
+    SessionRoot = sessionmaker(bind=root_db)  # pylint: disable=invalid-name
     session_root = SessionRoot()
 
-    SessionDb = sessionmaker(bind=database)
+    SessionDb = sessionmaker(bind=database)  # pylint: disable=invalid-name
     session_db = SessionDb()
 
     operations.synchronize(session_root, session_db)

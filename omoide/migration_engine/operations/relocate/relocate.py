@@ -67,4 +67,3 @@ def relocate_single_file(relocation: classes.Relocation,
         else:
             renderer.resize(path_from, path_to,
                             operation.width, operation.height)
-

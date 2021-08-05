@@ -1,0 +1,30 @@
+.text_zone {
+    background-color: var(--darky);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.zone, .text_zone {
+    max-width: var(--max_width);
+    margin-left: 10%;
+    margin-right: 10%;
+}
+
+.zone h3 {
+    text-align: center;
+}
+
+.content {
+    display: flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.one_tag {
+    border: 1px solid var(--pale_blue);
+    margin: 5px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #1d2b29;
+}

@@ -122,7 +122,7 @@ def extract_flag(name: str, args: List[str],
     return result, resulting_args
 
 
-T = TypeVar('T')
+T = TypeVar('T')  # pylint: disable=invalid-name
 
 
 def _make_common(args: List[str],

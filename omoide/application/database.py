@@ -1,63 +1,83 @@
+# -*- coding: utf-8 -*-
+"""Database tools used specifically by the Application.
+"""
 import json
 from collections import defaultdict
+from contextlib import contextmanager
 from typing import Optional
 
 from sqlalchemy.orm import Session
+from sqlalchemy.orm import sessionmaker
 
 from omoide import constants
 from omoide.application.search.class_index import ShallowMeta, Index
 from omoide.database import models
 
 
-def get_realm_uuid(session: Session,
-                   realm_route: str) -> Optional[str]:
-    if realm_route == constants.ALL_REALMS:
-        return realm_route
-
-    realm = session.query(models.Realm) \
-        .where(models.Realm.route == realm_route).first()
-
-    if realm is None:
-        return None
-
-    return realm.uuid
-
-
-def get_theme_uuid(session: Session,
-                   theme_route: str) -> Optional[str]:
-    if theme_route == constants.ALL_THEMES:
-        return theme_route
-
-    theme = session.query(models.Theme) \
-        .where(models.Theme.route == theme_route).first()
-
-    if theme is None:
-        return None
-
-    return theme.uuid
+@contextmanager
+def session_scope(session_type: sessionmaker):
+    """Provide a transactional scope around a series of operations."""
+    session = session_type()
+    try:
+        yield session
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 
-def get_group_uuid(session: Session,
-                   group_route: str) -> Optional[str]:
-    if group_route == constants.ALL_GROUPS:
-        return group_route
+# def get_realm_uuid(session: Session,
+#                    realm_route: str) -> Optional[str]:
+#     if realm_route == constants.ALL_REALMS:
+#         return realm_route
+#
+#     realm = session.query(models.Realm) \
+#         .where(models.Realm.route == realm_route).first()
+#
+#     if realm is None:
+#         return None
+#
+#     return realm.uuid
 
-    group = session.query(models.Group) \
-        .where(models.Group.route == group_route).first()
 
-    if group is None:
-        return None
+# def get_theme_uuid(session: Session,
+#                    theme_route: str) -> Optional[str]:
+#     if theme_route == constants.ALL_THEMES:
+#         return theme_route
+#
+#     theme = session.query(models.Theme) \
+#         .where(models.Theme.route == theme_route).first()
+#
+#     if theme is None:
+#         return None
+#
+#     return theme.uuid
 
-    return group.uuid
+
+# def get_group_uuid(session: Session,
+#                    group_route: str) -> Optional[str]:
+#     if group_route == constants.ALL_GROUPS:
+#         return group_route
+#
+#     group = session.query(models.Group) \
+#         .where(models.Group.route == group_route).first()
+#
+#     if group is None:
+#         return None
+#
+#     return group.uuid
 
 
-def get_meta(session: Session,
-             meta_uuid: str):
+def get_meta(session: Session, meta_uuid: str) -> models.Meta:
+    """Load instance of Meta from db."""
     return session.query(models.Meta) \
         .where(models.Meta.uuid == meta_uuid).one()
 
 
 def get_index(session: Session) -> Index:
+    """Load instance of Index from db."""
     metas = list(session.query(models.IndexMetas).order_by('number').all())
     all_metas = [
         ShallowMeta(x.meta_uuid, x.number, x.path_to_thumbnail)
@@ -88,78 +108,15 @@ def get_index(session: Session) -> Index:
 
 
 def get_graph(session: Session) -> dict:
-    # text = session.query(models.Helper).where(
-    #     models.Helper.key == 'graph').one().value
-    txt = """
-{
-    "A": {
-        "label": "Basic",
-        "elements": {
-            "A-1": {
-                "label": "Mice and humans",
-                "elements": {
-                    "A-1-1": {
-                        "label": "History"
-                    },
-                    "A-1-2": {
-                        "label": "As pets"
-                    },
-                    "A-1-3": {
-                        "label": "As model organism"
-                    },
-                    "A-1-4": {
-                        "label": "Folk culture"
-                    }
-                }
-            },
-            "A-2": {
-                "label": "Life expectancy"
-            },
-            "A-3": {
-                "label": "Life cycle and reproduction",
-                "elements": {
-                    "A-3-1": {
-                        "label": "Polygamy"
-                    },
-                    "A-3-2": {
-                        "label": "Polyandry"
-                    }
-                }
-            }
-        }
-    },
-    "B": {
-        "label": "Animalia"
-    },
-    "C": {
-        "label": "Senses",
-        "elements": {
-            "C-1": {
-                "label": "Vision"
-            },
-            "C-2": {
-                "label": "Olfaction"
-            },
-            "C-3": {
-                "label": "Tactile"
-            }
-        }
-    },
-    "D": {
-        "label": "Behavior",
-        "elements": {
-            "D-1": {
-                "label": "Social behavior"
-            }
-        }
-    }
-}    
-    """
-    return json.loads(txt)  #FIXME
+    """Load site map as a graph from db."""
+    text = session.query(models.Helper).where(
+        models.Helper.key == 'graph').one().value
+    return json.loads(text)
 
 
 def get_stats(session: Session, current_realm: str,
               current_theme: str) -> dict:
+    """Load statistics for given targets from db."""
     key = f'stats__{current_realm}__{current_theme}'
     item = session.query(models.Helper).where(
         models.Helper.key == key).first()
@@ -167,3 +124,18 @@ def get_stats(session: Session, current_realm: str,
         return {}
 
     return json.loads(item.value)
+
+
+def get_realm_uuid_for_theme_uuid(session: Session, theme_uuid: str,
+                                  previous_realm: str) -> Optional[str]:
+    """Return UUID for realm which holds this theme."""
+    if theme_uuid == constants.ALL_THEMES:
+        return previous_realm
+
+    theme = session.query(models.Theme) \
+        .where(models.Theme.uuid == theme_uuid).first()
+
+    if theme is None:
+        return None
+
+    return theme.realm.uuid

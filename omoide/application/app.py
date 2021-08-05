@@ -27,19 +27,20 @@ def create_app(command: commands.RunserverCommand,
         template_folder=command.template_folder,
         static_folder=command.static_folder,
     )
-    Session = sessionmaker(bind=engine)
+    Session = sessionmaker(bind=engine)  # pylint: disable=invalid-name
     query_builder = search_helpers.QueryBuilder(search_helpers.Query)
 
-    _session = Session()
-    search_index = database.get_index(_session)
-    _session.close()
+    with database.session_scope(Session) as _session:
+        search_index = database.get_index(_session)
+
+    version = f'Version: {constants.VERSION}'
 
     @app.context_processor
     def common_names():
         """Populate context with common names."""
         return {
             'title': '',  # FIXME
-            'note': f'Version: {constants.VERSION}',
+            'note': version,
             'injection': '',  # FIXME
             'byte_count_to_text': utils.byte_count_to_text,
         }
@@ -122,10 +123,11 @@ def create_app(command: commands.RunserverCommand,
     @app.route('/preview/<uuid>')
     def preview(uuid: str):
         """Show description for a single record."""
-        session = Session()
-        meta = database.get_meta(session, uuid) or abort(404)
+        with database.session_scope(Session) as session:
+            meta = database.get_meta(session, uuid) or abort(404)
+
         web_query = search_helpers.WebQuery.from_request(request.args)
-        tags = {
+        all_tags = {
             *[x.value for x in meta.group.theme.realm.tags],
             *[x.value for x in meta.group.theme.tags],
             *[x.value for x in meta.group.tags],
@@ -134,48 +136,77 @@ def create_app(command: commands.RunserverCommand,
         context = {
             'meta': meta,
             'web_query': web_query,
-            'tags': sorted(tags),
+            'tags': sorted(all_tags),
         }
         return flask.render_template('preview.html', **context)
 
-    @app.route('/navigation')
+    @app.route('/tags')
+    def tags():
+        """Show available tags."""
+        with database.session_scope(Session) as session:
+            web_query = search_helpers.WebQuery.from_request(request.args)
+            current_realm = web_query.get('current_realm',
+                                          constants.ALL_REALMS)
+            current_theme = web_query.get('current_theme',
+                                          constants.ALL_THEMES)
+            stats = database.get_stats(session, current_realm, current_theme)
+
+        context = {
+            'web_query': web_query,
+            'stats': stats,
+            'tags_by_frequency': stats.get('Tags by frequency', {}),
+            'tags_by_alphabet': stats.get('Tags by alphabet', {}),
+        }
+        return flask.render_template('tags.html', **context)
+
+    @app.route('/navigation', methods=['GET', 'POST'])
     def navigation():
         """Show selection fields for realm/theme."""
         web_query = search_helpers.WebQuery.from_request(request.args)
+        current_realm = web_query.get('current_realm', constants.ALL_REALMS)
 
         if request.method == 'POST':
-            web_query['q'] = request.form.get('query', '')
+            with database.session_scope(Session) as session:
+                if 'current_theme' in request.form:
+                    theme_uuid = request.form['current_theme']
+                    realm_uuid = database.get_realm_uuid_for_theme_uuid(
+                        session=session,
+                        theme_uuid=theme_uuid,
+                        previous_realm=current_realm,
+                    )
+                    if realm_uuid is None:
+                        abort(404)
+
+                    web_query['current_realm'] = realm_uuid
+                    web_query['current_theme'] = theme_uuid
+
+                elif 'current_realm' in request.form:
+                    web_query['current_realm'] = request.form['current_realm']
+
             return flask.redirect(flask.url_for('navigation') + str(web_query))
 
-        current_realm = web_query.get('current_realm', constants.ALL_REALMS)
-        current_theme = web_query.get('current_theme', constants.ALL_THEMES)
+        with database.session_scope(Session) as session:
+            raw_graph = database.get_graph(session)
 
-        session = Session()
-        raw_graph = database.get_graph(session)
-        # graph = appearance.format_graph(raw_graph,
-        #                                 current_realm, current_theme)
-        stats = database.get_stats(session, current_realm, current_theme)
-
-        dimensions = nav.calculate_table_dimensions(raw_graph)
+        height, width = nav.calculate_table_dimensions(raw_graph)
         initials = []
         coordinates = {}
-        table = nav.generate_empty_table(*dimensions)
+        header = nav.generate_table_header(width)
+        table = nav.generate_empty_table(height, width)
         nav.populate_table(table, raw_graph, initials, coordinates)
         nav.continue_lines(table, initials)
 
         context = {
             'web_query': web_query,
-            # 'graph': graph,
-            # 'stats': stats,
-            'table': table,
-            # 'tags_by_frequency': stats['Tags by frequency'],
-            # 'tags_by_alphabet': stats['Tags by alphabet'],
+            'table': header + table,
         }
         return flask.render_template('navigation.html', **context)
 
     @app.errorhandler(404)
     def page_not_found(exc):
         """Return not found page."""
+        # TODO
+        assert exc
         context = {
             # 'directory': constants.ALL_THEMES,
         }

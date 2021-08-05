@@ -49,8 +49,6 @@ class Filesystem:
         with open(path, mode='w', encoding='utf-8') as file:
             file.write(content)
 
-    # -------------------------------------------------------------------------
-
     @staticmethod
     def read_json(path: str) -> dict:
         """Read json file from the disk."""

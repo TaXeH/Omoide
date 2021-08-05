@@ -7,84 +7,44 @@
 {% endblock %}
 
 {% block body %}
-
-    <table class="nav_table">
-        {% for row in table %}
-            <tr>
-                {% for cell in row %}
-                    {% if cell.kind == 'horizontal_line' %}
-                        <td>-------------</td>
-                    {% elif cell.kind == 'vertical_line' %}
-                        <td>│</td>
-                    {% elif cell.kind == 'triplet_bottom' %}
-                        <td>┬</td>
-                    {% elif cell.kind == 'triplet_right' %}
-                        <td>├</td>
-                    {% elif cell.kind == 'corner' %}
-                        <td>└</td>
-                    {% elif cell.kind == 'text' %}
-                        <td>{{ cell.label }}</td>
-                    {% else %}
-                        <td>&nbsp;</td>
-                    {% endif %}
-                {% endfor %}
-            </tr>
-        {% endfor %}
-    </table>
-
-    {#    <div class="text_zone">#}
-    {#        <p>Total items: {{ stats['Total items'] }}</p>#}
-    {#        <p>Total size: {{ stats['Total size'] }}</p>#}
-    {#        <p>Oldest item: {{ stats['Oldest item'] }}</p>#}
-    {#        <p>Newest item: {{ stats['Newest item'] }}</p>#}
-    {#        <p>Total tags: {{ stats['Total tags'] }}</p>#}
-    {#    </div>#}
-
-    <br>
-
-    <div style="max-width: 500px; margin: auto">
-        {% for style, uuid, label in graph %}
-            <div>
-                <div class="{{ style }}">{{ label }}</div>
-            </div>
-        {% endfor %}
-    </div>
-
-    {#-----------------------------------------------------------------------#}
-    {#    <div class="zone">#}
-    {#        <h1>Tags by frequency</h1>#}
-    {#    </div>#}
-    {#-----------------------------------------------------------------------#}
-    {##}
-    {#    <div class="text_zone">#}
-    {#        <div class="content">#}
-    {#            {% for tag, times in tags_by_frequency %}#}
-    {#                <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}"#}
-    {#                   class="one_tag">{{ tag }} x {{ times }}</a>#}
-    {#            {% endfor %}#}
-    {#        </div>#}
-    {#    </div>#}
-    {##}
-    {#-----------------------------------------------------------------------#}
-    {#    <div class="zone">#}
-    {#        <h1>Tags by alphabet</h1>#}
-    {#    </div>#}
-    {#-----------------------------------------------------------------------#}
-    {##}
-    {#    <div class="text_zone">#}
-    {#        <div class="content">#}
-    {#            {% for letter, tags in tags_by_alphabet %}#}
-    {#                <ul>#}
-    {#                    <li><p>{{ letter|upper }}</p></li>#}
-    {#                    {% for tag in tags %}#}
-    {#                        <li>#}
-    {#                            <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}">#}
-    {#                                {{ tag }}</a>#}
-    {#                        </li>#}
-    {#                    {% endfor %}#}
-    {#                </ul>#}
-    {#            {% endfor %}#}
-    {#        </div>#}
-    {#    </div>#}
+    <form method="POST">
+        <table class="nav_table">
+            {% for row in table %}
+                <tr>
+                    {% for cell in row %}
+                        {% if cell.kind == 'horizontal_line' %}
+                            <td>─</td>
+                        {% elif cell.kind == 'vertical_line' %}
+                            <td>│</td>
+                        {% elif cell.kind == 'triplet_bottom' %}
+                            <td>┬</td>
+                        {% elif cell.kind == 'triplet_right' %}
+                            <td>├</td>
+                        {% elif cell.kind == 'corner' %}
+                            <td>└</td>
+                        {% elif cell.kind == 'text' %}
+                            <td>
+                                {% if loop.index0 == 0 %}
+                                    <button type="submit"
+                                            name="current_realm"
+                                            value="{{ cell.identifier }}"
+                                            class="nav_text hoverable_button">{{ cell.label }}</button>
+                                {% elif loop.index0 == 2 %}
+                                    <button type="submit"
+                                            name="current_theme"
+                                            value="{{ cell.identifier }}"
+                                            class="nav_text hoverable_button">{{ cell.label }}</button>
+                                {% else %}
+                                    <span class="nav_text">{{ cell.label }}</span>
+                                {% endif %}
+                            </td>
+                        {% else %}
+                            <td>&nbsp;</td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </form>
 
 {% endblock %}

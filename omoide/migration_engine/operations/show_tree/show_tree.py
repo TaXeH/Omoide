@@ -19,5 +19,9 @@ def act(command: commands.ShowTreeCommand,
         tree[branch].append(leaf)
         total += 1
 
-    print(tree)
+    for i, (branch, leaves) in enumerate(tree.items(), start=1):
+        stdout.print(f'{i}. {branch}')
+        for j, leaf in enumerate(sorted(leaves), start=1):
+            stdout.print(f'\t{j}. {leaf}')
+
     return total

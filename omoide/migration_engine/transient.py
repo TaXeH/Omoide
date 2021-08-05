@@ -115,46 +115,55 @@ class User(BaseUnitElement):
 
 
 class TagRealm(BaseUnitElement):
+    """Tag model."""
     realm_uuid: str
     value: str
 
 
 class TagTheme(BaseUnitElement):
+    """Tag model."""
     theme_uuid: str
     value: str
 
 
 class TagGroup(BaseUnitElement):
+    """Tag model."""
     group_uuid: str
     value: str
 
 
 class TagMeta(BaseUnitElement):
+    """Tag model."""
     meta_uuid: str
     value: str
 
 
 class PermissionRealm(BaseUnitElement):
+    """Permission model."""
     realm_uuid: str
     value: str
 
 
 class PermissionTheme(BaseUnitElement):
+    """Permission model."""
     theme_uuid: str
     value: str
 
 
 class PermissionGroup(BaseUnitElement):
+    """Permission model."""
     group_uuid: str
     value: str
 
 
 class PermissionMeta(BaseUnitElement):
+    """Permission model."""
     meta_uuid: str
     value: str
 
 
 class PermissionUser(BaseUnitElement):
+    """Permission model."""
     user_uuid: str
     value: str
 
