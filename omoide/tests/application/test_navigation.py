@@ -82,7 +82,7 @@ def test_calculate_graph_dimensions(reference_graph):
 
 def test_calculate_table_dimensions(reference_graph):
     rows, cols = navigation.calculate_table_dimensions(reference_graph)
-    assert rows == 23
+    assert rows == 12
     assert cols == 5
 
 
@@ -98,14 +98,41 @@ def test_generate_empty_table():
 
 
 def test_populate_table(reference_graph):
-    print()
     rows, cols = navigation.calculate_table_dimensions(reference_graph)
     table = navigation.generate_empty_table(rows, cols)
-    navigation.populate_table(table, reference_graph)
+    initials = []
+    coordinates = {}
+    navigation.populate_table(table, reference_graph, initials, coordinates)
+    navigation.continue_lines(table, initials)
+
     text = navigation.stringify_table(table, width=13, verbose=True)
-    print(text)
-    # assert text == """
-# [_____][_____][_____]
-# [_____][_____][_____]
-# [_____][_____][_____]
-#         """.strip()
+    assert text == """
+[Basic________][──────┬──────][Mice and huma][──────┬──────][History______]
+[_____________][______│______][_____________][______├──────][As pets______]
+[_____________][______│______][_____________][______├──────][As model orga]
+[_____________][______│______][_____________][______└──────][Folk culture_]
+[_____________][______├──────][Life expectan][_____________][_____________]
+[_____________][______└──────][Life cycle an][──────┬──────][Polygamy_____]
+[_____________][_____________][_____________][______└──────][Polyandry____]
+[Animalia_____][_____________][_____________][_____________][_____________]
+[Senses_______][──────┬──────][Vision_______][_____________][_____________]
+[_____________][______├──────][Olfaction____][_____________][_____________]
+[_____________][______└──────][Tactile______][_____________][_____________]
+[Behavior_____][─────────────][Social behavi][_____________][_____________]
+        """.strip()
+
+    text = navigation.stringify_table(table, width=13, verbose=False)
+    assert text == """
+Basic        ──────┬──────Mice and huma──────┬──────History      
+                   │                         ├──────As pets      
+                   │                         ├──────As model orga
+                   │                         └──────Folk culture 
+                   ├──────Life expectan                          
+                   └──────Life cycle an──────┬──────Polygamy     
+                                             └──────Polyandry    
+Animalia                                                         
+Senses       ──────┬──────Vision                                 
+                   ├──────Olfaction                              
+                   └──────Tactile                                
+Behavior     ─────────────Social behavi    
+        """.strip() + '                          '

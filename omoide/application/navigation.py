@@ -24,9 +24,11 @@ compact, but I had to mix different entities in single line.
 Resulting algorithm is less efficient than it could be, but I prefer
 using simple code instead of fighting for CPU usage.
 """
-from itertools import chain, repeat
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 
+from colorama import init, Fore
+
+init(autoreset=True)
 reference_graph = {
     'A': {
         'label': 'Basic',
@@ -91,107 +93,9 @@ reference_graph = {
     }
 }
 
-
-# @dataclass
-# class ContentType:
-#     """Possible content of table cell."""
-#     kind: str = 'empty'
-#
-#
-# @dataclass
-# class ContentTypeGeometry(ContentType):
-#     """Possible geometric content of table cell."""
-#     is_active: bool = False
-#
-#
-# @dataclass
-# class ContentEmpty(ContentType):
-#     """Empty cell."""
-#     kind = 'empty'
-#
-#     def __repr__(self):
-#         return ' '.center(19, ' ')
-#
-#
-# @dataclass
-# class ContentHorLine(ContentTypeGeometry):
-#     """Horizontal line."""
-#     kind = 'horizontal_line'
-#
-#     def __repr__(self):
-#         if self.is_active:
-#             return '═' * 19
-#         return '─' * 19
-#
-#
-# @dataclass
-# class ContentVerLine(ContentTypeGeometry):
-#     """Horizontal line."""
-#     kind = 'vertical_line'
-#
-#     def __repr__(self):
-#         if self.is_active:
-#             return '║'.center(19, ' ')
-#         return '│'.center(19, ' ')
-#
-#
-# @dataclass
-# class ContentCorner(ContentTypeGeometry):
-#     """Turning line."""
-#     kind = 'corner_line'
-#
-#     def __repr__(self):
-#         if self.is_active:
-#             return '         ╚═════════'
-#         return '         └─────────'
-#
-#
-# @dataclass
-# class ContentBottomTriple(ContentTypeGeometry):
-#     """Turning line."""
-#     kind = 'bottom_triple'
-#
-#     def __repr__(self):
-#         if self.is_active:
-#             return '╦'.center(19, '═')
-#         return '┬'.center(19, '─')
-#
-#
-# @dataclass
-# class ContentRightTriple(ContentTypeGeometry):
-#     """Turning line."""
-#     kind = 'right_triple'
-#
-#     def __repr__(self):
 #         if self.is_active:
 #             return '         ╠═════════'
 #         return '         ├─────────'
-#
-#
-# @dataclass
-# class ContentButton(ContentType):
-#     """Realm/theme/group."""
-#     link: str = ''
-#     label: str = '?'
-#     kind = 'button'
-#
-#     def __repr__(self):
-#         return '{:19}'.format(self.label[:19])
-#
-#
-# def is_active_realm(current_realm: str) -> str:
-#     """Choose style for realm."""
-#     if current_realm == constants.ALL_REALMS:
-#         return 'active_button'
-#     return 'passive_button'
-#
-#
-# def is_active_theme(current_theme: str) -> str:
-#     """Choose style for theme."""
-#     if current_theme == constants.ALL_THEMES:
-#         return 'active_button'
-#     return 'passive_button'
-
 
 # def create_first_table_row(current_realm: str,
 #                            current_theme: str) -> List[ContentType]:
@@ -207,57 +111,24 @@ reference_graph = {
 #         ContentGeometry(style='empty_geometry'),
 #         ContentGeometry(style='empty_geometry'),
 #     ]
-
-
-# def _empty_table_row() -> TableRow:
-#     """Create empty row of the table."""
-#     row = TableRow(
-#         cells=[ContentGeometry(style='empty_geometry')] * 5
-#     )
-#     return row
-
-
-# def generate_navigation_table(graph: dict, current_realm: str,
-#                               current_theme: str) -> List[TableRow]:
-#     """Create model for navigation table."""
-#     table = [
-#         _first_table_row(current_realm, current_theme),
-#         _empty_table_row(),
-#     ]
-#
-#     sequence: List[ContentType] = []
-#     for realm_uuid, realm_contents in graph.items():
-#         sequence.append(ContentButton(style=is_active_realm(current_realm),
-#                                       link=realm_uuid,
-#                                       label=realm_contents['label']))
-#
-#         elements = realm_contents.get('elements', {})
-#         if elements:
-#             sequence.append(ContentGeometry(style='horizontal_line'))
-#             generate_sub_unit(sequence, realm_contents['elements'],
-#                               current_theme)
-#         else:
-#             sequence.append(ContentGeometry(style='empty_geometry'))
-#             sequence.append(ContentGeometry(style='empty_geometry'))
-#             sequence.append(ContentGeometry(style='empty_geometry'))
-#             sequence.append(ContentGeometry(style='empty_geometry'))
-#
-#     for line in utils.group_to_size(sequence, 5):
-#         table.append(TableRow(cells=list(line)))
-#     return table
+HIGHLIGHT_SIMPLE = 'simple'
+HIGHLIGHT_RIGHT = 'right'
+HIGHLIGHT_BOTTOM = 'bottom'
 
 
 class Cell:
     """Regular element of a table."""
 
     def __init__(self, kind: str, identifier: str = '',
-                 label: str = '') -> None:
+                 label: str = '', highlight_type: str = '') -> None:
         """Initialize instance."""
         self.kind = kind
         self.identifier = identifier
         self.label = label
+        self.highlight_type = highlight_type
 
-    def __repr__(self):
+    def __repr__(self) -> str:
+        """Return textual representation."""
         return self.kind
 
     def as_str(self, width: int, verbose: bool) -> str:
@@ -269,36 +140,25 @@ class Cell:
 
         if self.kind == 'empty':
             output = spacer * width
+
         elif self.kind == 'text':
             output = self.label[:width].ljust(width, spacer)
 
         elif self.kind == 'horizontal_line':
             output = '─' * width
-        elif self.kind == 'horizontal_line_active':
-            output = '═' * width
 
         elif self.kind == 'vertical_line':
             output = '│'.center(width, spacer)
-        elif self.kind == 'vertical_line_active':
-            output = '║'.center(width, spacer)
 
         elif self.kind == 'triplet_bottom':
             output = '┬'.center(width, '─')
-        elif self.kind == 'triplet_bottom_active':
-            output = '┬'.center(width, '─')
-        elif self.kind == 'triplet_bottom_semi_active':
-            output = '╤'.center(width, '═')
+
         elif self.kind == 'triplet_right':
             output = spacer * (width // 2) + '├' + '─' * (width // 2)
-        elif self.kind == 'triplet_right_active':
-            output = spacer * (width // 2) + '╠' + '═' * (width // 2)
-        elif self.kind == 'triplet_right_semi_active':
-            output = spacer * (width // 2) + '╞' + '═' * (width // 2)
 
         elif self.kind == 'corner':
             output = spacer * (width // 2) + '└' + '─' * (width // 2)
-        elif self.kind == 'corner_active':
-            output = spacer * (width // 2) + '╚' + '═' * (width // 2)
+
         else:
             output = '?' * width
 
@@ -319,6 +179,10 @@ def calculate_graph_dimensions(graph: dict, *,
 
     Height corresponds to amount of terminal (non nested) elements and
     defines how many lines will be used to draw the graph.
+
+    >>> demo = {'x': {'elements': {'y': {}}, 'z': {}}}
+    >>> calculate_graph_dimensions(demo)
+    (1, 2)
     """
     height = 0
     max_depth = depth
@@ -342,7 +206,7 @@ def calculate_graph_dimensions(graph: dict, *,
 def calculate_table_dimensions(graph: dict) -> Tuple[int, int]:
     """Return amount of (rows, cols) needed to build a table."""
     height, width = calculate_graph_dimensions(graph)
-    return height, width + width - 1  # FIXME
+    return height, width + width - 1
 
 
 def generate_empty_table(rows: int, cols: int) -> List[List[Cell]]:
@@ -352,24 +216,9 @@ def generate_empty_table(rows: int, cols: int) -> List[List[Cell]]:
     ]
 
 
-def extend_highlight(highlight: List[str], table_width: int) -> List[str]:
-    """Extend highlight to a full table size.
-
-    >>> extend_highlight(['a', 'b'], table_width=7)
-    ['a', '', 'b', '', 'all', '', 'all']
-    """
-    graph_width = table_width - (table_width // 2)
-    output: List[str] = highlight + ['all'] * (graph_width - len(highlight))
-    output = list(chain.from_iterable(zip(output, repeat(''))))
-
-    if output[-1] == '':
-        output.pop()
-
-    return output
-
-
 def populate_table(table: List[List[Cell]], graph: dict,
                    initials: List[Tuple[int, int]],
+                   coordinates: Dict[str, Tuple[int, int]],
                    row: int = 0, col: int = 0) -> int:
     """Transform graph into table contents."""
     row_shift = 0
@@ -377,35 +226,26 @@ def populate_table(table: List[List[Cell]], graph: dict,
 
     for i, (identifier, contents) in enumerate(graph.items(), start=1):
         elements = contents.get('elements', {})
+        label = contents.get('label', '???')
 
-        table[row + row_shift][col] = Cell(
-            kind='text',
-            identifier=identifier,
-            label=contents['label'],
-        )
-
+        coordinates[identifier] = (row + row_shift, col)
+        table[row + row_shift][col] = Cell(kind='text',
+                                           identifier=identifier,
+                                           label=label)
         if col > 0:
             if i == 1 and total > 1:
-                table[row + row_shift][col - 1] = Cell(
-                    f'triplet_bottom'
-                )
+                table[row + row_shift][col - 1] = Cell('triplet_bottom')
                 initials.append((row, col - 1))
             elif 1 < i < total:
-                table[row + row_shift][col - 1] = Cell(
-                    f'triplet_right'
-                )
+                table[row + row_shift][col - 1] = Cell('triplet_right')
             elif i == total and total > 1:
-                table[row + row_shift][col - 1] = Cell(
-                    f'corner'
-                )
+                table[row + row_shift][col - 1] = Cell('corner')
             else:
-                table[row + row_shift][col - 1] = Cell(
-                    f'horizontal_line'
-                )
+                table[row + row_shift][col - 1] = Cell('horizontal_line')
 
         if elements:
             new_lines = populate_table(table, elements, initials,
-                                       row + row_shift, col + 2)
+                                       coordinates, row + row_shift, col + 2)
 
             row_shift += max(1, new_lines)
         else:
@@ -424,8 +264,34 @@ def continue_lines(table: List[List[Cell]],
 
             if cell.kind == 'empty':
                 table[sub_row][col] = Cell('vertical_line')
+
             elif cell.kind in ('corner', 'corner_active'):
                 break
+
+
+def apply_highlighting(table: List[List[Cell]], graph: dict,
+                       highlight: List[str],
+                       coordinates: Dict[str, Tuple[int, int]]) -> None:
+    """Mark path of highlighting sequence."""
+    sub_graph = graph
+    for identifier in highlight:
+        if 'elements' in sub_graph:
+            sub_graph = sub_graph['elements'][identifier]
+        else:
+            sub_graph = sub_graph[identifier]
+
+        row, col = coordinates[identifier]
+        table[row][col].highlight_type = HIGHLIGHT_SIMPLE
+
+        if col > 0:
+            table[row][col - 1].highlight_type = HIGHLIGHT_SIMPLE
+
+    for sub_identifier, value in sub_graph.get('elements', {}).items():
+        row, col = coordinates[sub_identifier]
+        table[row][col].highlight_type = HIGHLIGHT_SIMPLE
+
+        if col > 0:
+            table[row][col - 1].highlight_type = HIGHLIGHT_SIMPLE
 
 
 def stringify_table(table: List[List[Cell]],
@@ -436,17 +302,19 @@ def stringify_table(table: List[List[Cell]],
         lines.append(''.join(x.as_str(width, verbose) for x in row))
     return '\n'.join(lines)
 
+# FIXME
+# def main():
+#     rows, cols = calculate_table_dimensions(reference_graph)
+#     table = generate_empty_table(rows, cols)
+#     initials = []
+#     highlight = ['A', 'A-3']
+#     coordinates = {}
+#     populate_table(table, reference_graph, initials, coordinates)
+#     continue_lines(table, initials)
+#     apply_highlighting(table, reference_graph, highlight, coordinates)
+#     text = stringify_table(table, width=13, verbose=False)
+#     print(text)
 
-def main():
-    rows, cols = calculate_table_dimensions(reference_graph)
-    table = generate_empty_table(rows, cols)
-    initials = []
-    # highlight = ['A', 'A-3']
-    populate_table(table, reference_graph, initials)
-    continue_lines(table, initials)
-    text = stringify_table(table, width=13, verbose=False)
-    print(text)
 
-
-if __name__ == '__main__':
-    main()
+# if __name__ == '__main__':
+#     main()

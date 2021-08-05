@@ -13,6 +13,7 @@ from omoide import constants
 from omoide import utils
 from omoide.application import appearance
 from omoide.application import database
+from omoide.application import navigation as nav
 from omoide.application import search as search_helpers
 from omoide.application.search import search_routine
 from omoide.application.search.class_paginator import Paginator
@@ -151,16 +152,24 @@ def create_app(command: commands.RunserverCommand,
 
         session = Session()
         raw_graph = database.get_graph(session)
-        graph = appearance.format_graph(raw_graph,
-                                        current_realm, current_theme)
+        # graph = appearance.format_graph(raw_graph,
+        #                                 current_realm, current_theme)
         stats = database.get_stats(session, current_realm, current_theme)
+
+        dimensions = nav.calculate_table_dimensions(raw_graph)
+        initials = []
+        coordinates = {}
+        table = nav.generate_empty_table(*dimensions)
+        nav.populate_table(table, raw_graph, initials, coordinates)
+        nav.continue_lines(table, initials)
 
         context = {
             'web_query': web_query,
-            'graph': graph,
-            'stats': stats,
-            'tags_by_frequency': stats['Tags by frequency'],
-            'tags_by_alphabet': stats['Tags by alphabet'],
+            # 'graph': graph,
+            # 'stats': stats,
+            'table': table,
+            # 'tags_by_frequency': stats['Tags by frequency'],
+            # 'tags_by_alphabet': stats['Tags by alphabet'],
         }
         return flask.render_template('navigation.html', **context)
 

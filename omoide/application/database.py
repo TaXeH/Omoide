@@ -88,9 +88,74 @@ def get_index(session: Session) -> Index:
 
 
 def get_graph(session: Session) -> dict:
-    text = session.query(models.Helper).where(
-        models.Helper.key == 'graph').one().value
-    return json.loads(text)
+    # text = session.query(models.Helper).where(
+    #     models.Helper.key == 'graph').one().value
+    txt = """
+{
+    "A": {
+        "label": "Basic",
+        "elements": {
+            "A-1": {
+                "label": "Mice and humans",
+                "elements": {
+                    "A-1-1": {
+                        "label": "History"
+                    },
+                    "A-1-2": {
+                        "label": "As pets"
+                    },
+                    "A-1-3": {
+                        "label": "As model organism"
+                    },
+                    "A-1-4": {
+                        "label": "Folk culture"
+                    }
+                }
+            },
+            "A-2": {
+                "label": "Life expectancy"
+            },
+            "A-3": {
+                "label": "Life cycle and reproduction",
+                "elements": {
+                    "A-3-1": {
+                        "label": "Polygamy"
+                    },
+                    "A-3-2": {
+                        "label": "Polyandry"
+                    }
+                }
+            }
+        }
+    },
+    "B": {
+        "label": "Animalia"
+    },
+    "C": {
+        "label": "Senses",
+        "elements": {
+            "C-1": {
+                "label": "Vision"
+            },
+            "C-2": {
+                "label": "Olfaction"
+            },
+            "C-3": {
+                "label": "Tactile"
+            }
+        }
+    },
+    "D": {
+        "label": "Behavior",
+        "elements": {
+            "D-1": {
+                "label": "Social behavior"
+            }
+        }
+    }
+}    
+    """
+    return json.loads(txt)  #FIXME
 
 
 def get_stats(session: Session, current_realm: str,

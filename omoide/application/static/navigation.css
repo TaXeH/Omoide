@@ -1,32 +1,42 @@
-.realm_green {
-    border: 1px solid green;
-    text-align: left;
-}
-
-.realm_red {
+.nav_table {
     border: 1px solid red;
-    text-align: left;
-}
-
-.theme_green {
-    border: 1px solid green;
+    margin: auto;
+    max-width: 1300px;
+    width: 100%;
     text-align: center;
 }
 
-.theme_red {
-    border: 1px solid red;
-    text-align: center;
+.nav_table tr {
+    border: 1px solid #4ab333;
+
+}
+
+.nav_table td {
+    border: 1px solid #2035c2;
+
 }
 
 
-.group_green {
-    border: 1px solid green;
-    text-align: right;
+/* Define the hover highlight color for the table row */
+.realm_cell:hover {
+      background-color: #ffff99;
 }
 
-.group_red {
-    border: 1px solid red;
-    text-align: right;
+
+.active_button {
+    background-color: #3a4919;
+}
+
+.empty_geometry {
+    background-color: #cb1f1f;
+}
+
+.horizontal_line {
+    background-color: #1fc78d;
+}
+
+.passive_button {
+    background-color: grey;
 }
 
 .text_zone {
