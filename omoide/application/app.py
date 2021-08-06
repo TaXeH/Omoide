@@ -19,6 +19,7 @@ from omoide.application.search import search_routine
 from omoide.application.search.class_paginator import Paginator
 
 
+# pylint: disable=too-many-locals,too-many-statements
 def create_app(command: commands.RunserverCommand,
                engine: Engine) -> flask.Flask:
     """Create web application instance."""
@@ -43,6 +44,7 @@ def create_app(command: commands.RunserverCommand,
             'note': version,
             'injection': '',  # FIXME
             'byte_count_to_text': utils.byte_count_to_text,
+            'web_query': '',
         }
 
     @app.route('/content/<path:filename>')
@@ -164,6 +166,7 @@ def create_app(command: commands.RunserverCommand,
         """Show selection fields for realm/theme."""
         web_query = search_helpers.WebQuery.from_request(request.args)
         current_realm = web_query.get('current_realm', constants.ALL_REALMS)
+        current_theme = web_query.get('current_theme', constants.ALL_THEMES)
 
         if request.method == 'POST':
             with database.session_scope(Session) as session:
@@ -196,9 +199,18 @@ def create_app(command: commands.RunserverCommand,
         nav.populate_table(table, raw_graph, initials, coordinates)
         nav.continue_lines(table, initials)
 
+        highlight = nav.highlight_descendants(
+            graph=raw_graph,
+            realm=current_realm,
+            theme=current_theme,
+        )
+
         context = {
             'web_query': web_query,
             'table': header + table,
+            'highlight': highlight,
+            'all_realms_active': current_realm == constants.ALL_REALMS,
+            'all_themes_active': current_theme == constants.ALL_THEMES,
         }
         return flask.render_template('navigation.html', **context)
 

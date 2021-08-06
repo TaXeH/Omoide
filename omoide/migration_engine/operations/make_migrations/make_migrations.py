@@ -7,6 +7,7 @@ from typing import List
 from omoide import commands
 from omoide import constants
 from omoide import infra
+from omoide.infra import walking
 from omoide.migration_engine import classes
 from omoide.migration_engine.operations.make_migrations import schema
 
@@ -15,7 +16,7 @@ def act(command: commands.MakeMigrationsCommand,
         filesystem: infra.Filesystem,
         stdout: infra.STDOut) -> int:
     """Make migrations."""
-    walk = infra.walk_storage_from_command(command, filesystem)
+    walk = walking.walk_storage_from_command(command, filesystem)
 
     total_migrations = 0
     for branch, leaf, leaf_folder in walk:

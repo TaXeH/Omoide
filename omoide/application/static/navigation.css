@@ -39,10 +39,14 @@
     width: 100%;
 }
 
+.active {
+    background-color: var(--bright_blue);
+}
+
 .hoverable_button {
 
 }
 
 .hoverable_button:hover {
-      background-color: #b00e5e;
+    background-color: #b00e5e;
 }

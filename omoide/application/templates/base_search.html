@@ -19,7 +19,7 @@
 <div>
     <form method="post" action="{{ url_for('search') }}">
         <div class="query_container">
-            <a href="{{ url_for('search') }}" class="button">Home</a>
+            <a href="{{ url_for('search') + web_query|string }}" class="button">Home</a>
 
             <label for="query">
                 <input name="query"
@@ -34,8 +34,8 @@
                    name="search"
                    value="Search" autofocus/>
 
-            <a href="{{ url_for('tags') }}" class="button">Tags</a>
-            <a href="{{ url_for('navigation') }}" class="button">Navigation</a>
+            <a href="{{ url_for('tags') + web_query|string }}" class="button">Tags</a>
+            <a href="{{ url_for('navigation') + web_query|string }}" class="button">Navigation</a>
 
             <span></span>
             <span class="note">{{ note }}</span>

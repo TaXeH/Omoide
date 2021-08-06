@@ -9,41 +9,43 @@
 {% block body %}
     <form method="POST">
         <table class="nav_table">
-            {% for row in table %}
+            {%- for row in table %}
                 <tr>
-                    {% for cell in row %}
-                        {% if cell.kind == 'horizontal_line' %}
+                    {%- for cell in row %}
+                        {%- if cell.kind == 'horizontal_line' %}
                             <td>─</td>
-                        {% elif cell.kind == 'vertical_line' %}
+                        {%- elif cell.kind == 'vertical_line' %}
                             <td>│</td>
-                        {% elif cell.kind == 'triplet_bottom' %}
+                        {%- elif cell.kind == 'triplet_bottom' %}
                             <td>┬</td>
-                        {% elif cell.kind == 'triplet_right' %}
+                        {%- elif cell.kind == 'triplet_right' %}
                             <td>├</td>
-                        {% elif cell.kind == 'corner' %}
+                        {%- elif cell.kind == 'corner' %}
                             <td>└</td>
-                        {% elif cell.kind == 'text' %}
+                        {%- elif cell.kind == 'text' %}
                             <td>
-                                {% if loop.index0 == 0 %}
+                                {% set active_realm = ' active' if highlight.get(cell.identifier) or all_realms_active else '' %}
+                                {% set active = ' active' if highlight.get(cell.identifier) or all_themes_active else '' %}
+                                {%- if loop.index0 == 0 -%}
                                     <button type="submit"
                                             name="current_realm"
                                             value="{{ cell.identifier }}"
-                                            class="nav_text hoverable_button">{{ cell.label }}</button>
+                                            class="nav_text hoverable_button{{ active_realm }}">{{ cell.label }}</button>
                                 {% elif loop.index0 == 2 %}
                                     <button type="submit"
                                             name="current_theme"
                                             value="{{ cell.identifier }}"
-                                            class="nav_text hoverable_button">{{ cell.label }}</button>
+                                            class="nav_text hoverable_button{{ active }}">{{ cell.label }}</button>
                                 {% else %}
-                                    <span class="nav_text">{{ cell.label }}</span>
-                                {% endif %}
+                                    <span class="nav_text{{ active }}">{{ cell.label }}</span>
+                                {% endif -%}
                             </td>
-                        {% else %}
+                        {%- else %}
                             <td>&nbsp;</td>
-                        {% endif %}
-                    {% endfor %}
+                        {% endif -%}
+                    {% endfor -%}
                 </tr>
-            {% endfor %}
+            {% endfor -%}
         </table>
     </form>
 

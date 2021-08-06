@@ -39,7 +39,7 @@ Resulting terminal output looks like:
                                                  │
                                                  └──────Polyandry
 """
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Iterator
 
 
 class Cell:
@@ -216,3 +216,30 @@ def stringify_table(table: List[List[Cell]],
     for row in table:
         lines.append(''.join(x.as_str(width, verbose) for x in row))
     return '\n'.join(lines)
+
+
+def iterate_nested(graph: dict) -> Iterator[str]:
+    """Get identifiers for all nested elements."""
+    for identifier, contents in graph.items():
+        yield identifier
+        elements = contents.get('elements', {})
+        yield from iterate_nested(elements)
+
+
+def highlight_descendants(graph: dict,
+                          realm: str, theme: str) -> Dict[str, bool]:
+    """Make a dictionary with highlighted items.
+
+    Key is text element id and value is bool.
+    True for active element, False for passive.
+    """
+    highlight = {realm: True, theme: True}
+
+    realm_contents = graph.get(realm, {})
+    theme_contents = realm_contents.get('elements', {}).get(theme, {})
+    elements = theme_contents.get('elements', {})
+
+    for identifier in iterate_nested(elements):
+        highlight[identifier] = True
+
+    return highlight

@@ -129,8 +129,8 @@ def make_unit(branch: str,
     unit = transient.Unit()
     preprocessing.do_realms(source, unit, router)
     preprocessing.do_themes(source, unit, router)
-    preprocessing.do_groups(source, unit, router, identity_master,
-                            uuid_master, filesystem, leaf_folder, renderer)
+    preprocessing.do_groups(source, unit, router, uuid_master, filesystem,
+                            leaf_folder, renderer)
     preprocessing.do_no_group_metas(source, unit, router, uuid_master,
                                     filesystem, leaf_folder, renderer)
     preprocessing.do_users(source, unit)
