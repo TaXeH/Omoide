@@ -20,9 +20,6 @@ def random_records(index: Index, amount: int) -> List[ShallowMeta]:
 
 def find_records(query: Query, index: Index, amount: int) -> List[ShallowMeta]:
     """Return all records, that match to a given query."""
-    assert amount  # FIXME
-    # target_uuids = set()
-    #
     # if query:
     #     for tag in chain(query.and_, query.or_):
     #         target_uuids.update(index_tags.get(tag, set()))
@@ -79,26 +76,25 @@ def find_records(query: Query, index: Index, amount: int) -> List[ShallowMeta]:
     # chosen_records.sort(key=core.core_utils.meta_sorter,
     #                     reverse=constants.FLAG_DESC in query.flags)
 
+    target_uuids = index.all_uuids
+
+    for tag in query.and_:
+        with_tag = index.get_by_tag(tag)
+        target_uuids = target_uuids.intersection(with_tag)
+
     or_ = set()
     for tag in query.or_:
         with_tag = index.get_by_tag(tag)
         or_ = or_.union(with_tag)
 
-    if query.and_:
-        and_ = index.all_uuids
-        for tag in query.and_:
-            with_tag = index.get_by_tag(tag)
-            and_ = and_.intersection(with_tag)
-    else:
-        and_ = set()
+    if or_:
+        target_uuids = target_uuids.intersection(or_)
 
-    not_ = set()
     for tag in query.not_:
         with_tag = index.get_by_tag(tag)
-        not_ = not_.union(with_tag)
+        target_uuids -= with_tag
 
-    chosen_uuids = (or_ | and_) - not_
-    chosen_meta = [index.by_uuid[x] for x in chosen_uuids]
+    chosen_meta = [index.by_uuid[x] for x in target_uuids]
     chosen_meta.sort(key=lambda meta: meta.number)
 
     return chosen_meta

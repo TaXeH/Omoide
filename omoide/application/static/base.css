@@ -86,3 +86,19 @@ a:active {
     font-size: 12pt;
     text-align: left;
 }
+
+.text_zone {
+    background-color: var(--darky);
+    padding: 5px;
+    border-radius: 10px;
+}
+
+.text_zone {
+    max-width: var(--max_width);
+    margin: 20px 10%;
+}
+
+h3 {
+    text-align: center;
+    margin: 5px;
+}

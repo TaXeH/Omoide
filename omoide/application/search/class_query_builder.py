@@ -41,7 +41,10 @@ class QueryBuilder(Generic[QueryType]):
             return []
 
         if parts[0] not in constants.OPERATORS:
-            parts.insert(0, constants.KW_OR)
+            if len(parts) == 1:
+                parts.insert(0, constants.KW_AND)
+            else:
+                parts.insert(0, constants.KW_OR)
 
         return parts
 

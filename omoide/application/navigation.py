@@ -243,3 +243,26 @@ def highlight_descendants(graph: dict,
         highlight[identifier] = True
 
     return highlight
+
+
+def get_table_with_highlight(graph: dict,
+                             current_realm: str,
+                             current_theme: str
+                             ) -> Tuple[Table, Dict[str, bool]]:
+    """Get all required to draw navigation table."""
+    initials = []
+    coordinates = {}
+
+    height, width = calculate_table_dimensions(graph)
+    header = generate_table_header(width)
+    table = generate_empty_table(height, width)
+    populate_table(table, graph, initials, coordinates)
+    continue_lines(table, initials)
+
+    highlight = highlight_descendants(
+        graph=graph,
+        realm=current_realm,
+        theme=current_theme,
+    )
+
+    return header + table, highlight

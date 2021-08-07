@@ -8,37 +8,61 @@
 
 {% block body %}
     <div class="text_zone">
-        <p>Total items: {{ stats['Total items'] }}</p>
-        <p>Total size: {{ stats['Total size'] }}</p>
-        <p>Oldest item: {{ stats['Oldest item'] }}</p>
-        <p>Newest item: {{ stats['Newest item'] }}</p>
-        <p>Total tags: {{ stats['Total tags'] }}</p>
+        <h3>Statistics</h3>
+    </div>
+
+    <div class="content">
+        <table class="tag_table">
+            <tr>
+                <td>Total items</td>
+                <td>{{ stats['Total items'] }}</td>
+            </tr>
+            <tr>
+                <td>Total size</td>
+                <td>{{ stats['Total size'] }}</td>
+            </tr>
+
+            {%- if stats['Oldest item'] %}
+                <tr>
+                    <td>Oldest item:</td>
+                    <td>{{ stats['Oldest item'] }}</td>
+                </tr>
+            {% endif -%}
+
+            {%- if stats['Newest item'] %}
+                <tr>
+                    <td>Newest item:</td>
+                    <td>{{ stats['Newest item'] }}</td>
+                </tr>
+            {% endif -%}
+
+            <tr>
+                <td>Total tags</td>
+                <td>{{ stats['Total tags'] }}</td>
+            </tr>
+        </table>
     </div>
 
     <br>
 
-    {#    -----------------------------------------------------------------------#}
-    <div class="zone">
-        <h1>Tags by frequency</h1>
-    </div>
-    {#    -----------------------------------------------------------------------#}
+    {% if tags_by_frequency %}
+        <div class="text_zone">
+            <h3>Tags by frequency</h3>
+        </div>
 
-    <div class="text_zone">
         <div class="content">
             {% for tag, times in tags_by_frequency %}
                 <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}"
-                   class="one_tag">{{ tag }} x {{ times }}</a>
+                   class="one_tag">{{ tag }} ⋅ {{ times }}</a>
             {% endfor %}
         </div>
-    </div>
+    {% endif %}
 
-    {#    -----------------------------------------------------------------------#}
-    <div class="zone">
-        <h1>Tags by alphabet</h1>
-    </div>
-    {#    -----------------------------------------------------------------------#}
+    {% if tags_by_alphabet %}
+        <div class="text_zone">
+            <h3>Tags by alphabet</h3>
+        </div>
 
-    <div class="text_zone">
         <div class="content">
             {% for letter, tags in tags_by_alphabet %}
                 <ul>
@@ -52,6 +76,6 @@
                 </ul>
             {% endfor %}
         </div>
-    </div>
+    {% endif %}
 
 {% endblock %}

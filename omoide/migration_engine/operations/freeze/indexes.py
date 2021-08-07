@@ -72,6 +72,9 @@ def build_index_tags(session: Session, stdout: infra.STDOut) -> int:
             *(x.value for x in theme.tags),
             *(x.value for x in group.tags),
             *(x.value for x in meta.tags),
+            realm.uuid,
+            theme.uuid,
+            group.uuid,
         }
         new_values += len(all_tags)
 

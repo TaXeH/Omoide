@@ -26,7 +26,7 @@ def act(command: commands.RunserverCommand,
         folder=command.database_folder,
         filename=filename,
         filesystem=filesystem,
-        echo=True,
+        echo=False,
     )
 
     app = create_app(command, engine)

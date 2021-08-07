@@ -17,9 +17,9 @@
 <body>
 
 <div>
-    <form method="post" action="{{ url_for('search') }}">
+    <form method="post" action="{{ url_for('search') + web_query|string }}">
         <div class="query_container">
-            <a href="{{ url_for('search') + web_query|string }}" class="button">Home</a>
+            <a href="{{ url_for('search') }}" class="button">Home</a>
 
             <label for="query">
                 <input name="query"
