@@ -19,7 +19,7 @@ def act(command: commands.FreezeCommand,
         filesystem: infra.Filesystem,
         stdout: infra.STDOut) -> None:
     """Create static database."""
-    root_db_path = filesystem.join(command.storage_folder,
+    root_db_path = filesystem.join(filesystem.absolute(command.storage_folder),
                                    constants.ROOT_DB_FILE_NAME)
 
     if filesystem.not_exists(root_db_path):
@@ -33,10 +33,14 @@ def act(command: commands.FreezeCommand,
         echo=False,
     )
 
+    db_folder = filesystem.absolute(command.database_folder)
     db_filename = constants.STATIC_DB_FILE_NAME.format(
         today=persistent.get_today()
     )
-    db_path = filesystem.join(command.database_folder, db_filename)
+    db_path = filesystem.join(db_folder, db_filename)
+
+    if not filesystem.exists(db_folder):
+        filesystem.create_directory(db_folder)
 
     if filesystem.exists(db_path):
         stdout.yellow(f'Deleting old target database: {db_path}')
@@ -44,7 +48,7 @@ def act(command: commands.FreezeCommand,
 
     needs_schema = filesystem.not_exists(db_path)
     database = operations.create_database(
-        folder=command.database_folder,
+        folder=db_folder,
         filename=db_filename,
         filesystem=filesystem,
         echo=False,

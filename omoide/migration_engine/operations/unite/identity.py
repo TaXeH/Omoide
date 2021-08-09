@@ -5,6 +5,7 @@
 from itertools import chain
 
 from omoide import constants, infra
+from omoide.infra.walking import walk
 from omoide.migration_engine.operations import unite
 
 
@@ -14,7 +15,7 @@ def gather_existing_identities(storage_folder: str,
                                uuid_master: unite.UUIDMaster,
                                filesystem: infra.Filesystem) -> None:
     """Get all variables and all UUID from existing files."""
-    for branch, leaf, leaf_folder in infra.walk(storage_folder, filesystem):
+    for branch, leaf, leaf_folder in walk(storage_folder, filesystem):
 
         unit_path = filesystem.join(leaf_folder, constants.UNIT_FILE_NAME)
         if filesystem.exists(unit_path):

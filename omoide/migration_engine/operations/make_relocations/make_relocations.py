@@ -7,6 +7,7 @@ from typing import List
 from omoide import commands
 from omoide import constants
 from omoide import infra
+from omoide.infra.walking import walk_sources_from_command
 from omoide.migration_engine import transient, classes
 
 
@@ -15,7 +16,7 @@ def act(command: commands.MakeRelocationsCommand,
         filesystem: infra.Filesystem,
         stdout: infra.STDOut) -> int:
     """Make relocations."""
-    walk = infra.walk_sources_from_command(command, filesystem)
+    walk = walk_sources_from_command(command, filesystem)
 
     total_new_relocations = 0
     for branch, leaf, _ in walk:
