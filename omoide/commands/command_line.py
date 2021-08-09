@@ -159,6 +159,8 @@ def make_operation_runserver(args: List[str],
     host = constants.DEFAULT_SERVER_HOST
     port = constants.DEFAULT_SERVER_PORT
 
+    reload, args = extract_flag('reload', args, default=False)
+
     if args:
         command = args[0]
         parts = command.strip().split(':')
@@ -181,6 +183,7 @@ def make_operation_runserver(args: List[str],
     return instances.RunserverCommand(
         host=host,
         port=port,
+        reload=reload,
         content_folder=content_folder,
         database_folder=database_folder,
         template_folder=constants.DEFAULT_TEMPLATE_FOLDER,

@@ -89,6 +89,7 @@ class RunserverCommand(BaseCommand):
     """Start web application."""
     host: str
     port: int
+    reload: bool
     content_folder: str
     database_folder: str
     template_folder: str

@@ -30,4 +30,4 @@ def act(command: commands.RunserverCommand,
     )
 
     app = create_app(command, engine)
-    app.run(host=command.host, port=command.port, debug=True)
+    app.run(host=command.host, port=command.port, debug=command.reload)

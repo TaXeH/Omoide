@@ -1,7 +1,11 @@
 {% extends "base_search.html" %}
 {% from "macros.html" import if_not_empty %}
-{% from "macros.html" import if_not_empty_key %}
 
+{% block head %}
+    <link type="text/css"
+          href="{{ url_for('static', filename='preview.css') }}"
+          rel="stylesheet">
+{% endblock %}
 
 {% block body %}
     {#    <script>#}
@@ -49,39 +53,7 @@
 
         <div>
             <table class="preview_table">
-                <tr>
-                    <th colspan="2">Information</th>
-                </tr>
-                {{ if_not_empty('Original filename', meta.original_filename) }}
 
-                <tr>
-                    <th colspan="2">Parameters</th>
-                </tr>
-
-                {{ if_not_empty('Width', meta.width, ' px') }}
-                {{ if_not_empty('Height', meta.height, ' px') }}
-                {{ if_not_empty('Resolution', meta.resolution, ' Mpx') }}
-                {{ if_not_empty('Media type', meta.type) }}
-
-                <tr>
-                    <td>Size</td>
-                    <td>{{ byte_count_to_text(meta.size) }}</td>
-                </tr>
-
-                <tr>
-                    <th colspan="2">Tags</th>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <ol>
-                            {% for tag in tags %}
-                                <li>
-                                    <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}">{{ tag }}</a>
-                                </li>
-                            {% endfor %}
-                        </ol>
-                    </td>
-                </tr>
 
                 {% if meta.author or meta.origin_url %}
                     <tr>
@@ -90,8 +62,8 @@
                     {% if meta.origin_url %}
                         <tr>
                             <td>Url</td>
-                            <td class="possible_wide">
-                                <a href="{{ meta.origin_url }}">{{ meta.origin_url }}</a>
+                            <td>
+                                <a href="{{ meta.origin_url }}">Link</a>
                             </td>
                         </tr>
                     {% endif %}
@@ -99,23 +71,59 @@
                     {% if meta.author %}
                         <tr>
                             <td>Author</td>
-                            <td class="possible_wide">{{ meta.author }}</td>
+                            <td>
+                                {{ meta.author }}
+                            </td>
                         </tr>
                     {% endif %}
 
                     {% if meta.author_url %}
                         <tr>
                             <td>Profile</td>
-                            <td class="possible_wide">
-                                <a href="{{ meta.author_url }}">{{ meta.author_url }}</a>
+                            <td>
+                                <a href="{{ meta.author_url }}">Link</a>
                             </td>
                         </tr>
                     {% endif %}
                 {% endif %}
 
+                <tr>
+                    <th colspan="2">Information</th>
+                </tr>
+
+                <td>Size</td>
+                <td>{{ byte_count_to_text(meta.size) }}</td>
+
+                {{ if_not_empty('Width', meta.width, ' px') }}
+                {{ if_not_empty('Height', meta.height, ' px') }}
+                {{ if_not_empty('Resolution', meta.resolution, ' Mpx') }}
+                {{ if_not_empty('Media type', meta.type) }}
+                {{ if_not_empty('Registered on', meta.registered_on) }}
+                {{ if_not_empty('Registered by', meta.registered_by) }}
+
+                {%- if tags %}
+                    <tr>
+                        <th colspan="2">Tags</th>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <ol>
+                                {%- for tag in tags %}
+                                    <li>
+                                        <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}">{{ tag }}</a>
+                                    </li>
+                                {% endfor -%}
+                            </ol>
+                        </td>
+                    </tr>
+                {% endif -%}
+
+
             </table>
         </div>
 
     </div>
+
+    <br>
 
 {% endblock %}

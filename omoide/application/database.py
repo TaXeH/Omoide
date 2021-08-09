@@ -9,7 +9,6 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
-from omoide import constants
 from omoide.application.search.class_index import ShallowMeta, Index
 from omoide.database import models
 
@@ -28,52 +27,10 @@ def session_scope(session_type: sessionmaker):
         session.close()
 
 
-# def get_realm_uuid(session: Session,
-#                    realm_route: str) -> Optional[str]:
-#     if realm_route == constants.ALL_REALMS:
-#         return realm_route
-#
-#     realm = session.query(models.Realm) \
-#         .where(models.Realm.route == realm_route).first()
-#
-#     if realm is None:
-#         return None
-#
-#     return realm.uuid
-
-
-# def get_theme_uuid(session: Session,
-#                    theme_route: str) -> Optional[str]:
-#     if theme_route == constants.ALL_THEMES:
-#         return theme_route
-#
-#     theme = session.query(models.Theme) \
-#         .where(models.Theme.route == theme_route).first()
-#
-#     if theme is None:
-#         return None
-#
-#     return theme.uuid
-
-
-# def get_group_uuid(session: Session,
-#                    group_route: str) -> Optional[str]:
-#     if group_route == constants.ALL_GROUPS:
-#         return group_route
-#
-#     group = session.query(models.Group) \
-#         .where(models.Group.route == group_route).first()
-#
-#     if group is None:
-#         return None
-#
-#     return group.uuid
-
-
-def get_meta(session: Session, meta_uuid: str) -> models.Meta:
+def get_meta(session: Session, meta_uuid: str) -> Optional[models.Meta]:
     """Load instance of Meta from db."""
     return session.query(models.Meta) \
-        .where(models.Meta.uuid == meta_uuid).one()
+        .where(models.Meta.uuid == meta_uuid).first()
 
 
 def get_index(session: Session) -> Index:
@@ -107,13 +64,6 @@ def get_index(session: Session) -> Index:
     return index
 
 
-def get_graph(session: Session) -> dict:
-    """Load site map as a graph from db."""
-    text = session.query(models.Helper).where(
-        models.Helper.key == 'graph').one().value
-    return json.loads(text)
-
-
 def get_stats(session: Session, current_realm: str,
               current_theme: str) -> dict:
     """Load statistics for given targets from db."""
@@ -124,18 +74,3 @@ def get_stats(session: Session, current_realm: str,
         return {}
 
     return json.loads(item.value)
-
-
-def get_realm_uuid_for_theme_uuid(session: Session, theme_uuid: str,
-                                  previous_realm: str) -> Optional[str]:
-    """Return UUID for realm which holds this theme."""
-    if theme_uuid == constants.ALL_THEMES:
-        return previous_realm
-
-    theme = session.query(models.Theme) \
-        .where(models.Theme.uuid == theme_uuid).first()
-
-    if theme is None:
-        return None
-
-    return theme.realm.uuid

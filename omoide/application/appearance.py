@@ -2,7 +2,7 @@
 """Styling things.
 """
 
-from omoide import utils, constants
+from omoide import utils
 
 
 def get_note_on_search(total: int, duration: float) -> str:
@@ -15,12 +15,12 @@ def get_note_on_search(total: int, duration: float) -> str:
     return note
 
 
-def get_placeholder(current_realm: str, current_theme: str) -> str:
+def get_placeholder(current_realm_name: str, current_theme_name: str) -> str:
     """Return specific placeholder if we're not in default theme."""
-    if current_theme != constants.ALL_THEMES:
-        return f'Search on theme "{current_theme}"'
+    if current_theme_name:
+        return f'Search on theme "{current_theme_name}"'
 
-    if current_realm != constants.ALL_REALMS:
-        return f'Search on realm "{current_realm}"'
+    if current_realm_name:
+        return f'Search on realm "{current_realm_name}"'
 
     return ''

@@ -4,7 +4,7 @@
 """
 # search engine
 NEVER_FIND_THIS = 'ʕ•ᴥ•ʔ'
-UNKNOWN = 'UNKNOWN'
+UNKNOWN = 'unknown'
 ALL_REALMS = 'all_realms'
 ALL_THEMES = 'all_themes'
 ALL_GROUPS = 'all_groups'

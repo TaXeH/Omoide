@@ -1,6 +1,7 @@
 {% from "macros.html" import pagination %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <link rel="shortcut icon"
@@ -14,12 +15,15 @@
     {% block head %}{% endblock %}
     <title>{{ title }}</title>
 </head>
-<body>
 
+<body>
 <div>
     <form method="post" action="{{ url_for('search') + web_query|string }}">
         <div class="query_container">
-            <a href="{{ url_for('search') }}" class="button">Home</a>
+
+            <a href="{{ url_for('search') }}"
+               title="Use it to clear search query"
+               class="button">Home</a>
 
             <label for="query">
                 <input name="query"
@@ -34,8 +38,11 @@
                    name="search"
                    value="Search" autofocus/>
 
-            <a href="{{ url_for('tags') + web_query|string }}" class="button">Tags</a>
-            <a href="{{ url_for('navigation') + web_query|string }}" class="button">Navigation</a>
+            <a href="{{ url_for('tags') + web_query|string }}"
+               class="button">Tags</a>
+
+            <a href="{{ url_for('navigation') + web_query|string }}"
+               class="button">Navigation</a>
 
             <span></span>
             <span class="note">{{ note }}</span>
