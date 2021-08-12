@@ -12,13 +12,17 @@
     <link type="text/css"
           href="{{ url_for('static', filename='search.css') }}"
           rel="stylesheet">
+    <script type="text/javascript"
+            src="{{ url_for('static', filename='code.js') }}"></script>
     {% block head %}{% endblock %}
     <title>{{ title }}</title>
 </head>
 
 <body>
 <div>
-    <form method="post" action="{{ url_for('search') + web_query|string }}">
+    <form method="post"
+          action="{{ url_for('search') + web_query|string }}"
+          onsubmit="alterPlus();">
         <div class="query_container">
 
             <a href="{{ url_for('search') }}"
@@ -26,11 +30,12 @@
                class="button">Home</a>
 
             <label for="query">
-                <input name="query"
+                <input id="query_element"
+                       name="query"
                        type="search"
                        value="{{ user_query }}"
                        class="query_input"
-                       placeholder="{{ placeholder }}" autofocus>
+                       placeholder="{{ placeholder }}" autofocus/>
             </label>
 
             <input type="submit"
