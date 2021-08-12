@@ -5,13 +5,18 @@
 from itertools import chain
 
 from omoide import constants, infra
-from omoide.migration_engine.operations import unite
+from omoide.migration_engine.operations.unite \
+    .class_identity_master import IdentityMaster
+from omoide.migration_engine.operations.unite \
+    .class_router import Router
+from omoide.migration_engine.operations.unite \
+    .class_uuid_master import UUIDMaster
 
 
 def gather_existing_identities(storage_folder: str,
-                               router: unite.Router,
-                               identity_master: unite.IdentityMaster,
-                               uuid_master: unite.UUIDMaster,
+                               router: Router,
+                               identity_master: IdentityMaster,
+                               uuid_master: UUIDMaster,
                                filesystem: infra.Filesystem) -> None:
     """Get all variables and all UUID from existing files."""
     for branch, leaf, leaf_folder in infra.walk(storage_folder, filesystem):
@@ -31,7 +36,7 @@ def gather_existing_identities(storage_folder: str,
     uuid_master.clear_queue()
 
 
-def gather_routes_from_unit(raw_unit: dict, router: unite.Router) -> None:
+def gather_routes_from_unit(raw_unit: dict, router: Router) -> None:
     """Find all routes in given unit and store them into router."""
     objects = chain(raw_unit.get('realms', []),
                     raw_unit.get('themes', []),
@@ -42,7 +47,7 @@ def gather_routes_from_unit(raw_unit: dict, router: unite.Router) -> None:
 
 
 def gather_uuids_from_cache(cache: dict,
-                            uuid_master: unite.UUIDMaster) -> None:
+                            uuid_master: UUIDMaster) -> None:
     """Find all UUIDs in given unit and store them into UUID master."""
     for fields in cache.get('variables', {}).values():
         for value in fields.values():
@@ -52,7 +57,7 @@ def gather_uuids_from_cache(cache: dict,
 
 
 def gather_variables_from_cache(branch: str, leaf: str, cache: dict,
-                                identity_master: unite.IdentityMaster) -> None:
+                                identity_master: IdentityMaster) -> None:
     """Find all variables in given cache and store them in Identity master."""
     uuid_type_by_category = {
         'realms': constants.PREFIX_REALM,

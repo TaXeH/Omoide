@@ -13,8 +13,6 @@ from omoide.migration_engine import classes
 from omoide.migration_engine import ephemeral
 from omoide.migration_engine import transient
 from omoide.migration_engine.operations import unite
-from omoide.migration_engine.operations.unite import identity
-from omoide.migration_engine.operations.unite import preprocessing
 
 
 def act(command: commands.UniteCommand,
@@ -27,11 +25,13 @@ def act(command: commands.UniteCommand,
     uuid_master = unite.UUIDMaster()
     renderer = classes.Renderer()
 
-    identity.gather_existing_identities(storage_folder=command.storage_folder,
-                                        router=router,
-                                        identity_master=identity_master,
-                                        uuid_master=uuid_master,
-                                        filesystem=filesystem)
+    unite.identity.gather_existing_identities(
+        storage_folder=command.storage_folder,
+        router=router,
+        identity_master=identity_master,
+        uuid_master=uuid_master,
+        filesystem=filesystem,
+    )
 
     walk = infra.walk_sources_from_command(command, filesystem)
 
@@ -116,7 +116,7 @@ def make_unit(branch: str,
     """Combine all updates in big JSON file."""
     source_path = filesystem.join(leaf_folder, constants.SOURCE_FILE_NAME)
     source_raw_text = filesystem.read_file(source_path)
-    source_text = preprocessing.preprocess_source(
+    source_text = unite.preprocessing.preprocess_source(
         text=source_raw_text,
         branch=branch,
         leaf=leaf,
@@ -127,13 +127,14 @@ def make_unit(branch: str,
     source = ephemeral.Source(**source_dict)
 
     unit = transient.Unit()
-    preprocessing.do_realms(source, unit, router)
-    preprocessing.do_themes(source, unit, router)
-    preprocessing.do_groups(source, unit, router, uuid_master, filesystem,
-                            leaf_folder, renderer)
-    preprocessing.do_no_group_metas(source, unit, router, uuid_master,
-                                    filesystem, leaf_folder, renderer)
-    preprocessing.do_users(source, unit)
+    unite.preprocessing.do_realms(source, unit, router)
+    unite.preprocessing.do_themes(source, unit, router)
+    unite.preprocessing.do_groups(source, unit, router,
+                                  uuid_master, filesystem,
+                                  leaf_folder, renderer)
+    unite.preprocessing.do_no_group_metas(source, unit, router, uuid_master,
+                                          filesystem, leaf_folder, renderer)
+    unite.preprocessing.do_users(source, unit)
 
     return unit
 

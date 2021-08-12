@@ -4,8 +4,8 @@
 """
 from typing import Iterator, Tuple
 
-from omoide import infra
 from omoide.commands import instances
+from omoide.infra.class_filesystem import Filesystem
 
 __all__ = [
     'walk_sources_from_command',
@@ -15,7 +15,7 @@ __all__ = [
 
 
 def walk_sources_from_command(command: instances.FilesRelatedCommand,
-                              filesystem: infra.Filesystem
+                              filesystem: Filesystem
                               ) -> Iterator[Tuple[str, str, str]]:
     """Typical iteration by command settings."""
     return walk(command.sources_folder, filesystem,
@@ -23,14 +23,14 @@ def walk_sources_from_command(command: instances.FilesRelatedCommand,
 
 
 def walk_storage_from_command(command: instances.FilesRelatedCommand,
-                              filesystem: infra.Filesystem
+                              filesystem: Filesystem
                               ) -> Iterator[Tuple[str, str, str]]:
     """Typical iteration by command settings."""
     return walk(command.storage_folder, filesystem,
                 command.branch, command.leaf)
 
 
-def walk(folder: str, filesystem: infra.Filesystem, branch: str = 'all',
+def walk(folder: str, filesystem: Filesystem, branch: str = 'all',
          leaf: str = 'all') -> Iterator[Tuple[str, str, str]]:
     """Iterate on nested folders."""
     for current_branch in filesystem.list_folders(folder):
