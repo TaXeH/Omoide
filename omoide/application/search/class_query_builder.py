@@ -17,7 +17,7 @@ class QueryBuilder(Generic[QueryType]):
     """Helper class that makes query instances.
     """
     string = '|'.join(
-        r'\s?\{}'.format(x) for x in constants.OPERATORS
+        r'\s\{}'.format(x) for x in constants.OPERATORS
     )
     pattern = re.compile('(' + string + ')')
 

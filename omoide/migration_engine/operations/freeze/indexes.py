@@ -76,6 +76,14 @@ def build_index_tags(session: Session, stdout: infra.STDOut) -> int:
             theme.uuid,
             group.uuid,
         }
+
+        for synonym in theme.synonyms:
+            values = {x.value for x in synonym.values}
+            for value in values:
+                if value in all_tags:
+                    all_tags.update(values)
+                    break
+
         new_values += len(all_tags)
 
         for tag in all_tags:

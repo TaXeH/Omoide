@@ -9,7 +9,12 @@ from omoide import constants
 from omoide import infra
 from omoide.migration_engine import classes
 from omoide.migration_engine import persistent, transient, ephemeral
-from omoide.migration_engine.operations import unite
+from omoide.migration_engine.operations.unite \
+    .class_identity_master import IdentityMaster
+from omoide.migration_engine.operations.unite \
+    .class_uuid_master import UUIDMaster
+from omoide.migration_engine.operations.unite \
+    .class_router import Router
 
 CastTypes = Union[
     transient.TagRealm,
@@ -27,8 +32,8 @@ CastTypes = Union[
 
 
 def preprocess_source(text: str, branch: str, leaf: str,
-                      identity_master: unite.IdentityMaster,
-                      uuid_master: unite.UUIDMaster) -> str:
+                      identity_master: IdentityMaster,
+                      uuid_master: UUIDMaster) -> str:
     """Convert template of the sources file into renderable one.
 
     Here we're substituting variables and extending contents.
@@ -47,8 +52,8 @@ def apply_global_variables(source: str) -> str:
 
 
 def generate_variables(text: str, branch: str, leaf: str,
-                       identity_master: unite.IdentityMaster,
-                       uuid_master: unite.UUIDMaster) -> str:
+                       identity_master: IdentityMaster,
+                       uuid_master: UUIDMaster) -> str:
     """Substitute UUID variables in the source text."""
     pattern = re.compile(constants.UUID_MAKE_VARIABLE_PATTERN, re.IGNORECASE)
 
@@ -71,7 +76,7 @@ def generate_variables(text: str, branch: str, leaf: str,
     return text
 
 
-def apply_variables(text: str, identity_master: unite.IdentityMaster) -> str:
+def apply_variables(text: str, identity_master: IdentityMaster) -> str:
     """Replace variable names with values."""
     variables = re.findall(constants.UUID_VARIABLE_PATTERN, text)
 
@@ -100,7 +105,7 @@ def cast_all(unit: transient.Unit, unit_field: str, entity_field: str,
 
 def do_realms(source: ephemeral.Source,
               unit: transient.Unit,
-              router: unite.Router) -> None:
+              router: Router) -> None:
     """Construct transient entities from ephemeral ones."""
     for ep_realm in source.realms:
         cast_all(unit, 'tags_realms', 'value',
@@ -123,7 +128,7 @@ def do_realms(source: ephemeral.Source,
 
 def do_themes(source: ephemeral.Source,
               unit: transient.Unit,
-              router: unite.Router) -> None:
+              router: Router) -> None:
     """Construct transient entities from ephemeral ones."""
     revision = persistent.get_revision()
     now = persistent.get_now()
@@ -181,8 +186,8 @@ def do_themes(source: ephemeral.Source,
 
 def do_groups(source: ephemeral.Source,
               unit: transient.Unit,
-              router: unite.Router,
-              uuid_master: unite.UUIDMaster,
+              router: Router,
+              uuid_master: UUIDMaster,
               filesystem: infra.Filesystem,
               leaf_folder: str,
               renderer: classes.Renderer) -> None:
@@ -222,8 +227,8 @@ def do_groups(source: ephemeral.Source,
 
 def do_no_group_metas(source: ephemeral.Source,
                       unit: transient.Unit,
-                      router: unite.Router,
-                      uuid_master: unite.UUIDMaster,
+                      router: Router,
+                      uuid_master: UUIDMaster,
                       filesystem: infra.Filesystem,
                       leaf_folder: str,
                       renderer: classes.Renderer) -> None:
@@ -238,10 +243,10 @@ def do_no_group_metas(source: ephemeral.Source,
 def preprocess_group_meta_pack(unit: transient.Unit,
                                leaf_folder: str,
                                group: ephemeral.Group,
-                               uuid_master: unite.UUIDMaster,
+                               uuid_master: UUIDMaster,
                                filesystem: infra.Filesystem,
                                renderer: classes.Renderer,
-                               router: unite.Router) -> None:
+                               router: Router) -> None:
     """Construct transient entities from ephemeral ones."""
     realm_route = router.get_route(group.realm_uuid)
     theme_route = router.get_route(group.theme_uuid)
@@ -332,8 +337,8 @@ def preprocess_group_meta_pack(unit: transient.Unit,
 def preprocess_no_group_meta_pack(unit: transient.Unit,
                                   leaf_folder: str,
                                   ep_meta: ephemeral.Meta,
-                                  router: unite.Router,
-                                  uuid_master: unite.UUIDMaster,
+                                  router: Router,
+                                  uuid_master: UUIDMaster,
                                   filesystem: infra.Filesystem,
                                   renderer: classes.Renderer) -> None:
     """Construct transient entities from ephemeral ones."""
