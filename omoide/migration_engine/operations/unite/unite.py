@@ -9,7 +9,6 @@ from typing import Optional, NoReturn
 from omoide import commands
 from omoide import constants
 from omoide import infra
-from omoide.infra.walking import walk_sources_from_command
 from omoide.migration_engine import classes
 from omoide.migration_engine import ephemeral
 from omoide.migration_engine import transient
@@ -34,7 +33,7 @@ def act(command: commands.UniteCommand,
                                         uuid_master=uuid_master,
                                         filesystem=filesystem)
 
-    walk = walk_sources_from_command(command, filesystem)
+    walk = infra.walk_sources_from_command(command, filesystem)
 
     total_new_units = 0
     for branch, leaf, leaf_folder in walk:

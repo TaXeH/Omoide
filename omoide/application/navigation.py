@@ -159,7 +159,7 @@ def generate_empty_table(rows: int, cols: int) -> List[List[Cell]]:
 def populate_table(table: List[List[Cell]], graph: dict,
                    initials: List[Tuple[int, int]],
                    coordinates: Dict[str, Tuple[int, int]],
-                   row: int = 0, col: int = 0) -> int:
+                   row: int = 0, col: int = 0, spacing: int = 0) -> int:
     """Transform graph into table contents."""
     row_shift = 0
     total = len(graph)
@@ -187,9 +187,9 @@ def populate_table(table: List[List[Cell]], graph: dict,
             new_lines = populate_table(table, elements, initials,
                                        coordinates, row + row_shift, col + 2)
 
-            row_shift += max(2, new_lines)
+            row_shift += max(spacing + 1, new_lines)
         else:
-            row_shift += 2
+            row_shift += spacing + 1
 
     return row_shift
 

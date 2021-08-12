@@ -1,7 +1,7 @@
 :root {
     --background-main: #2e3035;
     --background-dark: #1a1b1d;
-    --background-envelope: #474a51;
+    --grayish: #474a51;
     --font-color: #a7a7a7;
 
     --min_width: 800px;
@@ -87,15 +87,17 @@ a:active {
     text-align: left;
 }
 
-.text_zone {
+.limited-width {
+    max-width: var(--max_width);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.textual-header {
     background-color: var(--darky);
     padding: 5px;
     border-radius: 10px;
-}
-
-.text_zone {
-    max-width: var(--max_width);
-    margin: 20px 10%;
+    margin: 20px;
 }
 
 h3 {
@@ -115,7 +117,7 @@ h3 {
 }
 
 .pages a {
-    color: var(--pale_blue) !important;
+    color: var(--grayish) !important;
     background-color: var(--darky);
     padding: 5px 15px;
     margin: 5px;
@@ -123,11 +125,11 @@ h3 {
     border-radius: 5px;
 }
 
-.current_page {
+.active-page {
     color: black !important;
     background-color: var(--bright_blue) !important;
 }
 
-.inactive_page {
+.inactive-page {
     background-color: var(--darky) !important;
 }

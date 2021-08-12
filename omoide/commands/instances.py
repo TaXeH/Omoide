@@ -90,6 +90,7 @@ class RunserverCommand(BaseCommand):
     host: str
     port: int
     reload: bool
+    static: bool
     content_folder: str
     database_folder: str
     template_folder: str

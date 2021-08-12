@@ -43,11 +43,11 @@ def get_index(session: Session) -> Index:
 
     by_tags = defaultdict(set)
     for each in session.query(models.IndexTags).all():
-        by_tags[each.tag].add(each.uuid)
+        by_tags[each.tag.lower()].add(each.uuid)
 
     by_permissions = defaultdict(set)
     for each in session.query(models.IndexPermissions).all():
-        by_permissions[each.permission].add(each.uuid)
+        by_permissions[each.permission.lower()].add(each.uuid)
 
     index = Index(
         all_metas=all_metas,

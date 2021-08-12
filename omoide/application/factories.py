@@ -10,10 +10,10 @@ from omoide import constants, commands
 from omoide.application import search as search_, database
 
 
-def add_content(app, Session: sessionmaker,
+def add_content(app, maker: sessionmaker,
                 command: commands.RunserverCommand) -> None:
     """Add static files serving."""
-    assert Session  # FIXME
+    assert maker  # FIXME
 
     @app.route('/content/<path:filename>')
     def serve_content(filename: str):
@@ -27,7 +27,7 @@ def add_content(app, Session: sessionmaker,
                                          filename, conditional=True)
 
 
-def add_tags(app, Session: sessionmaker) -> None:
+def add_tags(app, maker: sessionmaker) -> None:
     """Add tags tab."""
 
     @app.route('/tags')
@@ -36,7 +36,7 @@ def add_tags(app, Session: sessionmaker) -> None:
         web_query = search_.WebQuery.from_request(request.args)
         user_query = web_query.get('q')
 
-        with database.session_scope(Session) as session:
+        with database.session_scope(maker) as session:
             current_realm = web_query.get('current_realm',
                                           constants.ALL_REALMS)
             current_theme = web_query.get('current_theme',

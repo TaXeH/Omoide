@@ -14,6 +14,7 @@ from omoide.application import search
 from omoide.application.search import search_routine
 
 
+# pylint: disable=too-many-locals
 def make_search_response(maker: sessionmaker, web_query: search.WebQuery,
                          query_builder: search.QueryBuilder,
                          index: search.Index) -> Dict[str, Any]:
@@ -39,14 +40,14 @@ def make_search_response(maker: sessionmaker, web_query: search.WebQuery,
         query.and_.add(current_theme)
 
     if query:
-        uuids = search_routine.find_records(query, index, 15)
+        uuids = search_routine.find_records(query, index)
     else:
-        uuids = search_routine.random_records(index, 15)
+        uuids = search_routine.random_records(index, 50)
 
     paginator = search.Paginator(
         sequence=uuids,
         current_page=current_page,
-        items_per_page=15,  # FIXME
+        items_per_page=50,  # FIXME
     )
 
     duration = time.perf_counter() - start

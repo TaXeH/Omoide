@@ -15,12 +15,13 @@ class Paginator:
         """Initialize instance."""
         assert items_per_page
         self._sequence = sequence
-        self._current_page = max(current_page, 1)
         self._pages_in_block = pages_in_block
 
         self.total_items = len(sequence)
         self.items_per_page = items_per_page
         self.num_pages = math.ceil(self.total_items / self.items_per_page)
+
+        self._current_page = min(max(current_page, 1), self.num_pages)
 
     def __len__(self) -> int:
         """Return total amount of items in the sequence."""

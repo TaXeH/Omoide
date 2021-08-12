@@ -18,81 +18,34 @@ def random_records(index: Index, amount: int) -> List[ShallowMeta]:
     return chosen_records
 
 
-def find_records(query: Query, index: Index, amount: int) -> List[ShallowMeta]:
+def find_records(query: Query, index: Index) -> List[ShallowMeta]:
     """Return all records, that match to a given query."""
-    # if query:
-    #     for tag in chain(query.and_, query.or_):
-    #         target_uuids.update(index_tags.get(tag, set()))
-    # else:
-    #     target_uuids = set()
-    #
-    # chosen_records = []
-
-    # if constants.FLAG_DEMAND in query.flags:
-    #     avoid_tags = set()
-    # else:
-    #     avoid_tags = set(theme.tags_on_demand) - query.and_ - query.or_
-
-    # for uuid in target_uuids:
-    #     meta = repository.get_record(uuid)
-    #
-    #     if meta is None:
-    #         continue
-    #
-    #     tags = repository.get_extended_tags(meta.uuid)
-    #
-    #     if tags & avoid_tags:
-    #         hidden += 1
-    #         continue
-    #
-    #     # condition for and - all words must be present
-    #     # condition for or - at least one word must be present
-    #     # condition for not - no words must be present
-    #     # skipped if predicate is empty
-    #     cond_and_ = any((query.and_ & tags == query.and_,
-    #                      len(query.and_) == 0))
-    #
-    #     cond_or_ = any((query.or_ & tags,
-    #                     len(query.or_) == 0))
-    #
-    #     cond_not_ = any((not (query.not_ & tags),
-    #                      len(query.not_) == 0))
-    #
-    #     if all((cond_and_, cond_or_, cond_not_)):
-    #         chosen_records.append(meta)
-
-    # if query.include:
-    #     chosen_records = [
-    #         x for x in chosen_records
-    #         if x.directory in query.include
-    #     ]
-
-    # if query.exclude:
-    #     chosen_records = [
-    #         x for x in chosen_records
-    #         if x.directory not in query.exclude
-    #     ]
-
-    # chosen_records.sort(key=core.core_utils.meta_sorter,
-    #                     reverse=constants.FLAG_DESC in query.flags)
-
+    # print(query)
     target_uuids = index.all_uuids
-
-    for tag in query.and_:
-        with_tag = index.get_by_tag(tag)
-        target_uuids = target_uuids.intersection(with_tag)
-
+    # print(1, len(target_uuids), target_uuids)
     or_ = set()
     for tag in query.or_:
         with_tag = index.get_by_tag(tag)
+        # print('performing or', tag, len(with_tag), with_tag)
         or_ = or_.union(with_tag)
+    # print(2, len(target_uuids), target_uuids)
 
-    if or_:
+    if or_ or query.or_:
         target_uuids = target_uuids.intersection(or_)
+    # print(3, len(target_uuids), target_uuids)
+
+    for tag in query.and_:
+        with_tag = index.get_by_tag(tag)
+        # print('performing and', tag, len(with_tag), with_tag)
+        target_uuids = target_uuids.intersection(with_tag)
+    # print(4, len(target_uuids), target_uuids)
 
     for tag in query.not_:
         with_tag = index.get_by_tag(tag)
+        # print('performing not', tag, len(with_tag), with_tag)
         target_uuids -= with_tag
+
+    # print(5, len(target_uuids), target_uuids)
 
     chosen_meta = [index.by_uuid[x] for x in target_uuids]
     chosen_meta.sort(key=lambda meta: meta.number)

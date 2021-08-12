@@ -12,6 +12,7 @@ from omoide.application import factories
 from omoide.application import search as search_
 
 
+# pylint: disable=too-many-locals
 def create_app(command: commands.RunserverCommand,
                engine: Engine) -> flask.Flask:
     """Create web application instance."""
@@ -111,7 +112,9 @@ def create_app(command: commands.RunserverCommand,
         )
         return flask.render_template('preview.html', **context)
 
-    factories.add_content(app, Session, command)  # TODO - only for dev mode
+    if command.static:
+        factories.add_content(app, Session, command)
+
     factories.add_tags(app, Session)
 
     return app

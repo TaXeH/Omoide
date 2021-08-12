@@ -160,6 +160,7 @@ def make_operation_runserver(args: List[str],
     port = constants.DEFAULT_SERVER_PORT
 
     reload, args = extract_flag('reload', args, default=False)
+    static, args = extract_flag('static', args, default=False)
 
     if args:
         command = args[0]
@@ -184,6 +185,7 @@ def make_operation_runserver(args: List[str],
         host=host,
         port=port,
         reload=reload,
+        static=static,
         content_folder=content_folder,
         database_folder=database_folder,
         template_folder=constants.DEFAULT_TEMPLATE_FOLDER,

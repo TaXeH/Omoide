@@ -1,32 +1,33 @@
-.nav_table {
-    /*table with navigation graph*/
+.nav-table {
+    /* table with navigation graph */
     margin: auto;
     max-width: 1000px;
     width: 100%;
     text-align: center;
 }
 
-.nav_table tr:nth-child(even) {
-    /*spacer row*/
+.nav-table tr:nth-child(even) {
+    /* table with navigation graph: spacer row */
     overflow-y: hidden;
     max-height: 5px;
 }
 
-.nav_table td:nth-child(even) {
-    /*spacer column*/
+.nav-table td:nth-child(even) {
+    /* table with navigation graph: spacer column */
     width: 5%;
     min-width: 5px;
     max-width: 15px;
 }
 
-.nav_table td:nth-child(odd) {
-    /*content column*/
+.nav-table td:nth-child(odd) {
+    /* table with navigation graph: content column */
     width: 30%;
     min-width: 150px;
     max-width: 500px;
 }
 
-.nav_text {
+.nav-label {
+    /* single button label inside navigation graph table */
     margin: 5px;
     border: none;
     color: white;
@@ -39,14 +40,12 @@
     width: 100%;
 }
 
-.active {
+.nav-label-active {
+    /* currently active buttons on navigation graph */
     background-color: var(--bright_blue);
 }
 
-.hoverable_button {
-
-}
-
-.hoverable_button:hover {
-    background-color: #b00e5e;
+.nav-label:hover {
+    /* hovering above specific button in navigation graph */
+    background-color: #9e47f1;
 }

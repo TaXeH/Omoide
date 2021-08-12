@@ -7,75 +7,77 @@
 {% endblock %}
 
 {% block body %}
-    <div class="text_zone">
-        <h3>Statistics</h3>
-    </div>
-
-    <div class="content">
-        <table class="tag_table">
-            <tr>
-                <td>Total items</td>
-                <td>{{ stats['Total items'] }}</td>
-            </tr>
-            <tr>
-                <td>Total size</td>
-                <td>{{ stats['Total size'] }}</td>
-            </tr>
-
-            {%- if stats['Oldest item'] %}
-                <tr>
-                    <td>Oldest item:</td>
-                    <td>{{ stats['Oldest item'] }}</td>
-                </tr>
-            {% endif -%}
-
-            {%- if stats['Newest item'] %}
-                <tr>
-                    <td>Newest item:</td>
-                    <td>{{ stats['Newest item'] }}</td>
-                </tr>
-            {% endif -%}
-
-            <tr>
-                <td>Total tags</td>
-                <td>{{ stats['Total tags'] }}</td>
-            </tr>
-        </table>
-    </div>
-
-    <br>
-
-    {% if tags_by_frequency %}
-        <div class="text_zone">
-            <h3>Tags by frequency</h3>
+    <div class="limited-width">
+        <div class="textual-header">
+            <h3>Statistics</h3>
         </div>
 
         <div class="content">
-            {% for tag, times in tags_by_frequency %}
-                <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}"
-                   class="one_tag">{{ tag }} ⋅ {{ times }}</a>
-            {% endfor %}
-        </div>
-    {% endif %}
+            <table class="tag_table">
+                <tr>
+                    <td>Total items</td>
+                    <td>{{ stats['Total items'] }}</td>
+                </tr>
+                <tr>
+                    <td>Total size</td>
+                    <td>{{ stats['Total size'] }}</td>
+                </tr>
 
-    {% if tags_by_alphabet %}
-        <div class="text_zone">
-            <h3>Tags by alphabet</h3>
+                {%- if stats['Oldest item'] %}
+                    <tr>
+                        <td>Oldest item:</td>
+                        <td>{{ stats['Oldest item'] }}</td>
+                    </tr>
+                {% endif -%}
+
+                {%- if stats['Newest item'] %}
+                    <tr>
+                        <td>Newest item:</td>
+                        <td>{{ stats['Newest item'] }}</td>
+                    </tr>
+                {% endif -%}
+
+                <tr>
+                    <td>Total tags</td>
+                    <td>{{ stats['Total tags'] }}</td>
+                </tr>
+            </table>
         </div>
 
-        <div class="content">
-            {% for letter, tags in tags_by_alphabet %}
-                <ul>
-                    <li><p>{{ letter|upper }}</p></li>
-                    {% for tag in tags %}
-                        <li>
-                            <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}">
-                                {{ tag }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            {% endfor %}
-        </div>
-    {% endif %}
+        <br>
+
+        {% if tags_by_frequency %}
+            <div class="textual-header">
+                <h3>Tags by frequency</h3>
+            </div>
+
+            <div class="content">
+                {% for tag, times in tags_by_frequency %}
+                    <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}"
+                       class="one_tag">{{ tag }} ⋅ {{ times }}</a>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if tags_by_alphabet %}
+            <div class="textual-header">
+                <h3>Tags by alphabet</h3>
+            </div>
+
+            <div class="content">
+                {% for letter, tags in tags_by_alphabet %}
+                    <ul>
+                        <li><p>{{ letter|upper }}</p></li>
+                        {% for tag in tags %}
+                            <li>
+                                <a href="{{ url_for('search') + web_query.replace(q=tag)|string }}">
+                                    {{ tag }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
 
 {% endblock %}
