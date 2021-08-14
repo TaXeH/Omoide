@@ -44,6 +44,7 @@ class UUIDMaster:
         self.uuids_groups = make_set(uuids_groups)
         self.uuids_metas = make_set(uuids_metas)
         self.uuids_users = make_set(uuids_users)
+        self.all_seen_uuids: Set[str] = set()
 
         uuids_queue = uuids_queue or []
 
@@ -95,6 +96,9 @@ class UUIDMaster:
             new_uuid = f'{prefix}_{original}'
         else:
             new_uuid, original = self.generate_uuid(existing_uuids, prefix)
+
+        assert original not in self.all_seen_uuids
+        self.all_seen_uuids.add(original)
 
         self.used_queue.append(original)
         existing_uuids.add(new_uuid)
