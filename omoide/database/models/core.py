@@ -9,28 +9,10 @@ from omoide import constants
 from omoide.database import common
 
 __alL__ = [
-    'Realm',
     'Theme',
     'Group',
     'Meta',
 ]
-
-
-class Realm(common.BaseModel):
-    """Realm model."""
-    __tablename__ = 'realms'
-
-    # primary and foreign keys
-    uuid = sa.Column(sa.String(length=constants.UUID_LEN),
-                     primary_key=True, nullable=False, index=True)
-    # fields
-    route = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
-    label = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
-
-    # relations
-    themes = relationship('Theme', back_populates='realm')
-    tags = relationship('TagRealm', back_populates='realm')
-    permissions = relationship('PermissionRealm', back_populates='realm')
 
 
 class Theme(common.BaseModel):
@@ -48,12 +30,9 @@ class Theme(common.BaseModel):
     label = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
 
     # relations
-    realm = relationship('Realm', back_populates='themes')
     groups = relationship('Group', back_populates='theme')
     tags = relationship('TagTheme', back_populates='theme')
     synonyms = relationship('Synonym', back_populates='theme')
-    implicit_tags = relationship('ImplicitTag', back_populates='theme')
-    permissions = relationship('PermissionTheme', back_populates='theme')
 
 
 class Group(common.BaseModel):
@@ -99,7 +78,6 @@ class Group(common.BaseModel):
     theme = relationship('Theme', back_populates='groups')
     metas = relationship('Meta', back_populates='group')
     tags = relationship('TagGroup', back_populates='group')
-    permissions = relationship('PermissionGroup', back_populates='group')
 
 
 class Meta(common.BaseModel):
@@ -181,4 +159,3 @@ class Meta(common.BaseModel):
     # relations
     group = relationship('Group', back_populates='metas')
     tags = relationship('TagMeta', back_populates='meta')
-    permissions = relationship('PermissionMeta', back_populates='meta')

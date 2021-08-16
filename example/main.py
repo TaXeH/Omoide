@@ -2,7 +2,7 @@
 
 """Prepare resources and launch application.
 """
-from omoide.manage import main as manage
+from omoide.__main__ import main as manage
 from omoide.migration_engine import persistent
 
 

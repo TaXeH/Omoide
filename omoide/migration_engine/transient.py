@@ -4,42 +4,19 @@
 """
 from typing import List
 
-from pydantic import BaseModel, Field, validator
-
-from omoide import constants
+from pydantic import BaseModel, Field
 
 __all__ = [
-    'Realm',
     'Theme',
     'Group',
     'Meta',
-    'User',
-    'TagRealm',
     'TagTheme',
     'TagGroup',
     'TagMeta',
-    'PermissionRealm',
-    'PermissionTheme',
-    'PermissionGroup',
-    'PermissionMeta',
-    'PermissionUser',
     'Synonym',
     'SynonymValue',
-    'ImplicitTag',
-    'ImplicitTagValue',
     'Unit',
 ]
-
-
-class _CheckRealmUUIDMixin:
-    """Additional checker."""
-
-    @validator('uuid')
-    def must_be_actual_realm_uuid(self, value):
-        """Ensure that UUID is converted from variable."""
-        assert not value.startswith(constants.VARIABLE_SIGN)
-        assert value.startswith(constants.PREFIX_REALM)
-        return value
 
 
 class BaseUnitElement(BaseModel):
@@ -48,17 +25,9 @@ class BaseUnitElement(BaseModel):
     last_update: str
 
 
-class Realm(BaseUnitElement, _CheckRealmUUIDMixin):
-    """User defined Realm."""
-    uuid: str
-    route: str
-    label: str
-
-
 class Theme(BaseUnitElement):
     """User defined Theme."""
     uuid: str
-    realm_uuid: str
     route: str
     label: str
 
@@ -85,7 +54,6 @@ class Group(_BaseEntity):
 class Meta(_BaseEntity):
     """User defined Meta."""
     uuid: str
-    realm_uuid: str
     theme_uuid: str
     group_uuid: str
 
@@ -107,19 +75,6 @@ class Meta(_BaseEntity):
     next: str = Field(default='')
 
 
-class User(BaseUnitElement):
-    """User defined User (lol)."""
-    uuid: str
-    name: str
-    # TODO - User must have more fields than that
-
-
-class TagRealm(BaseUnitElement):
-    """Tag model."""
-    realm_uuid: str
-    value: str
-
-
 class TagTheme(BaseUnitElement):
     """Tag model."""
     theme_uuid: str
@@ -138,36 +93,6 @@ class TagMeta(BaseUnitElement):
     value: str
 
 
-class PermissionRealm(BaseUnitElement):
-    """Permission model."""
-    realm_uuid: str
-    value: str
-
-
-class PermissionTheme(BaseUnitElement):
-    """Permission model."""
-    theme_uuid: str
-    value: str
-
-
-class PermissionGroup(BaseUnitElement):
-    """Permission model."""
-    group_uuid: str
-    value: str
-
-
-class PermissionMeta(BaseUnitElement):
-    """Permission model."""
-    meta_uuid: str
-    value: str
-
-
-class PermissionUser(BaseUnitElement):
-    """Permission model."""
-    user_uuid: str
-    value: str
-
-
 class _NestedField(BaseUnitElement):
     """Base class for nested elements of theme."""
     uuid: str
@@ -179,43 +104,21 @@ class Synonym(_NestedField):
     """User defined Synonym."""
 
 
-class ImplicitTag(_NestedField):
-    """User defined ImplicitTag."""
-
-
 class SynonymValue(BaseUnitElement):
     """User defined Synonym."""
     synonym_uuid: str
     value: str
 
 
-class ImplicitTagValue(BaseUnitElement):
-    """User defined ImplicitTag."""
-    implicit_tag_uuid: str
-    value: str
-
-
 class Unit(BaseModel):
     """All parsed entries combined."""
-    realms: List[Realm] = Field(default_factory=list)
     themes: List[Theme] = Field(default_factory=list)
     groups: List[Group] = Field(default_factory=list)
     metas: List[Meta] = Field(default_factory=list)
-    users: List[User] = Field(default_factory=list)
 
-    tags_realms: List[TagRealm] = Field(default_factory=list)
     tags_themes: List[TagTheme] = Field(default_factory=list)
     tags_groups: List[TagGroup] = Field(default_factory=list)
     tags_metas: List[TagMeta] = Field(default_factory=list)
 
     synonyms: List[Synonym] = Field(default_factory=list)
     synonyms_values: List[SynonymValue] = Field(default_factory=list)
-
-    implicit_tags: List[ImplicitTag] = Field(default_factory=list)
-    implicit_tags_values: List[ImplicitTagValue] = Field(default_factory=list)
-
-    permissions_realm: List[PermissionRealm] = Field(default_factory=list)
-    permissions_themes: List[PermissionTheme] = Field(default_factory=list)
-    permissions_groups: List[PermissionGroup] = Field(default_factory=list)
-    permissions_metas: List[PermissionMeta] = Field(default_factory=list)
-    permissions_users: List[PermissionUser] = Field(default_factory=list)

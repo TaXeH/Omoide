@@ -14,12 +14,9 @@ from omoide import constants
 
 __all__ = [
     'Source',
-    'Realm',
     'Theme',
     'Synonym',
-    'ImplicitTag',
     'Group',
-    'User',
 ]
 
 
@@ -75,17 +72,6 @@ class UniqueTagsMixin:
 
 
 # noinspection PyMethodParameters
-class UniquePermissionsMixin:
-    """Mixin that checks uniqueness."""
-
-    @validator('permissions')
-    def must_be_unique(cls, value):
-        """Raise if items are not unique."""
-        assert_unique('permissions', value)
-        return value
-
-
-# noinspection PyMethodParameters
 class UniqueValuesMixin:
     """Mixin that checks uniqueness."""
 
@@ -93,22 +79,6 @@ class UniqueValuesMixin:
     def must_be_unique(cls, value):
         """Raise if items are not unique."""
         assert_unique('values', value)
-        return value
-
-
-# noinspection PyMethodParameters
-class Realm(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
-    """User defined Realm."""
-    uuid: str
-    route: str
-    label: str
-    tags: List[str] = Field(default_factory=list)
-    permissions: List[str] = Field(default_factory=list)
-
-    @validator('uuid')
-    def must_be_realm(cls, value):
-        """Raise if UUID is incorrect."""
-        assert_has_prefix('uuid', value, constants.PREFIX_REALM)
         return value
 
 
@@ -139,33 +109,13 @@ class Synonym(_NestedField):
 
 
 # noinspection PyMethodParameters
-class ImplicitTag(_NestedField):
-    """User defined ImplicitTag."""
-
-    @validator('uuid')
-    def must_be_implicit_tag(cls, value):
-        """Raise if UUID is incorrect."""
-        assert_has_prefix('uuid', value, constants.PREFIX_IMPLICIT_TAG)
-        return value
-
-
-# noinspection PyMethodParameters
-class Theme(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
+class Theme(BaseModel, UniqueTagsMixin):
     """User defined Theme."""
     uuid: str
-    realm_uuid: str
     route: str
     label: str
     synonyms: List[Synonym] = Field(default_factory=dict)
-    implicit_tags: List[ImplicitTag] = Field(default_factory=list)
     tags: List[str] = Field(default_factory=list)
-    permissions: List[str] = Field(default_factory=list)
-
-    @validator('realm_uuid')
-    def must_be_realm(cls, value):
-        """Raise if UUID is incorrect."""
-        assert_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
-        return value
 
     @validator('uuid')
     def must_be_theme(cls, value):
@@ -175,9 +125,8 @@ class Theme(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
 
 
 # noinspection PyMethodParameters
-class _BaseEntity(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
+class _BaseEntity(BaseModel, UniqueTagsMixin):
     """Base class for Group and Meta."""
-    realm_uuid: str
     registered_on: str = Field(default='')
     registered_by: str = Field(default='')
     author: str = Field(default='')
@@ -186,20 +135,6 @@ class _BaseEntity(BaseModel, UniqueTagsMixin, UniquePermissionsMixin):
     comment: str = Field(default='')
     hierarchy: str = Field(default='')
     tags: List[str] = Field(default_factory=list)
-    permissions: List[str] = Field(default_factory=list)
-
-    @validator('registered_by')
-    def must_be_user(cls, value):
-        """Raise if UUID is incorrect."""
-        if value:
-            assert_has_prefix('registered_by', value, constants.PREFIX_USER)
-        return value
-
-    @validator('realm_uuid')
-    def must_be_realm(cls, value):
-        """Raise if UUID is incorrect."""
-        assert_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
-        return value
 
 
 # noinspection PyMethodParameters
@@ -210,32 +145,25 @@ class Group(_BaseEntity):
     route: str
     label: str
 
-    @validator('uuid')
-    def must_be_group(cls, value):
-        """Raise if UUID is incorrect."""
-        assert_has_prefix('uuid', value, constants.PREFIX_GROUP)
-        return value
-
     @validator('theme_uuid')
     def must_be_theme(cls, value):
         """Raise if UUID is incorrect."""
         assert_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
         return value
 
+    @validator('uuid')
+    def must_be_group(cls, value):
+        """Raise if UUID is incorrect."""
+        assert_has_prefix('uuid', value, constants.PREFIX_GROUP)
+        return value
+
 
 # noinspection PyMethodParameters
 class Meta(_BaseEntity):
     """User defined Meta."""
-    realm_uuid: str
     theme_uuid: str
     group_uuid: str
     filenames: List[str]
-
-    @validator('realm_uuid')
-    def must_be_realm(cls, value):
-        """Raise if UUID is incorrect."""
-        assert_has_prefix('realm_uuid', value, constants.PREFIX_REALM)
-        return value
 
     @validator('theme_uuid')
     def must_be_theme(cls, value):
@@ -256,28 +184,9 @@ class Meta(_BaseEntity):
         return value
 
 
-# noinspection PyMethodParameters
-class User(BaseModel, UniquePermissionsMixin):
-    """User defined User (lol)."""
-    uuid: str
-    name: str
-    permissions: List[str] = Field(default_factory=list)
-
-    # TODO - User must have more fields than that
-
-    @validator('uuid')
-    def must_be_user(cls, value):
-        """Raise if UUID is incorrect."""
-        assert_has_prefix('uuid', value, constants.PREFIX_USER)
-        return value
-
-
 class Source(BaseModel):
     """All source entries combined."""
-    realms: List[Realm] = Field(default_factory=list)
     themes: List[Theme] = Field(default_factory=list)
-    synonyms: List[Synonym] = Field(default_factory=list)
-    implicit_tags: List[ImplicitTag] = Field(default_factory=list)
     groups: List[Group] = Field(default_factory=list)
     metas: List[Meta] = Field(default_factory=list)
-    users: List[User] = Field(default_factory=list)
+    synonyms: List[Synonym] = Field(default_factory=list)

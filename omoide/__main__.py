@@ -5,52 +5,52 @@
 Possible call variants:
 
     To analyze source files and create unit files:
-        python manage.py unite all all
-        python manage.py unite source_folder_1
-        python manage.py unite source_folder_1 all
-        python manage.py unite source_folder_1 leaf_folder_1
+        python -m omoide unite all all
+        python -m omoide unite source_folder_1
+        python -m omoide unite source_folder_1 all
+        python -m omoide unite source_folder_1 leaf_folder_1
 
     To make migrations:
-        python manage.py make_migrations all all
-        python manage.py make_migrations source_folder_1
-        python manage.py make_migrations source_folder_1 all
-        python manage.py make_migrations source_folder_1 leaf_folder_1
+        python -m omoide make_migrations all all
+        python -m omoide make_migrations source_folder_1
+        python -m omoide make_migrations source_folder_1 all
+        python -m omoide make_migrations source_folder_1 leaf_folder_1
 
     To make relocations:
-        python manage.py make_relocations all all
-        python manage.py make_relocations source_folder_1
-        python manage.py make_relocations source_folder_1 all
-        python manage.py make_relocations source_folder_1 leaf_folder_1
+        python -m omoide make_relocations all all
+        python -m omoide make_relocations source_folder_1
+        python -m omoide make_relocations source_folder_1 all
+        python -m omoide make_relocations source_folder_1 leaf_folder_1
 
     To perform migrations:
-        python manage.py migrate all all
-        python manage.py migrate source_folder_1
-        python manage.py migrate source_folder_1 all
-        python manage.py migrate source_folder_1 leaf_folder_1
+        python -m omoide migrate all all
+        python -m omoide migrate source_folder_1
+        python -m omoide migrate source_folder_1 all
+        python -m omoide migrate source_folder_1 leaf_folder_1
 
     To relocate and resize media files:
-        python manage.py relocate all all
-        python manage.py relocate source_folder_1
-        python manage.py relocate source_folder_1 all
-        python manage.py relocate source_folder_1 leaf_folder_1
+        python -m omoide relocate all all
+        python -m omoide relocate source_folder_1
+        python -m omoide relocate source_folder_1 all
+        python -m omoide relocate source_folder_1 leaf_folder_1
 
     To synchronize databases:
-        python manage.py sync all all
-        python manage.py sync branch source_folder_1
-        python manage.py sync leaf leaf_folder_1
+        python -m omoide sync all all
+        python -m omoide sync branch source_folder_1
+        python -m omoide sync leaf leaf_folder_1
 
     To create final static database:
-        python manage.py freeze
+        python -m omoide freeze
 
     To launch development server:
-        python manage.py runserver
-        python manage.py runserver 9000
-        python manage.py runserver 127.0.0.1:9000
+        python -m omoide runserver
+        python -m omoide runserver 9000
+        python -m omoide runserver 127.0.0.1:9000
 
         Use --reload to turn on auto reload.
 
     To display folder structure:
-        python manage.py show_tree
+        python -m omoide show_tree
 
     For all commands:
         Use --sources to specify sources folder.

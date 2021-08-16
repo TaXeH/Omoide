@@ -9,7 +9,6 @@ from omoide.database import common
 
 __alL__ = [
     'IndexTags',
-    'IndexPermissions',
     'IndexMetas',
 ]
 
@@ -29,25 +28,6 @@ class IndexTags(common.Base):
     # fields
     tag = sa.Column(sa.String(length=constants.MAX_LEN),
                     nullable=False, unique=False, index=True)
-    uuid = sa.Column(sa.String(length=constants.UUID_LEN),
-                     nullable=False, unique=False)
-
-
-class IndexPermissions(common.Base):
-    """Index for permissions info.
-
-    Used to perform fast search on permissions. Note that we're not limiting
-    permission column with existing permissions and uuid column with existing
-    uuids. Gets loaded at the application start and never queried after.
-    """
-    __tablename__ = 'index_permissions'
-
-    # primary and foreign keys
-    id = sa.Column(sa.Integer,
-                   primary_key=True, unique=True, autoincrement=True)
-    # fields
-    permission = sa.Column(sa.String(length=constants.MAX_LEN),
-                           nullable=False, unique=False, index=True)
     uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                      nullable=False, unique=False)
 
