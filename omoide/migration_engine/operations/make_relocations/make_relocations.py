@@ -7,7 +7,7 @@ from typing import List
 from omoide import commands
 from omoide import constants
 from omoide import infra
-from omoide.migration_engine import transient, classes
+from omoide.migration_engine import entities, classes
 
 
 # pylint: disable=too-many-locals
@@ -36,7 +36,7 @@ def act(command: commands.MakeRelocationsCommand,
 
         relocations: List[classes.Relocation] = []
         unit_dict = filesystem.read_json(unit_file_path)
-        unit = transient.Unit(**unit_dict)
+        unit = entities.Unit(**unit_dict)
 
         for meta in unit.metas:
             new_relocations = make_relocations_for_one_meta(
@@ -60,13 +60,13 @@ def act(command: commands.MakeRelocationsCommand,
 
 
 def make_relocations_for_one_meta(command: commands.MakeRelocationsCommand,
-                                  meta: transient.Meta,
+                                  meta: entities.Meta,
                                   branch: str,
                                   leaf: str,
                                   filesystem: infra.Filesystem
                                   ) -> classes.Relocation:
     """Gather all required resources for relocation information."""
-    _, _, realm, theme, group, _ = meta.path_to_content.split('/')
+    _, _, theme, group, _ = meta.path_to_content.split('/')
 
     operations = [
         classes.Operation(
@@ -74,7 +74,7 @@ def make_relocations_for_one_meta(command: commands.MakeRelocationsCommand,
             height=meta.height,
             folder_to=filesystem.join(command.content_folder,
                                       constants.MEDIA_CONTENT_FOLDER_NAME,
-                                      realm, theme, group),
+                                      theme, group),
             operation_type='copy',
         ),
         classes.Operation(
@@ -82,7 +82,7 @@ def make_relocations_for_one_meta(command: commands.MakeRelocationsCommand,
             height=constants.PREVIEW_SIZE[1],
             folder_to=filesystem.join(command.content_folder,
                                       constants.MEDIA_PREVIEW_FOLDER_NAME,
-                                      realm, theme, group),
+                                      theme, group),
             operation_type='scale',
         ),
         classes.Operation(
@@ -90,7 +90,7 @@ def make_relocations_for_one_meta(command: commands.MakeRelocationsCommand,
             height=constants.THUMBNAIL_SIZE[1],
             folder_to=filesystem.join(command.content_folder,
                                       constants.MEDIA_THUMBNAILS_FOLDER_NAME,
-                                      realm, theme, group),
+                                      theme, group),
             operation_type='scale',
         ),
     ]
@@ -100,7 +100,7 @@ def make_relocations_for_one_meta(command: commands.MakeRelocationsCommand,
         source_filename=f'{meta.original_filename}.{meta.original_extension}',
         target_filename=f'{meta.uuid}.{meta.original_extension}',
         folder_from=filesystem.join(command.sources_folder, branch, leaf,
-                                    realm, theme, group),
+                                    theme, group),
         operations=operations,
     )
 

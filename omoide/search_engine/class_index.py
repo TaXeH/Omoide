@@ -34,13 +34,11 @@ class Index:
     """
 
     def __init__(self, all_metas: List[ShallowMeta],
-                 by_tags: Dict[str, FrozenSet[str]],
-                 by_permission: Dict[str, FrozenSet[str]]) -> None:
+                 by_tags: Dict[str, FrozenSet[str]]) -> None:
         """Initialize instance."""
         self.all_metas = tuple(all_metas)
         self.all_uuids = frozenset(x.uuid for x in all_metas)
         self.by_tags = by_tags
-        self.by_permission = by_permission
         self.by_uuid = {meta.uuid: meta for meta in all_metas}
 
     def __len__(self) -> int:

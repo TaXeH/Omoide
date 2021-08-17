@@ -23,13 +23,10 @@ class IdentityMaster:
         self._cache: Dict[str, str] = {}
 
         self._prefix_to_method = {
-            constants.PREFIX_REALM: 'generate_uuid_realm',
             constants.PREFIX_THEME: 'generate_uuid_theme',
             constants.PREFIX_SYNONYM: 'generate_uuid_synonym',
-            constants.PREFIX_IMPLICIT_TAG: 'generate_uuid_implicit_tag',
             constants.PREFIX_GROUP: 'generate_uuid_group',
             constants.PREFIX_META: 'generate_uuid_meta',
-            constants.PREFIX_USER: 'generate_uuid_user',
         }
 
         self._already_generated: Set[str] = set()
@@ -67,14 +64,10 @@ class IdentityMaster:
         """
         selector = partial(self.select_by_branch, branch, leaf)
         return {
-            'realms': selector(constants.PREFIX_REALM, self._by_namespace),
             'themes': selector(constants.PREFIX_THEME, self._by_namespace),
             'synonyms': selector(constants.PREFIX_SYNONYM, self._by_namespace),
-            'implicit_tags': selector(constants.PREFIX_IMPLICIT_TAG,
-                                      self._by_namespace),
             'groups': selector(constants.PREFIX_GROUP, self._by_namespace),
             'metas': selector(constants.PREFIX_META, self._by_namespace),
-            'users': selector(constants.PREFIX_USER, self._by_namespace),
         }
 
     @staticmethod

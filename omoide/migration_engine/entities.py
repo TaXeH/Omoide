@@ -93,15 +93,10 @@ class TagMeta(BaseUnitElement):
     value: str
 
 
-class _NestedField(BaseUnitElement):
-    """Base class for nested elements of theme."""
-    uuid: str
-    theme_uuid: str
-    label: str
-
-
-class Synonym(_NestedField):
+class Synonym(BaseUnitElement):
     """User defined Synonym."""
+    uuid: str
+    label: str
 
 
 class SynonymValue(BaseUnitElement):

@@ -9,7 +9,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
-from omoide.application.search.class_index import ShallowMeta, Index
+from omoide import search_engine
 from omoide.database import models
 
 
@@ -33,11 +33,11 @@ def get_meta(session: Session, meta_uuid: str) -> Optional[models.Meta]:
         .where(models.Meta.uuid == meta_uuid).first()
 
 
-def get_index(session: Session) -> Index:
+def get_index(session: Session) -> search_engine.Index:
     """Load instance of Index from db."""
     metas = list(session.query(models.IndexMetas).order_by('number').all())
     all_metas = [
-        ShallowMeta(x.meta_uuid, x.number, x.path_to_thumbnail)
+        search_engine.ShallowMeta(x.meta_uuid, x.number, x.path_to_thumbnail)
         for x in metas
     ]
 
@@ -45,19 +45,11 @@ def get_index(session: Session) -> Index:
     for each in session.query(models.IndexTags).all():
         by_tags[each.tag.lower()].add(each.uuid)
 
-    by_permissions = defaultdict(set)
-    for each in session.query(models.IndexPermissions).all():
-        by_permissions[each.permission.lower()].add(each.uuid)
-
-    index = Index(
+    index = search_engine.Index(
         all_metas=all_metas,
         by_tags={
             tag: frozenset(uuids)
             for tag, uuids in by_tags.items()
-        },
-        by_permission={
-            permission: frozenset(uuids)
-            for permission, uuids in by_permissions.items()
         },
     )
 

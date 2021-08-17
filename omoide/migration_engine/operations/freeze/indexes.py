@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session
 from omoide import infra
 from omoide.database import models
 
-_META_REALMS_CACHE = {}
 _META_THEMES_CACHE = {}
 _META_GROUPS_CACHE = {}
 
@@ -18,21 +17,8 @@ def build_indexes(session: Session, stdout: infra.STDOut) -> int:
     """Create fast lookup tables."""
     new_values = 0
     new_values += build_index_tags(session, stdout)
-    new_values += build_index_permissions(session, stdout)
     new_values += build_index_meta(session, stdout)
-    # TODO - add search enhancements
     return new_values
-
-
-def lazy_get_realm(meta: models.Meta) -> models.Realm:
-    """Lazy return Realm or go to database for it."""
-    value = _META_REALMS_CACHE.get(meta.uuid)
-
-    if value is None:
-        value = meta.group.theme.realm
-        _META_REALMS_CACHE[meta.uuid] = value
-
-    return value
 
 
 def lazy_get_theme(meta: models.Meta) -> models.Theme:
@@ -63,18 +49,16 @@ def build_index_tags(session: Session, stdout: infra.STDOut) -> int:
     new_values = 0
 
     for meta in session.query(models.Meta).all():
-        realm = lazy_get_realm(meta)
         theme = lazy_get_theme(meta)
         group = lazy_get_group(meta)
 
         all_tags = {
-            *(x.value for x in realm.tags),
             *(x.value for x in theme.tags),
             *(x.value for x in group.tags),
             *(x.value for x in meta.tags),
-            realm.uuid,
             theme.uuid,
             group.uuid,
+            meta.uuid,
         }
 
         for synonym in theme.synonyms:
@@ -88,33 +72,6 @@ def build_index_tags(session: Session, stdout: infra.STDOut) -> int:
 
         for tag in all_tags:
             value = models.IndexTags(tag=tag, uuid=meta.uuid)
-            session.add(value)
-
-    session.commit()
-
-    return new_values
-
-
-def build_index_permissions(session: Session, stdout: infra.STDOut) -> int:
-    """Create indexes for permissions."""
-    stdout.print('\tBuilding index for permissions')
-    new_values = 0
-
-    for meta in session.query(models.Meta).all():
-        realm = lazy_get_realm(meta)
-        theme = lazy_get_theme(meta)
-        group = lazy_get_group(meta)
-
-        all_permissions = {
-            *(x.value for x in realm.permissions),
-            *(x.value for x in theme.permissions),
-            *(x.value for x in group.permissions),
-            *(x.value for x in meta.permissions),
-        }
-        new_values += len(all_permissions)
-
-        for tag in all_permissions:
-            value = models.IndexPermissions(permission=tag, uuid=meta.uuid)
             session.add(value)
 
     session.commit()

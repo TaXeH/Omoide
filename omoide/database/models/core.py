@@ -22,9 +22,6 @@ class Theme(common.BaseModel):
     # primary and foreign keys
     uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                      primary_key=True, nullable=False, index=True)
-    realm_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
-                           sa.ForeignKey('realms.uuid'),
-                           nullable=False, unique=False, index=True)
     # fields
     route = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
     label = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
@@ -32,7 +29,6 @@ class Theme(common.BaseModel):
     # relations
     groups = relationship('Group', back_populates='theme')
     tags = relationship('TagTheme', back_populates='theme')
-    synonyms = relationship('Synonym', back_populates='theme')
 
 
 class Group(common.BaseModel):

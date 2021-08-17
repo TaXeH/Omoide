@@ -10,6 +10,7 @@ from omoide import commands, constants, utils
 from omoide.application import database, logic
 from omoide.application import factories
 from omoide.application import search as search_
+from omoide import search_engine
 
 
 # pylint: disable=too-many-locals
@@ -22,7 +23,7 @@ def create_app(command: commands.RunserverCommand,
         static_folder=command.static_folder,
     )
     Session = sessionmaker(bind=engine)  # pylint: disable=invalid-name
-    query_builder = search_.QueryBuilder(search_.Query)
+    query_builder = search_engine.QueryBuilder(search_engine.Query)
 
     with database.session_scope(Session) as _session:
         search_index = database.get_index(_session)

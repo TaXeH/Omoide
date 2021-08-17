@@ -10,7 +10,7 @@ from omoide.database import models
 from omoide.migration_engine import classes
 
 FIELDS_TO_DROP = {
-    models.Meta: {'realm_uuid', 'theme_uuid'}
+    models.Meta: {'theme_uuid'}
 }
 
 
@@ -43,26 +43,15 @@ def instantiate_commands(content: dict):
 
     sql: List[classes.SQL] = []
 
-    sql.extend(as_sql(_get('realms'), models.Realm))
     sql.extend(as_sql(_get('themes'), models.Theme))
     sql.extend(as_sql(_get('groups'), models.Group))
     sql.extend(as_sql(_get('metas'), models.Meta))
-    sql.extend(as_sql(_get('users'), models.User))
 
-    sql.extend(as_sql(_get('permissions_realm'), models.PermissionRealm))
-    sql.extend(as_sql(_get('permissions_themes'), models.PermissionTheme))
-    sql.extend(as_sql(_get('permissions_groups'), models.PermissionGroup))
-    sql.extend(as_sql(_get('permissions_metas'), models.PermissionMeta))
-    sql.extend(as_sql(_get('permissions_users'), models.PermissionUser))
-
-    sql.extend(as_sql(_get('tags_realms'), models.TagRealm))
     sql.extend(as_sql(_get('tags_themes'), models.TagTheme))
     sql.extend(as_sql(_get('tags_groups'), models.TagGroup))
     sql.extend(as_sql(_get('tags_metas'), models.TagMeta))
 
     sql.extend(as_sql(_get('synonyms'), models.Synonym))
     sql.extend(as_sql(_get('synonyms_values'), models.SynonymValue))
-    sql.extend(as_sql(_get('implicit_tags'), models.ImplicitTag))
-    sql.extend(as_sql(_get('implicit_tags_values'), models.ImplicitTagValue))
 
     return sql

@@ -3,6 +3,8 @@
 """Constant values.
 """
 # search engine
+ALL_THEMES = 'all_themes'
+NO_GROUP = 'no_group'
 UNKNOWN = 'unknown'
 
 # identity

@@ -2,6 +2,10 @@
 {% from "macros.html" import pagination %}
 
 {% block body %}
+    {{ search_query }}<br>
+    {% for line in search_report %}
+        {{ line }}<br>
+    {% endfor %}
 
     {{ pagination(paginator, web_query) }}
 

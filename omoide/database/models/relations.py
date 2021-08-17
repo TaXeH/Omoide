@@ -75,14 +75,10 @@ class Synonym(common.BaseModel):
     # primary and foreign keys
     uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                      primary_key=True, nullable=False, index=True)
-    theme_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
-                           sa.ForeignKey('themes.uuid'),
-                           nullable=False, unique=False, index=True)
     # fields
     label = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
 
     # relations
-    theme = relationship('Theme', back_populates='synonyms')
     values = relationship('SynonymValue', back_populates='synonym')
 
 

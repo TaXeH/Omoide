@@ -10,8 +10,8 @@ from omoide import commands
 from omoide import constants
 from omoide import infra
 from omoide.migration_engine import classes
-from omoide.migration_engine import ephemeral
-from omoide.migration_engine import transient
+from omoide.migration_engine import raw_entities
+from omoide.migration_engine import entities
 from omoide.migration_engine.operations import unite
 
 
@@ -112,7 +112,7 @@ def make_unit(branch: str,
               identity_master: unite.IdentityMaster,
               uuid_master: unite.UUIDMaster,
               filesystem: infra.Filesystem,
-              renderer: classes.Renderer) -> transient.Unit:
+              renderer: classes.Renderer) -> entities.Unit:
     """Combine all updates in big JSON file."""
     source_path = filesystem.join(leaf_folder, constants.SOURCE_FILE_NAME)
     source_raw_text = filesystem.read_file(source_path)
@@ -124,17 +124,16 @@ def make_unit(branch: str,
         uuid_master=uuid_master,
     )
     source_dict = json.loads(source_text)
-    source = ephemeral.Source(**source_dict)
+    source = raw_entities.Source(**source_dict)
 
-    unit = transient.Unit()
-    unite.preprocessing.do_realms(source, unit, router)
+    unit = entities.Unit()
     unite.preprocessing.do_themes(source, unit, router)
     unite.preprocessing.do_groups(source, unit, router,
                                   uuid_master, filesystem,
                                   leaf_folder, renderer)
+    unite.preprocessing.do_synonyms(source, unit)
     unite.preprocessing.do_no_group_metas(source, unit, router, uuid_master,
                                           filesystem, leaf_folder, renderer)
-    unite.preprocessing.do_users(source, unit)
 
     return unit
 

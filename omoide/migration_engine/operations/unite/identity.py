@@ -38,8 +38,7 @@ def gather_existing_identities(storage_folder: str,
 
 def gather_routes_from_unit(raw_unit: dict, router: Router) -> None:
     """Find all routes in given unit and store them into router."""
-    objects = chain(raw_unit.get('realms', []),
-                    raw_unit.get('themes', []),
+    objects = chain(raw_unit.get('themes', []),
                     raw_unit.get('groups', []))
 
     for each in objects:
@@ -60,13 +59,10 @@ def gather_variables_from_cache(branch: str, leaf: str, cache: dict,
                                 identity_master: IdentityMaster) -> None:
     """Find all variables in given cache and store them in Identity master."""
     uuid_type_by_category = {
-        'realms': constants.PREFIX_REALM,
         'themes': constants.PREFIX_THEME,
         'synonyms': constants.PREFIX_SYNONYM,
-        'implicit_tags': constants.PREFIX_IMPLICIT_TAG,
         'groups': constants.PREFIX_GROUP,
         'metas': constants.PREFIX_META,
-        'users': constants.PREFIX_USER,
     }
     for category, variables in cache.get('variables', {}).items():
         uuid_type = uuid_type_by_category[category]

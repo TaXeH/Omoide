@@ -85,30 +85,17 @@ def restore_database_from_scratch(folder: str,
 
 def synchronize(session_from: Session, session_to: Session) -> None:
     """Synchronize objects from one database to another."""
-    sync_model(session_from, session_to, models.Realm)
-    sync_model(session_from, session_to, models.TagRealm)
-    sync_model(session_from, session_to, models.PermissionRealm)
-
     sync_model(session_from, session_to, models.Theme)
     sync_model(session_from, session_to, models.TagTheme)
-    sync_model(session_from, session_to, models.PermissionTheme)
 
     sync_model(session_from, session_to, models.Synonym)
     sync_model(session_from, session_to, models.SynonymValue)
 
-    sync_model(session_from, session_to, models.ImplicitTag)
-    sync_model(session_from, session_to, models.ImplicitTagValue)
-
     sync_model(session_from, session_to, models.Group)
     sync_model(session_from, session_to, models.TagGroup)
-    sync_model(session_from, session_to, models.PermissionGroup)
 
     sync_model(session_from, session_to, models.Meta)
     sync_model(session_from, session_to, models.TagMeta)
-    sync_model(session_from, session_to, models.PermissionMeta)
-
-    sync_model(session_from, session_to, models.User)
-    sync_model(session_from, session_to, models.PermissionUser)
 
 
 def sync_model(session_from: Session, session_to: Session, model) -> None:

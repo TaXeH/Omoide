@@ -82,30 +82,11 @@ class UniqueValuesMixin:
         return value
 
 
-# noinspection PyMethodParameters
-class _NestedField(BaseModel, UniqueValuesMixin):
-    """Base class for nested elements of theme."""
+class Synonym(BaseModel):
+    """User defined Synonym."""
     uuid: str
-    theme_uuid: str
     label: str
     values: List[str] = Field(default_factory=list)
-
-    @validator('theme_uuid')
-    def must_be_theme(cls, value):
-        """Raise if UUID is incorrect."""
-        assert_has_prefix('theme_uuid', value, constants.PREFIX_THEME)
-        return value
-
-
-# noinspection PyMethodParameters
-class Synonym(_NestedField):
-    """User defined Synonym."""
-
-    @validator('uuid')
-    def must_be_synonym(cls, value):
-        """Raise if UUID is incorrect."""
-        assert_has_prefix('uuid', value, constants.PREFIX_SYNONYM)
-        return value
 
 
 # noinspection PyMethodParameters
