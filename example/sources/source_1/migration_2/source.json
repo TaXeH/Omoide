@@ -17,7 +17,19 @@
             "label": "Farm",
             "registered_on": "2021-08-14",
             "registered_by": "Igor",
-            "hierarchy": "farm"
+            "hierarchy": "farm",
+            "extended": [
+                {
+                    "filenames": [
+                        "barn-216372.jpg",
+                        "barn-1081686.jpg"
+                    ],
+                    "tags": [
+                        "house",
+                        "building"
+                    ]
+                }
+            ]
         }
     ]
 }

@@ -32,7 +32,10 @@
                 "514173.jpg"
             ],
             "tags": [
-                "insect"
+                "catch",
+                "insect",
+                "acrobat",
+                "climb"
             ]
         },
         {
@@ -48,7 +51,9 @@
                 "514169.jpg"
             ],
             "tags": [
-                "cozy"
+                "cozy",
+                "nest",
+                "adorable"
             ]
         },
         {
@@ -65,7 +70,8 @@
                 "514181.jpg"
             ],
             "tags": [
-                "climb"
+                "climb",
+                "acrobat"
             ]
         },
         {
@@ -79,7 +85,19 @@
                 "E7FcYUEXMAIDpNv.jpg"
             ],
             "tags": [
-                "berries"
+                "berries",
+                "feast",
+                "group"
+            ]
+        }
+    ],
+    "synonyms": [
+        {
+            "uuid": "var('s', 'synonym_mice')",
+            "label": "Mice",
+            "values": [
+                "mouse",
+                "mice"
             ]
         }
     ]

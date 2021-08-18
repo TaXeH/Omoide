@@ -17,7 +17,7 @@
             "label": "Browney mouse",
             "registered_on": "2021-08-14",
             "registered_by": "Igor",
-            "hierarchy": "gerbils",
+            "hierarchy": "gerbils,browney",
             "tags": [
                 "browney"
             ]
@@ -29,7 +29,7 @@
             "label": "Whitey mouse",
             "registered_on": "2021-08-14",
             "registered_by": "Igor",
-            "hierarchy": "gerbils",
+            "hierarchy": "gerbils,whitey",
             "tags": [
                 "whitey"
             ]
@@ -47,30 +47,105 @@
             "group_uuid": "$group_gerbils_no_group",
             "registered_on": "2021-08-14",
             "registered_by": "Igor",
-            "hierarchy": "gerbils",
+            "hierarchy": "gerbils,no_group",
             "filenames": [
-                "adorable-1239417.jpg",
-                "animal-1238374.jpg",
-                "animal-1238376.jpg",
-                "animal-1239221.jpg",
+                "adorable-1239417.jpg"
+            ],
+            "tags": [
+                "hands"
+            ]
+        },
+        {
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
+            "registered_on": "2021-08-14",
+            "registered_by": "Igor",
+            "hierarchy": "gerbils,no_group",
+            "filenames": [
+                "animal-1238374.jpg"
+            ],
+            "tags": [
+                "black",
+                "white beard"
+            ]
+        },
+        {
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
+            "registered_on": "2021-08-14",
+            "registered_by": "Igor",
+            "hierarchy": "gerbils,no_group",
+            "filenames": [
+                "animal-1238376.jpg"
+            ],
+            "tags": [
+                "black"
+            ]
+        },
+        {
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
+            "registered_on": "2021-08-14",
+            "registered_by": "Igor",
+            "hierarchy": "gerbils,no_group",
+            "filenames": [
+                "animal-1239221.jpg"
+            ],
+            "tags": [
+                "white",
+                "leaves"
+            ]
+        },
+        {
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
+            "registered_on": "2021-08-14",
+            "registered_by": "Igor",
+            "hierarchy": "gerbils,no_group",
+            "filenames": [
+                "kulfoto_com.jpg"
+            ],
+            "tags": [
+                "scary",
+                "creepy",
+                "face"
+            ]
+        },
+        {
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
+            "registered_on": "2021-08-14",
+            "registered_by": "Igor",
+            "hierarchy": "gerbils,no_group",
+            "filenames": [
+                "gerbil-716586.jpg"
+            ],
+            "tags": [
+                "agouti",
+                "hand"
+            ]
+        },
+        {
+            "theme_uuid": "$theme_gerbils",
+            "group_uuid": "$group_gerbils_no_group",
+            "registered_on": "2021-08-14",
+            "registered_by": "Igor",
+            "hierarchy": "gerbils,no_group",
+            "filenames": [
                 "domestic-animal-1584385.jpg",
                 "domestic-animal-1584388.jpg",
-                "gerbil-716586.jpg",
                 "gerbil-5195035.jpg",
-                "kulfoto_com.jpg",
                 "mouse-2204321.jpg"
             ]
         }
     ],
     "synonyms": [
         {
-            "uuid": "var('s', 'synonym_rodents')",
-            "label": "Rodents",
+            "uuid": "var('s', 'synonym_gerbils')",
+            "label": "Gerbils",
             "values": [
-                "mouse",
                 "gerbil",
-                "gerbils",
-                "mice"
+                "gerbils"
             ]
         }
     ]
