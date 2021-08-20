@@ -27,13 +27,16 @@ class BaseCommand:
 @dataclass
 class FilesRelatedCommand(BaseCommand):
     """Works mainly with files."""
-    sources_folder: str
-    storage_folder: str
-    content_folder: str
-    database_folder: str
-    branch: str
-    leaf: str
-    force: bool
+    now: str = ''
+    revision: str = ''
+    sources_folder: str = ''
+    storage_folder: str = ''
+    content_folder: str = ''
+    database_folder: str = ''
+    branch: str = ''
+    leaf: str = ''
+    force: bool = False
+    dry_run: bool = False
 
 
 @dataclass
@@ -93,6 +96,6 @@ class RunserverCommand(BaseCommand):
     static: bool
     content_folder: str
     database_folder: str
-    template_folder: str
+    templates_folder: str
     static_folder: str
     name: str = 'runserver'
