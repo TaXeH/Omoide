@@ -15,8 +15,10 @@ from omoide import constants
 __all__ = [
     'Source',
     'Theme',
-    'Synonym',
     'Group',
+    'Extended',
+    'Meta',
+    'Synonym',
 ]
 
 
@@ -82,7 +84,18 @@ class UniqueValuesMixin:
         return value
 
 
-class Synonym(BaseModel):
+# noinspection PyMethodParameters
+class UniqueFilenamesMixin:
+    """Mixin that checks uniqueness."""
+
+    @validator('filenames')
+    def must_be_unique(cls, value):
+        """Raise if items are not unique."""
+        assert_unique('filenames', value)
+        return value
+
+
+class Synonym(BaseModel, UniqueValuesMixin):
     """User defined Synonym."""
     uuid: str
     label: str
@@ -118,6 +131,11 @@ class _BaseEntity(BaseModel, UniqueTagsMixin):
     tags: List[str] = Field(default_factory=list)
 
 
+class Extended(_BaseEntity, UniqueFilenamesMixin):
+    """Additional fields for specific part of group."""
+    filenames: List[str]
+
+
 # noinspection PyMethodParameters
 class Group(_BaseEntity):
     """User defined Theme."""
@@ -125,6 +143,7 @@ class Group(_BaseEntity):
     theme_uuid: str
     route: str
     label: str
+    extended: List[Extended] = Field(default_factory=list)
 
     @validator('theme_uuid')
     def must_be_theme(cls, value):
@@ -140,7 +159,7 @@ class Group(_BaseEntity):
 
 
 # noinspection PyMethodParameters
-class Meta(_BaseEntity):
+class Meta(_BaseEntity, UniqueFilenamesMixin):
     """User defined Meta."""
     theme_uuid: str
     group_uuid: str
@@ -156,12 +175,6 @@ class Meta(_BaseEntity):
     def must_be_group(cls, value):
         """Raise if UUID is incorrect."""
         assert_has_prefix('group_uuid', value, constants.PREFIX_GROUP)
-        return value
-
-    @validator('filenames')
-    def must_be_unique(cls, value):
-        """Raise if items are not unique."""
-        assert_unique('filenames', value)
         return value
 
 

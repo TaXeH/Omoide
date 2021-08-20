@@ -2,8 +2,8 @@
 
 """Prepare resources and launch application.
 """
-from omoide.__main__ import main as manage
-from omoide.migration_engine import persistent
+from omoide.__main__ import cli as manage
+from omoide.migration_engine.operations.unite import persistent
 
 
 def main():
@@ -11,18 +11,17 @@ def main():
     """
     # added to avoid constant updates in example with each release
     # not really supposed to be used in actual work
-    persistent.set_now('2021-07-17 00:00:00')
-    persistent.set_today('2021-07-17')
+    persistent.set_now('2021-08-20 00:00:00')
     persistent.set_revision('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
 
-    # manage(['unite', '--force'])
-    # manage(['make_migrations', '--force'])
-    # manage(['make_relocations', '--force'])
-    # manage(['migrate', '--force'])
-    # manage(['relocate', '--force'])
-    # manage(['sync', '--force'])
+    manage(['unite'])
+    # manage(['make_migrations'])
+    # manage(['make_relocations'])
+    # manage(['migrate'])
+    # manage(['relocate'])
+    # manage(['sync'])
     # manage(['freeze'])
-    manage(['runserver'])
+    # manage(['runserver'])
 
 
 if __name__ == '__main__':

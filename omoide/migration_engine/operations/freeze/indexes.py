@@ -4,6 +4,8 @@
 Gets loaded on start of the application and
 helps limiting amount of database requests.
 """
+from typing import List
+
 from sqlalchemy.orm import Session
 
 from omoide import infra
@@ -11,6 +13,7 @@ from omoide.database import models
 
 _META_THEMES_CACHE = {}
 _META_GROUPS_CACHE = {}
+_SYNONYMS = None
 
 
 def build_indexes(session: Session, stdout: infra.STDOut) -> int:
@@ -43,6 +46,16 @@ def lazy_get_group(meta: models.Meta) -> models.Group:
     return value
 
 
+def lazy_get_synonyms(session) -> List[models.Synonym]:
+    """Lazy return Group or go to database for it."""
+    global _SYNONYMS
+
+    if _SYNONYMS is None:
+        _SYNONYMS = session.query(models.Synonym).all()
+
+    return _SYNONYMS
+
+
 def build_index_tags(session: Session, stdout: infra.STDOut) -> int:
     """Create indexes for tags."""
     stdout.print('\tBuilding index for tags')
@@ -61,7 +74,7 @@ def build_index_tags(session: Session, stdout: infra.STDOut) -> int:
             meta.uuid,
         }
 
-        for synonym in theme.synonyms:
+        for synonym in lazy_get_synonyms(session):
             values = {x.value for x in synonym.values}
             for value in values:
                 if value in all_tags:

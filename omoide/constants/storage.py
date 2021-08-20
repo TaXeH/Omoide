@@ -28,7 +28,7 @@ RELOCATION_FILE_NAME = 'relocation.json'
 ROOT_DB_FILE_NAME = 'root.db'
 BRANCH_DB_FILE_NAME = 'branch.db'
 LEAF_DB_FILE_NAME = 'migration.db'
-STATIC_DB_FILE_NAME = '{today}_database.db'
+STATIC_DB_FILE_NAME = 'database.db'
 
 # media parameters
 PREVIEW_SIZE = (1024, 1024)

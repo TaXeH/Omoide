@@ -49,6 +49,7 @@ def get_analyze_tool(extension: str) -> Optional[Callable[[str], MediaInfo]]:
     """Return callable that can analyze this kind of files.
     """
     return {
+        'jp2': analyze_static_image,
         'jpg': analyze_static_image,
         'jpeg': analyze_static_image,
         'bmp': analyze_static_image,

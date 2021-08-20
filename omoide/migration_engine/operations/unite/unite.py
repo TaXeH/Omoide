@@ -10,7 +10,7 @@ from omoide import commands
 from omoide import constants
 from omoide import infra
 from omoide.migration_engine import classes
-from omoide.migration_engine import raw_entities
+from omoide.migration_engine.operations.unite import raw_entities
 from omoide.migration_engine import entities
 from omoide.migration_engine.operations import unite
 

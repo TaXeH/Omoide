@@ -7,8 +7,8 @@ from typing import Union, List, Type, Tuple
 
 from omoide import constants
 from omoide import infra
-from omoide.migration_engine import classes
-from omoide.migration_engine import persistent, entities, raw_entities
+from omoide.migration_engine import classes, entities
+from omoide.migration_engine.operations.unite import persistent, raw_entities
 from omoide.migration_engine.operations.unite \
     .class_identity_master import IdentityMaster
 from omoide.migration_engine.operations.unite \

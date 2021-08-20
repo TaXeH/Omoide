@@ -9,7 +9,6 @@ from sqlalchemy.orm import sessionmaker
 from omoide import commands
 from omoide import constants
 from omoide import infra
-from omoide.migration_engine import persistent
 from omoide.database import operations
 from omoide.migration_engine.operations.freeze import indexes
 from omoide.migration_engine.operations.freeze import helpers
@@ -34,10 +33,7 @@ def act(command: commands.FreezeCommand,
     )
 
     db_folder = filesystem.absolute(command.database_folder)
-    db_filename = constants.STATIC_DB_FILE_NAME.format(
-        today=persistent.get_today()
-    )
-    db_path = filesystem.join(db_folder, db_filename)
+    db_path = filesystem.join(db_folder, constants.STATIC_DB_FILE_NAME)
 
     if not filesystem.exists(db_folder):
         filesystem.create_directory(db_folder)
@@ -49,7 +45,7 @@ def act(command: commands.FreezeCommand,
     needs_schema = filesystem.not_exists(db_path)
     database = operations.create_database(
         folder=db_folder,
-        filename=db_filename,
+        filename=constants.STATIC_DB_FILE_NAME,
         filesystem=filesystem,
         echo=False,
     )

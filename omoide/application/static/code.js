@@ -1,4 +1,4 @@
-function alterPlus(x) {
+function alterPlus() {
     // rewrite + symbol in query into %2B
     let element = document.getElementById("query_element");
     element.value = element.value.replaceAll("\+", "%2B")

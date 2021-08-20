@@ -4,7 +4,7 @@
 """
 import os as _os
 
-VERSION = '2021-08-11'
+VERSION = '2021-08-20'
 
 DEFAULT_SERVER_HOST = '0.0.0.0'
 DEFAULT_SERVER_PORT = 8000

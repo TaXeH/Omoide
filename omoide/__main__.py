@@ -40,6 +40,7 @@ import click
 from omoide import commands, infra
 from omoide import constants
 from omoide.commands import perform
+from omoide.migration_engine.operations.unite import persistent
 
 
 def run(command: commands.BaseCommand,
@@ -56,6 +57,12 @@ def run(command: commands.BaseCommand,
         filesystem.ensure_folder_exists(command.storage_folder, stdout)
         filesystem.ensure_folder_exists(command.content_folder, stdout)
         assert_sources_folder_exist(command, filesystem, stdout)
+
+        if command.now:
+            persistent.set_now(command.now)
+
+        if command.revision:
+            persistent.set_revision(command.revision)
 
     elif isinstance(command, commands.RunserverCommand):
         command.content_folder = _abs(command.content_folder)
