@@ -38,21 +38,21 @@ def main():
     with suppress(SystemExit):
         omoide_(['freeze'])
 
-    with suppress(SystemExit):
-        filesystem = infra.Filesystem()
-        root = filesystem.absolute('..')
-        app_folder = filesystem.join(root, 'omoide', 'application')
-        templates_folder = filesystem.join(app_folder,
-                                           constants.TEMPLATES_FOLDER_NAME)
-        static_folder = filesystem.join(app_folder,
-                                        constants.STATIC_FOLDER_NAME)
-        database_folder = filesystem.join(filesystem.absolute('.'),
-                                          constants.DATABASE_FOLDER_NAME)
-        omoide_(['runserver',
-                 f'--static',
-                 f'--database-folder={database_folder}',
-                 f'--templates-folder={templates_folder}',
-                 f'--static-folder={static_folder}'])
+    # with suppress(SystemExit):
+    #     filesystem = infra.Filesystem()
+    #     root = filesystem.absolute('..')
+    #     app_folder = filesystem.join(root, 'omoide', 'application')
+    #     templates_folder = filesystem.join(app_folder,
+    #                                        constants.TEMPLATES_FOLDER_NAME)
+    #     static_folder = filesystem.join(app_folder,
+    #                                     constants.STATIC_FOLDER_NAME)
+    #     database_folder = filesystem.join(filesystem.absolute('.'),
+    #                                       constants.DATABASE_FOLDER_NAME)
+    #     omoide_(['runserver',
+    #              f'--static',
+    #              f'--database-folder={database_folder}',
+    #              f'--templates-folder={templates_folder}',
+    #              f'--static-folder={static_folder}'])
 
 
 if __name__ == '__main__':

@@ -29,7 +29,7 @@ def calculate_statistics(session: Session, stdout: infra.STDOut) -> int:
         for group in theme.groups:
             for meta in group.metas:
                 theme_stats.add(
-                    item_date=meta.registered_on,
+                    item_date=meta.registered_on or group.registered_on,
                     item_size=meta.size,
                     item_tags=[x.value for x in meta.tags]
                 )
