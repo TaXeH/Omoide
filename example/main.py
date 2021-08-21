@@ -2,7 +2,9 @@
 
 """Prepare resources and launch application.
 """
-from omoide.__main__ import cli as manage
+from contextlib import suppress
+
+from omoide.__main__ import cli as omoide_
 from omoide.migration_engine.operations.unite import persistent
 
 
@@ -14,14 +16,20 @@ def main():
     persistent.set_now('2021-08-20 00:00:00')
     persistent.set_revision('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
 
-    manage(['unite'])
-    # manage(['make_migrations'])
-    # manage(['make_relocations'])
-    # manage(['migrate'])
-    # manage(['relocate'])
-    # manage(['sync'])
-    # manage(['freeze'])
-    # manage(['runserver'])
+    with suppress(SystemExit):
+        omoide_(['unite'])
+
+    # with suppress(SystemExit):
+    #     omoide_(['make_migrations'])
+
+    # with suppress(SystemExit):
+    #     omoide_(['make_relocations'])
+
+    # omoide_(['migrate'])
+    # omoide_(['relocate'])
+    # omoide_(['sync'])
+    # omoide_(['freeze'])
+    # omoide_(['runserver'])
 
 
 if __name__ == '__main__':

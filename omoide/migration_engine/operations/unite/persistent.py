@@ -11,27 +11,11 @@ from omoide import constants
 
 __all__ = [
     'get_now',
-    'get_today',
     'get_revision',
 ]
 
-_TODAY: Optional[str] = None
 _NOW: Optional[str] = None
 _REVISION: Optional[str] = None
-
-
-def get_today() -> str:
-    """Get today date as a string."""
-    global _TODAY
-    if _TODAY is None:
-        _TODAY = str(datetime.now().date())
-    return _TODAY
-
-
-def set_today(today: str) -> None:
-    """Set value."""
-    global _TODAY
-    _TODAY = today
 
 
 def get_now() -> str:

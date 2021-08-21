@@ -66,13 +66,10 @@ class Meta(_BaseEntity):
     height: int = Field(default=0)
     resolution: float = Field(default=0.0)
     size: int = Field(default=0)
-    duration: int = Field(default=0)
     type: str = Field(default='')
     ordering: int = Field(default=0)
     signature: str = Field(default='')
     signature_type: str = Field(default='')
-    previous: str = Field(default='')
-    next: str = Field(default='')
 
 
 class TagTheme(BaseUnitElement):

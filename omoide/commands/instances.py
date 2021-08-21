@@ -33,8 +33,8 @@ class FilesRelatedCommand(BaseCommand):
     storage_folder: str = ''
     content_folder: str = ''
     database_folder: str = ''
-    branch: str = ''
-    leaf: str = ''
+    branch: str = 'all'
+    leaf: str = 'all'
     force: bool = False
     dry_run: bool = False
 

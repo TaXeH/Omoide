@@ -224,22 +224,6 @@ def preprocess_group_meta_pack(unit: entities.Unit,
             f'/{constants.MEDIA_THUMBNAILS_FOLDER_NAME}/{common}'
         )
 
-        if total == 1:
-            _previous = ''
-            _next = ''
-
-        elif i == 1 and i < total:
-            _previous = ''
-            _next = uuids[i]
-
-        elif i == total:
-            _previous = uuids[i - 2]
-            _next = ''
-
-        else:
-            _previous = uuids[i - 2]
-            _next = uuids[i]
-
         tr_meta = entities.Meta(
             revision=persistent.get_revision(),
             last_update=persistent.get_now(),
@@ -252,8 +236,6 @@ def preprocess_group_meta_pack(unit: entities.Unit,
             path_to_content=path_to_content,
             path_to_preview=path_to_preview,
             path_to_thumbnail=path_to_thumbnail,
-            previous=_previous,
-            next=_next,
             **media_info,
             author=group.author,
             author_url=group.author_url,
@@ -296,9 +278,11 @@ def preprocess_no_group_meta_pack(unit: entities.Unit,
         meta_filename = f'{uuid}.{ext}'
         common = f'{theme_route}/{group_route}/{meta_filename}'
 
-        path_to_content = f'/content/{common}'
-        path_to_preview = f'/preview/{common}'
-        path_to_thumbnail = f'/thumbnails/{common}'
+        path_to_content = f'/{constants.MEDIA_CONTENT_FOLDER_NAME}/{common}'
+        path_to_preview = f'/{constants.MEDIA_PREVIEW_FOLDER_NAME}/{common}'
+        path_to_thumbnail = (
+            f'/{constants.MEDIA_THUMBNAILS_FOLDER_NAME}/{common}'
+        )
 
         tr_meta = entities.Meta(
             revision=persistent.get_revision(),
@@ -312,8 +296,6 @@ def preprocess_no_group_meta_pack(unit: entities.Unit,
             path_to_content=path_to_content,
             path_to_preview=path_to_preview,
             path_to_thumbnail=path_to_thumbnail,
-            previous='',
-            next='',
             **media_info,
             author=ep_meta.author,
             author_url=ep_meta.author_url,

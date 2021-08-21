@@ -19,7 +19,6 @@ class MediaInfo(TypedDict):
     height: int
     resolution: float
     size: int
-    duration: int
     type: str
     signature: str
     signature_type: str
@@ -36,12 +35,25 @@ def analyze_static_image(path: str) -> MediaInfo:
         'height': height,
         'resolution': round(width * height / 1_000_000, 2),
         'size': os.path.getsize(path),
-        'duration': 0,
         'type': 'image',
         'signature': '',  # TODO
         'signature_type': '',  # TODO
     }
 
+    return media_info
+
+
+def analyze_test(path: str) -> MediaInfo:
+    """Used for testing, returns dummy info."""
+    media_info = {
+        'width': 0,
+        'height': 0,
+        'resolution': 0.0,
+        'size': os.path.getsize(path),
+        'type': 'image',
+        'signature': '',
+        'signature_type': '',
+    }
     return media_info
 
 
@@ -54,6 +66,7 @@ def get_analyze_tool(extension: str) -> Optional[Callable[[str], MediaInfo]]:
         'jpeg': analyze_static_image,
         'bmp': analyze_static_image,
         'png': analyze_static_image,
+        'test': analyze_test,
     }.get(extension.lower())
 
 
