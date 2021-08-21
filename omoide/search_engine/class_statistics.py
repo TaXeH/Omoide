@@ -4,7 +4,7 @@
 """
 from collections import defaultdict
 from typing import (
-    List, Dict, Collection, Generator, Tuple, Union, Any, Optional
+    List, Dict, Collection, Tuple, Any, Optional
 )
 
 from omoide import utils
@@ -20,16 +20,19 @@ class Statistics:
 
     def __init__(self, min_date: str = '', max_date: str = '',
                  total_items: int = 0, total_size: int = 0,
-                 tags: Optional[List[str]] = None) -> None:
+                 tags: Optional[Dict[str, int]] = None) -> None:
         """Initialize instance."""
         self.min_date = min_date
         self.max_date = max_date
         self.total_items = total_items
         self.total_size = total_size
-        self._tags: List[str] = tags or []
+        self._tags: Dict[str, int] = defaultdict(int)
         self._tags_by_freq: List[Tuple[str, int]] = []
         self._tags_by_alphabet: List[Tuple[str, List[str]]] = []
         self._need_recalculation = True
+
+        if tags:
+            self._tags.update(tags)
 
     def __len__(self) -> int:
         """Return total amount of tags."""
@@ -39,12 +42,6 @@ class Statistics:
         """Return textual representation."""
         return f'<{type(self).__name__}, n={self.total_items}>'
 
-    def __iter__(self) -> Generator[Tuple[str, Union[int, str]], None, None]:
-        """Iterate on pais of parameters, but not nested ones."""
-        for key, value in self.as_dict().items():
-            if isinstance(value, (int, str)):
-                yield key, value
-
     def __add__(self, other) -> 'Statistics':
         """Sum two statistics together."""
         cls = type(self)
@@ -52,14 +49,21 @@ class Statistics:
         if not isinstance(other, cls):
             return NotImplemented
 
-        instance = cls()
+        resulting_tags = defaultdict(int)
+        for tag, amount in self.tags.items():
+            resulting_tags[tag] = amount
+
+        for tag, amount in other.tags.items():
+            resulting_tags[tag] += amount
+
+        instance = cls(tags=resulting_tags)
         instance.min_date = min(self.min_date or other.min_date,
                                 other.min_date or self.min_date)
         instance.max_date = max(self.max_date or other.max_date,
                                 other.max_date or self.max_date)
         instance.total_items = self.total_items + other.total_items
         instance.total_size = self.total_size + other.total_size
-        instance.tags = self.tags + other.tags
+
         return instance
 
     def add(self, item_date: str, item_size: int,
@@ -69,8 +73,13 @@ class Statistics:
         self.total_size += item_size
         self.min_date = min(self.min_date or item_date, item_date)
         self.max_date = max(self.max_date or item_date, item_date)
-        self._tags.extend(item_tags)
+        self.add_tags(item_tags)
         self._need_recalculation = True
+
+    def add_tags(self, tags: Collection[str]) -> None:
+        """Calculate new tags amount."""
+        for tag in tags:
+            self._tags[tag] += 1
 
     def as_dict(self) -> Dict[str, Any]:
         """Return statistics as a dictionary."""
@@ -96,16 +105,13 @@ class Statistics:
     def _recalculate(self) -> None:
         """Update inner storages."""
         # frequency -----------------------------------------------------------
-        tags_stats = defaultdict(int)
-        for tag in self._tags:
-            tags_stats[tag] += 1
 
-        self._tags_by_freq = list(tags_stats.items())
+        self._tags_by_freq = list(self.tags.items())
 
-        # by alphabet
+        # sorting items by alphabet
         self._tags_by_freq.sort(key=lambda x: x[0], reverse=False)
 
-        # by frequency
+        # sorting items by frequency
         self._tags_by_freq.sort(key=lambda x: x[1], reverse=True)
 
         # alphabet ------------------------------------------------------------
@@ -144,12 +150,6 @@ class Statistics:
         return self._tags_by_alphabet
 
     @property
-    def tags(self) -> List[str]:
+    def tags(self) -> Dict[str, int]:
         """Return copy of inner tags."""
-        return self._tags.copy()
-
-    @tags.setter
-    def tags(self, new_tags: Collection[str]) -> None:
-        """Assign new tags."""
-        self._tags = self._tags + list(new_tags)
-        self._need_recalculation = True
+        return dict(self._tags.copy())
