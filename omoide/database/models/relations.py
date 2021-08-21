@@ -22,14 +22,13 @@ class TagTheme(common.BaseModel):
     __tablename__ = 'tags_themes'
 
     # primary and foreign keys
-    id = sa.Column(sa.Integer,
-                   primary_key=True, unique=True, autoincrement=True)
     theme_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                            sa.ForeignKey('themes.uuid'),
-                           nullable=False, unique=False, index=True)
+                           nullable=False, unique=False, index=True,
+                           primary_key=True)
     # fields
-    value = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
-
+    value = sa.Column(sa.String(length=constants.MAX_LEN),
+                      nullable=False, primary_key=True)
     # relations
     theme = relationship('Theme', back_populates='tags')
 
@@ -39,14 +38,13 @@ class TagGroup(common.BaseModel):
     __tablename__ = 'tags_groups'
 
     # primary and foreign keys
-    id = sa.Column(sa.Integer,
-                   primary_key=True, unique=True, autoincrement=True)
     group_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                            sa.ForeignKey('groups.uuid'),
-                           nullable=False, unique=False, index=True)
+                           nullable=False, unique=False, index=True,
+                           primary_key=True)
     # fields
-    value = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
-
+    value = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False,
+                      primary_key=True)
     # relations
     group = relationship('Group', back_populates='tags')
 
@@ -56,14 +54,13 @@ class TagMeta(common.BaseModel):
     __tablename__ = 'tags_metas'
 
     # primary and foreign keys
-    id = sa.Column(sa.Integer,
-                   primary_key=True, unique=True, autoincrement=True)
     meta_uuid = sa.Column(sa.String(length=constants.UUID_LEN),
                           sa.ForeignKey('metas.uuid'),
-                          nullable=False, unique=False, index=True)
+                          nullable=False, unique=False, index=True,
+                          primary_key=True)
     # fields
-    value = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
-
+    value = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False,
+                      primary_key=True)
     # relations
     meta = relationship('Meta', back_populates='tags')
 
@@ -87,15 +84,13 @@ class SynonymValue(common.BaseModel):
     __tablename__ = 'synonyms_values'
 
     # primary and foreign keys
-    id = sa.Column(sa.Integer,
-                   primary_key=True, unique=True, autoincrement=True)
     synonym_uuid = sa.Column('synonym_uuid',
                              sa.String(length=constants.UUID_LEN),
                              sa.ForeignKey('synonyms.uuid'),
-                             nullable=False,
-                             unique=False, index=True)
+                             nullable=False, unique=False, index=True,
+                             primary_key=True)
     # fields
     value = sa.Column('value', sa.String(length=constants.MAX_LEN),
-                      nullable=False)
+                      nullable=False, primary_key=True)
     # relations
     synonym = relationship('Synonym', back_populates='values')

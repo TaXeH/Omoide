@@ -58,14 +58,12 @@ def act(command: commands.SyncCommand,
             folder=branch_folder,
             filename=constants.BRANCH_DB_FILE_NAME,
             filesystem=filesystem,
-            echo=False,
+            echo=True,
         )
         if needs_schema:
             operations.create_scheme(branch_db)
 
-        # pylint: disable=invalid-name
-        SessionBranch = sessionmaker(bind=branch_db)
-        session_branch = SessionBranch()
+        session_branch = sessionmaker(bind=branch_db)()
 
         for leaf in filesystem.list_folders(branch_folder):
 
@@ -103,14 +101,12 @@ def act(command: commands.SyncCommand,
 def sync_leaf(leaf_folder: str, leaf: str, session_branch: Session,
               filesystem: infra.Filesystem, stdout: infra.STDOut) -> int:
     """Synchronize leaf -> branch."""
-    leaf_db = operations.create_database(
-        folder=leaf_folder,
-        filename=constants.LEAF_DB_FILE_NAME,
-        filesystem=filesystem,
-        echo=False,
-    )
-    SessionLeaf = sessionmaker(bind=leaf_db)  # pylint: disable=invalid-name
-    session_leaf = SessionLeaf()
+    leaf_db = operations.create_database(folder=leaf_folder,
+                                         filename=constants.LEAF_DB_FILE_NAME,
+                                         filesystem=filesystem,
+                                         echo=False)
+
+    session_leaf = sessionmaker(bind=leaf_db)()
 
     synchronize(session_from=session_leaf, session_to=session_branch)
     stdout.yellow(f'\t * [{leaf}] Synchronized')
