@@ -2,13 +2,13 @@
 """Business logic of the service.
 """
 import time
-from typing import Dict, Any, Callable
+from typing import Dict, Any, Callable, List, Optional
 
 from sqlalchemy.orm import sessionmaker
 
 from omoide import constants
 from omoide import search_engine
-from omoide.application import appearance, navigation
+from omoide.application import appearance
 from omoide.application import cache
 from omoide.application import database
 from omoide.application import search
@@ -76,54 +76,28 @@ def make_search_response(maker: sessionmaker, web_query: search.WebQuery,
 
 def make_navigation_response_get(maker: sessionmaker,
                                  web_query: search.WebQuery,
-                                 current_realm: str,
-                                 current_theme: str) -> Dict[str, Any]:
+                                 active_themes: Optional[List[str]],
+                                 ) -> Dict[str, Any]:
     """Create context for navigation request (GET)."""
-    with database.session_scope(maker) as session:
-        graph = cache.get_graph(session)
-
-    user_query = web_query.get('q')
-    table, highlight = navigation.get_table_with_highlight(
-        graph=graph,
-        current_realm=current_realm,
-        current_theme=current_theme,
-    )
+    # with database.session_scope(maker) as session:
+    #     graph = cache.get_graph(session)
+    #
+    # user_query = web_query.get('q')
+    # table, highlight = navigation.get_table_with_highlight(
+    #     graph=graph,
+    #     current_realm=current_realm,
+    #     current_theme=current_theme,
+    # )
 
     context = {
-        'web_query': web_query,
-        'user_query': user_query,
-        'table': table,
-        'highlight': highlight,
-        'all_realms_active': current_realm == constants.ALL_REALMS,
-        'all_themes_active': current_theme == constants.ALL_THEMES,
+        # 'web_query': web_query,
+        # 'user_query': user_query,
+        # 'table': table,
+        # 'highlight': highlight,
+        # 'all_realms_active': current_realm == constants.ALL_REALMS,
+        # 'all_themes_active': current_theme == constants.ALL_THEMES,
     }
     return context
-
-
-def make_navigation_response_post(maker: sessionmaker,
-                                  web_query: search.WebQuery,
-                                  form: dict,
-                                  current_realm: str,
-                                  abort_callback: Callable) -> search.WebQuery:
-    """Create context for navigation request (POST)."""
-    with database.session_scope(maker) as session:
-        if (theme_uuid := form.get('current_theme')) is not None:
-            realm_uuid = cache.get_realm_uuid_for_theme_uuid(
-                session=session,
-                theme_uuid=theme_uuid,
-                previous_realm=current_realm,
-            )
-
-            if realm_uuid is None:
-                abort_callback(404)
-
-            web_query['current_realm'] = realm_uuid
-            web_query['current_theme'] = theme_uuid
-
-        elif (realm_uuid := form.get('current_realm')) is not None:
-            web_query['current_realm'] = realm_uuid
-
-    return web_query
 
 
 def make_preview_response(maker: sessionmaker,

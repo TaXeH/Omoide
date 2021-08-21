@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 from omoide import commands, constants, utils
 from omoide import search_engine
 from omoide.application import database, logic
-from omoide.application import factories
+from omoide.application import factories, appearance
 from omoide.application import search as search_
 
 
@@ -56,28 +56,29 @@ def create_app(command: commands.RunserverCommand,
         }
         return flask.render_template('404.html', **context), 404
 
-    @app.route('/navigation', methods=['GET', 'POST'])
+    @app.route('/navigation')
     def navigation():
         """Show selection fields for realm/theme."""
         web_query = search_.WebQuery.from_request(flask.request.args)
-        current_realm = web_query.get('current_realm', constants.ALL_REALMS)
-        current_theme = web_query.get('current_theme', constants.ALL_THEMES)
 
-        if flask.request.method == 'POST':
-            web_query = logic.make_navigation_response_post(
-                maker=Session,
-                web_query=web_query,
-                form=flask.request.form,
-                current_realm=current_realm,
-                abort_callback=flask.abort,
-            )
-            return flask.redirect(flask.url_for('navigation') + str(web_query))
+        active_themes_string = web_query.get('active_themes')
+        active_themes = appearance.extract_active_themes(
+            active_themes_string)
+
+        # if flask.request.method == 'POST':
+        #     web_query = logic.make_navigation_response_post(
+        #         maker=Session,
+        #         web_query=web_query,
+        #         form=flask.request.form,
+        #         current_realm=current_realm,
+        #         abort_callback=flask.abort,
+        #     )
+        #     return flask.redirect(flask.url_for('navigation') + str(web_query))
 
         context = logic.make_navigation_response_get(
             maker=Session,
             web_query=web_query,
-            current_realm=current_realm,
-            current_theme=current_theme,
+            active_themes=active_themes,
         )
 
         return flask.render_template('navigation.html', **context)
@@ -121,16 +122,12 @@ def create_app(command: commands.RunserverCommand,
         web_query = search_.WebQuery.from_request(flask.request.args)
         user_query = web_query.get('q')
 
-        with database.session_scope(Session) as session:
-            active_themes_string = web_query.get('active_themes',
-                                                 constants.ALL_THEMES).strip()
-            if active_themes_string != constants.ALL_THEMES:
-                active_themes = [
-                    x.strip() for x in active_themes_string.split(',')
-                ]
-            else:
-                active_themes = None
+        active_themes_string = web_query.get('active_themes',
+                                             constants.ALL_THEMES)
+        active_themes = appearance.extract_active_themes(
+            active_themes_string)
 
+        with database.session_scope(Session) as session:
             statistic = database.get_statistic(session, active_themes)
 
         context = {
@@ -138,6 +135,7 @@ def create_app(command: commands.RunserverCommand,
             'user_query': user_query,
             'statistic': statistic,
         }
+
         return flask.render_template('tags.html', **context)
 
     return app

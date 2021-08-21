@@ -3,11 +3,9 @@
 """
 
 import flask
-from flask import request
 from sqlalchemy.orm import sessionmaker
 
-from omoide import constants, commands
-from omoide.application import search as search_, database
+from omoide import commands
 
 
 def add_content(app, maker: sessionmaker,
