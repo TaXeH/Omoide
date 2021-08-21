@@ -7,21 +7,19 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
 from omoide import commands, constants, utils
+from omoide import search_engine
 from omoide.application import database, logic
 from omoide.application import factories
 from omoide.application import search as search_
-from omoide import search_engine
 
 
 # pylint: disable=too-many-locals
 def create_app(command: commands.RunserverCommand,
                engine: Engine) -> flask.Flask:
     """Create web application instance."""
-    app = flask.Flask(
-        import_name='omoide',
-        template_folder=command.template_folder,
-        static_folder=command.static_folder,
-    )
+    app = flask.Flask(import_name='omoide',
+                      template_folder=command.templates_folder,
+                      static_folder=command.static_folder)
     Session = sessionmaker(bind=engine)  # pylint: disable=invalid-name
     query_builder = search_engine.QueryBuilder(search_engine.Query)
 

@@ -112,8 +112,6 @@ class Meta(common.BaseModel):
     resolution = sa.Column(sa.Float, nullable=False)
     # in bytes for any file
     size = sa.Column(sa.Integer, nullable=False)
-    # in seconds for video and audio, 0 for everything else
-    duration = sa.Column(sa.Integer, nullable=False)
     # string like 'image', 'video', etc.
     type = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
 
@@ -142,11 +140,6 @@ class Meta(common.BaseModel):
     signature = sa.Column(sa.Text, nullable=False)
     # human-readable type, like 'md5'
     signature_type = sa.Column(sa.Text, nullable=False)
-
-    # uuid of the previous meta
-    previous = sa.Column(sa.Text, nullable=False)
-    # uuid of the next meta
-    next = sa.Column(sa.Text, nullable=False)
 
     # string with arbitrary names, that represent some logical structure
     # supposed to be used in ordering, like 'plants,flowers,daisy'
