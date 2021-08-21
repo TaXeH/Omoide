@@ -2,12 +2,13 @@
 
 """Abstraction of filesystem.
 """
-import json
 import os
 import shutil
 import typing
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Optional
+
+import ujson
 
 from omoide.infra.class_stdout import STDOut
 
@@ -53,14 +54,14 @@ class Filesystem:
     def read_json(path: str) -> dict:
         """Read json file from the disk."""
         with open(path, mode='r', encoding='utf-8') as file:
-            content = json.load(file)
+            content = ujson.load(file)
         return content
 
     @staticmethod
     def write_json(path: str, content: typing.Union[dict, list]) -> None:
         """Write json file to the disk."""
         with open(path, mode='w', encoding='utf-8') as file:
-            json.dump(content, file, indent=4, ensure_ascii=False)
+            ujson.dump(content, file, indent=4, ensure_ascii=False)
 
     @staticmethod
     def join(*args) -> str:
@@ -100,7 +101,8 @@ class Filesystem:
         return os.path.abspath(path)
 
     @classmethod
-    def ensure_folder_exists(cls, directory: str, stdout: STDOut,
+    def ensure_folder_exists(cls, directory: str,
+                             stdout: Optional[STDOut] = None,
                              prefix: str = '') -> bool:
         """Create all chain of folders at given path.
 
@@ -120,10 +122,12 @@ class Filesystem:
 
             if not os.path.exists(current_path):
                 cls.create_directory(current_path)
-                stdout.light_green(
-                    f'{prefix}New folder created: {current_path}'
-                )
                 actually_created = True
+
+                if stdout:
+                    stdout.light_green(
+                        f'{prefix}New folder created: {current_path}'
+                    )
 
         return actually_created
 

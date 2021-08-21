@@ -4,15 +4,17 @@
 """
 import json
 import sys
-from typing import Optional, NoReturn
+from typing import Optional, NoReturn, List
+
+import pydantic
 
 from omoide import commands
 from omoide import constants
 from omoide import infra
 from omoide.migration_engine import classes
-from omoide.migration_engine.operations.unite import raw_entities
 from omoide.migration_engine import entities
 from omoide.migration_engine.operations import unite
+from omoide.migration_engine.operations.unite import raw_entities
 
 
 def act(command: commands.UniteCommand,
@@ -49,19 +51,20 @@ def act(command: commands.UniteCommand,
             stdout.cyan(f'\t[{branch}][{leaf}] Unit file already exist')
             continue
 
-        make_unit_in_leaf(command=command,
-                          branch=branch,
-                          leaf=leaf,
-                          leaf_folder=leaf_folder,
-                          router=router,
-                          identity_master=identity_master,
-                          uuid_master=uuid_master,
-                          renderer=renderer,
-                          filesystem=filesystem,
-                          stdout=stdout)
+        new_path = make_unit_in_leaf(command=command,
+                                     branch=branch,
+                                     leaf=leaf,
+                                     leaf_folder=leaf_folder,
+                                     router=router,
+                                     identity_master=identity_master,
+                                     uuid_master=uuid_master,
+                                     renderer=renderer,
+                                     filesystem=filesystem,
+                                     stdout=stdout)
 
-        stdout.green(f'\t[{branch}][{leaf}] Created unit file')
-        total_new_units += 1
+        if new_path:
+            stdout.green(f'\t[{branch}][{leaf}] Created unit file')
+            total_new_units += 1
 
     return total_new_units
 
@@ -73,8 +76,11 @@ def make_unit_in_leaf(command: commands.UniteCommand, branch: str, leaf: str,
                       uuid_master: unite.UUIDMaster,
                       renderer: classes.Renderer,
                       filesystem: infra.Filesystem,
-                      stdout: infra.STDOut) -> str:
+                      stdout: infra.STDOut) -> Optional[str]:
     """Create single unit file."""
+    uuids = load_cached_uuids(filesystem, command.storage_folder, branch, leaf)
+    uuid_master.insert_queue(uuids)
+
     unit = make_unit(branch=branch,
                      leaf=leaf,
                      leaf_folder=leaf_folder,
@@ -82,27 +88,28 @@ def make_unit_in_leaf(command: commands.UniteCommand, branch: str, leaf: str,
                      identity_master=identity_master,
                      uuid_master=uuid_master,
                      filesystem=filesystem,
-                     renderer=renderer)
+                     renderer=renderer,
+                     stdout=stdout)
 
-    cache = {
-        'variables': identity_master.extract(branch, leaf),
-        'uuids': uuid_master.extract_queue(),
-    }
-    uuid_master.clear_queue()
+    cache = {'variables': identity_master.extract_variables(branch, leaf),
+             'uuids': uuid_master.extract_used_uuids()}
 
     unit_folder = filesystem.join(command.storage_folder, branch, leaf)
-    filesystem.ensure_folder_exists(unit_folder, stdout)
-
     unit_path = filesystem.join(unit_folder, constants.UNIT_FILE_NAME)
-    unit_dict = unit.dict()
-    unit_text = json.dumps(unit_dict)
-    assert_no_variables(unit_text, stdout)
-    filesystem.write_json(unit_path, unit_dict)
 
-    cache_path = filesystem.join(unit_folder, constants.CACHE_FILE_NAME)
-    filesystem.write_json(cache_path, cache)
+    if not command.dry_run:
+        filesystem.ensure_folder_exists(unit_folder, stdout)
 
-    return unit_path
+        unit_dict = unit.dict()
+        unit_text = json.dumps(unit_dict)
+        assert_no_variables(unit_text, stdout)
+        filesystem.write_json(unit_path, unit_dict)
+
+        cache_path = filesystem.join(unit_folder, constants.CACHE_FILE_NAME)
+        filesystem.write_json(cache_path, cache)
+        return unit_path
+
+    return None
 
 
 def make_unit(branch: str,
@@ -112,7 +119,8 @@ def make_unit(branch: str,
               identity_master: unite.IdentityMaster,
               uuid_master: unite.UUIDMaster,
               filesystem: infra.Filesystem,
-              renderer: classes.Renderer) -> entities.Unit:
+              renderer: classes.Renderer,
+              stdout: infra.STDOut) -> entities.Unit:
     """Combine all updates in big JSON file."""
     source_path = filesystem.join(leaf_folder, constants.SOURCE_FILE_NAME)
     source_raw_text = filesystem.read_file(source_path)
@@ -124,7 +132,7 @@ def make_unit(branch: str,
         uuid_master=uuid_master,
     )
     source_dict = json.loads(source_text)
-    source = raw_entities.Source(**source_dict)
+    source = instantiate_source(source_dict, stdout)
 
     unit = entities.Unit()
     unite.preprocessing.do_themes(source, unit, router)
@@ -136,6 +144,39 @@ def make_unit(branch: str,
                                           filesystem, leaf_folder, renderer)
 
     return unit
+
+
+def instantiate_source(raw_source: dict,
+                       stdout: infra.STDOut) -> raw_entities.Source:
+    """Safely create Source or display contents on exception."""
+    targets = [
+        ('themes', raw_entities.Theme),
+        ('groups', raw_entities.Group),
+        ('metas', raw_entities.Meta),
+        ('synonyms', raw_entities.Synonym),
+    ]
+
+    payload = {}
+
+    for target_category, target_type in targets:
+        content = raw_source.get(target_category, [])
+        elements = []
+
+        for each in content:
+            try:
+                element = target_type(**each)
+            except pydantic.error_wrappers.ValidationError:
+                stdout.red(
+                    'Failed on:\n'
+                    + json.dumps(each, indent=4, ensure_ascii=False)
+                )
+                raise
+            else:
+                elements.append(element)
+
+        payload[target_category] = elements
+
+    return raw_entities.Source(**payload)
 
 
 def assert_no_variables(unit_text: str,
@@ -151,3 +192,17 @@ def assert_no_variables(unit_text: str,
             f'\n...{fragment}...\n'
         )
         sys.exit(1)
+
+
+def load_cached_uuids(filesystem: infra.Filesystem, storage_folder: str,
+                      branch: str, leaf: str) -> List[str]:
+    """Load uuids cache for current target."""
+    path = filesystem.join(storage_folder, branch, leaf,
+                           constants.CACHE_FILE_NAME)
+
+    if filesystem.exists(path):
+        uuids = filesystem.read_json(path).get('uuids', [])
+    else:
+        uuids = []
+
+    return uuids

@@ -3,7 +3,8 @@
 """Special class that handles UUID generation.
 """
 import uuid as uuid_module
-from typing import Set, Collection, Optional, List, Union, Sequence, Tuple
+from collections import defaultdict
+from typing import Collection, Optional, List, Sequence, NoReturn
 
 from omoide import constants
 
@@ -11,147 +12,94 @@ __all__ = [
     'UUIDMaster',
 ]
 
-RawValues = Optional[Sequence[str]]
-Values = Optional[Collection[str]]
-
 
 class UUIDMaster:
     """Special class that handles UUID generation."""
 
-    def __init__(self,
-                 uuids_queue: RawValues = None,
-                 uuids_themes: Values = None,
-                 uuids_synonyms: Values = None,
-                 uuids_groups: Values = None,
-                 uuids_metas: Values = None,
-                 ) -> None:
+    def __init__(self, all_uuids: Optional[Collection[str]] = None) -> None:
         """Initialize instance."""
+        self._all_uuids = set(all_uuids) if all_uuids is not None else set()
+        self._given_queue: List[str] = []
+        self._used_uuids: List[str] = []
 
-        def make_set(collection: Optional[Collection[str]]
-                     ) -> Set[str]:
-            """Shorthand for ternary operator."""
-            if collection is None:
-                return set()
-            return set(collection)
-
-        self.uuids_themes = make_set(uuids_themes)
-        self.uuids_synonyms = make_set(uuids_synonyms)
-        self.uuids_groups = make_set(uuids_groups)
-        self.uuids_metas = make_set(uuids_metas)
-        self.all_seen_uuids: Set[str] = set()
-
-        uuids_queue = uuids_queue or []
-
-        self.given_queue: List[str] = list(reversed(uuids_queue))
-        self.used_queue: List[str] = []
-
-        self._prefix_to_storage = {
-            constants.PREFIX_THEME: self.uuids_themes,
-            constants.PREFIX_SYNONYM: self.uuids_synonyms,
-            constants.PREFIX_GROUP: self.uuids_groups,
-            constants.PREFIX_META: self.uuids_metas,
-        }
-
-    def __contains__(self, uuid: Union[str, str]) -> bool:
+    def __contains__(self, uuid: str) -> bool:
         """Return True if this UUID is already used."""
-        return any([
-            uuid in self.uuids_themes,
-            uuid in self.uuids_synonyms,
-            uuid in self.uuids_groups,
-            uuid in self.uuids_metas,
-        ])
+        return uuid in self._all_uuids
+
+    def extract_used_uuids(self) -> List[str]:
+        """Return copy of used uuids."""
+        result = self._used_uuids.copy()
+        self._used_uuids.clear()
+        return result
+
+    def ensure_that_uuid_is_unique(self, uuid: str) -> Optional[NoReturn]:
+        """Raise it this UUID is duplicated."""
+        if uuid in self._all_uuids:
+            raise ValueError(
+                f'Seems like same UUID was generated twice: {uuid}'
+            )
+
+    def ensure_that_queue_is_unique(self) -> Optional[NoReturn]:
+        """Check our queue for uniqueness."""
+        all_uuids = defaultdict(int)
+
+        for original in self._given_queue:
+            all_uuids[original] += 1
+            if all_uuids[original] > 1:
+                raise ValueError('Seems like same UUID was added '
+                                 f'to the queue twice: {original}')
 
     @staticmethod
-    def generate_uuid4() -> str:
+    def _generate_uuid4() -> str:
         """Generate basic UUID4."""
         return str(uuid_module.uuid4())
 
-    def generate_uuid(self, existing_uuids: Set[str],
-                      prefix: str) -> Tuple[str, str]:
+    def generate_uuid(self) -> str:
         """Create new UUID."""
-        original = self.generate_uuid4()
-        new_uuid = f'{prefix}_{original}'
-        while new_uuid in existing_uuids:
-            original = self.generate_uuid4()
-            new_uuid = f'{prefix}_{original}'
-        return str(new_uuid), original
+        uuid = self._generate_uuid4()
+        while uuid in self._all_uuids:
+            uuid = self._generate_uuid4()
+        return uuid
 
-    def generate_and_add_uuid(self, existing_uuids: Set[str],
-                              prefix: str) -> str:
+    def generate_and_add_uuid(self, prefix: str) -> str:
         """Create and add new UUID."""
-        if self.given_queue:
-            original = self.given_queue.pop()
-            new_uuid = f'{prefix}_{original}'
+        if self._given_queue:
+            uuid = self._given_queue.pop()
         else:
-            new_uuid, original = self.generate_uuid(existing_uuids, prefix)
+            uuid = self.generate_uuid()
 
-        assert original not in self.all_seen_uuids
-        self.all_seen_uuids.add(original)
-
-        self.used_queue.append(original)
-        existing_uuids.add(new_uuid)
-        return str(new_uuid)
+        self.ensure_that_uuid_is_unique(uuid)
+        self._all_uuids.add(uuid)
+        self._used_uuids.append(uuid)
+        full_uuid = f'{prefix}_{uuid}'
+        return full_uuid
 
     def generate_uuid_theme(self) -> str:
         """Create and add new UUID for theme."""
-        return self.generate_and_add_uuid(existing_uuids=self.uuids_themes,
-                                          prefix=constants.PREFIX_THEME)
+        return self.generate_and_add_uuid(prefix=constants.PREFIX_THEME)
 
     def generate_uuid_group(self) -> str:
         """Create and add new UUID for group."""
-        return self.generate_and_add_uuid(existing_uuids=self.uuids_groups,
-                                          prefix=constants.PREFIX_GROUP)
+        return self.generate_and_add_uuid(prefix=constants.PREFIX_GROUP)
 
     def generate_uuid_meta(self) -> str:
         """Create and add new UUID for meta."""
-        return self.generate_and_add_uuid(existing_uuids=self.uuids_metas,
-                                          prefix=constants.PREFIX_META)
+        uuid = self.generate_and_add_uuid(prefix=constants.PREFIX_META)
+        return uuid
 
     def generate_uuid_synonym(self) -> str:
         """Create and add new UUID for synonym."""
-        return self.generate_and_add_uuid(existing_uuids=self.uuids_synonyms,
-                                          prefix=constants.PREFIX_SYNONYM)
+        return self.generate_and_add_uuid(prefix=constants.PREFIX_SYNONYM)
 
     def insert_queue(self, uuids: Sequence[str]) -> None:
         """Add uuids queue."""
-        self.given_queue = list(reversed(uuids)) + self.given_queue
-
-    def __add__(self, other) -> 'UUIDMaster':
-        """Sum two UUID Masters."""
-        cls = type(self)
-        if not isinstance(other, cls):
-            raise TypeError(
-                f'{cls.__name__} can be added only to '
-                'an instance of the same type'
-            )
-
-        if any([self.given_queue,
-                self.used_queue,
-                other.given_queue,
-                other.used_queue]):
-            raise ValueError(
-                'You must empty queues before adding uuid masters'
-            )
-
-        return cls(
-            uuids_themes=self.uuids_themes.union(other.uuids_themes),
-            uuids_synonyms=self.uuids_synonyms.union(other.uuids_synonyms),
-            uuids_groups=self.uuids_groups.union(other.uuids_groups),
-            uuids_metas=self.uuids_metas.union(other.uuids_metas),
-        )
-
-    def extract_queue(self) -> List[str]:
-        """Get all generated UUIDS."""
-        return self.used_queue.copy()
-
-    def clear_queue(self):
-        """Clear list of generated UUIDS."""
-        self.used_queue.clear()
+        self._given_queue = list(reversed(uuids))
+        self.ensure_that_queue_is_unique()
 
     @staticmethod
     def get_prefix(string: str) -> str:
         """Return prefix of the UUID."""
-        return string[0]
+        return string.split('_')[0]
 
     def add_existing_uuid(self, uuid: str) -> None:
         """Add this value to used ones (even if it is contained in queue)."""
@@ -160,5 +108,4 @@ class UUIDMaster:
         if prefix not in constants.ALL_PREFIXES_SET:
             raise ValueError(f'Unknown prefix {prefix!r} for uuid {uuid}')
 
-        storage = self._prefix_to_storage[prefix]
-        storage.add(uuid)
+        self._all_uuids.add(uuid)

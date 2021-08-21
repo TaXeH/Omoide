@@ -57,7 +57,8 @@ class IdentityMaster:
         """Get value by given name."""
         return self._cache[variable_name]
 
-    def extract(self, branch: str, leaf: str) -> Dict[str, Dict[str, str]]:
+    def extract_variables(self, branch: str,
+                          leaf: str) -> Dict[str, Dict[str, str]]:
         """Serialize to a dictionary.
 
         Note that we're avoiding adding static data here.
