@@ -4,6 +4,7 @@
 """
 from contextlib import suppress
 
+from omoide import infra, constants
 from omoide.__main__ import cli as omoide_
 from omoide.migration_engine.operations.unite import persistent
 
@@ -16,8 +17,8 @@ def main():
     persistent.set_now('2021-08-20 00:00:00')
     persistent.set_revision('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
 
-    with suppress(SystemExit):
-        omoide_(['unite'])
+    # with suppress(SystemExit):
+    #     omoide_(['unite'])
 
     # with suppress(SystemExit):
     #     omoide_(['make_migrations'])
@@ -25,11 +26,33 @@ def main():
     # with suppress(SystemExit):
     #     omoide_(['make_relocations'])
 
-    # omoide_(['migrate'])
-    # omoide_(['relocate'])
-    # omoide_(['sync'])
-    # omoide_(['freeze'])
-    # omoide_(['runserver'])
+    # with suppress(SystemExit):
+    #     omoide_(['migrate'])
+
+    # with suppress(SystemExit):
+    #     omoide_(['relocate'])
+
+    # with suppress(SystemExit):
+    #     omoide_(['sync'])
+
+    # with suppress(SystemExit):
+    #     omoide_(['freeze'])
+
+    with suppress(SystemExit):
+        filesystem = infra.Filesystem()
+        root = filesystem.absolute('..')
+        app_folder = filesystem.join(root, 'omoide', 'application')
+        templates_folder = filesystem.join(app_folder,
+                                           constants.TEMPLATES_FOLDER_NAME)
+        static_folder = filesystem.join(app_folder,
+                                        constants.STATIC_FOLDER_NAME)
+        database_folder = filesystem.join(filesystem.absolute('.'),
+                                          constants.DATABASE_FOLDER_NAME)
+        omoide_(['runserver',
+                 f'--static',
+                 f'--database-folder={database_folder}',
+                 f'--templates-folder={templates_folder}',
+                 f'--static-folder={static_folder}'])
 
 
 if __name__ == '__main__':

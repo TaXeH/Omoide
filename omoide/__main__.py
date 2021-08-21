@@ -69,7 +69,7 @@ def run(command: commands.BaseCommand,
         command.database_folder = _abs(command.database_folder)
         command.templates_folder = _abs(command.templates_folder)
         command.static_folder = _abs(command.static_folder)
-
+    print(command)
     target_func = get_target_func(command)
     target_func(command, filesystem, stdout)
 
