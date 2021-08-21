@@ -43,6 +43,7 @@ def create_app(command: commands.RunserverCommand,
             'note': version,
             'injection': injection,
             'byte_count_to_text': utils.byte_count_to_text,
+            'sep_digits': utils.sep_digits,
             'web_query': '',
         }
 
@@ -114,6 +115,29 @@ def create_app(command: commands.RunserverCommand,
     if command.static:
         factories.add_content(app, Session, command)
 
-    factories.add_tags(app, Session)
+    @app.route('/tags')
+    def tags():
+        """Show available tags."""
+        web_query = search_.WebQuery.from_request(flask.request.args)
+        user_query = web_query.get('q')
+
+        with database.session_scope(Session) as session:
+            active_themes_string = web_query.get('active_themes',
+                                                 constants.ALL_THEMES).strip()
+            if active_themes_string != constants.ALL_THEMES:
+                active_themes = [
+                    x.strip() for x in active_themes_string.split(',')
+                ]
+            else:
+                active_themes = None
+
+            statistic = database.get_statistic(session, active_themes)
+
+        context = {
+            'web_query': web_query,
+            'user_query': user_query,
+            'statistic': statistic,
+        }
+        return flask.render_template('tags.html', **context)
 
     return app

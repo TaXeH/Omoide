@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """Database tools used specifically by the Application.
 """
-import json
 from collections import defaultdict
 from contextlib import contextmanager
-from typing import Optional
+from typing import Optional, List
 
+import ujson
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
@@ -56,13 +56,23 @@ def get_index(session: Session) -> search_engine.Index:
     return index
 
 
-def get_stats(session: Session, current_realm: str,
-              current_theme: str) -> dict:
+def get_statistic(session: Session, active_themes: Optional[List[str]]
+                  ) -> search_engine.Statistics:
     """Load statistics for given targets from db."""
-    key = f'stats__{current_realm}__{current_theme}'
-    item = session.query(models.Helper).where(
-        models.Helper.key == key).first()
-    if item is None:
-        return {}
+    if active_themes is None:
+        keys = ['stats__all_themes']
+    else:
+        keys = [f'stats__{x}' for x in active_themes]  # FIXME
 
-    return json.loads(item.value)
+    statistic = search_engine.Statistics()
+    for key in keys:
+        item = session.query(models.Helper).where(
+            models.Helper.key == key).first()
+
+        if item is not None:
+            local_statistic = search_engine.Statistics.from_dict(
+                source=ujson.loads(item.value)
+            )
+            statistic += local_statistic
+
+    return statistic

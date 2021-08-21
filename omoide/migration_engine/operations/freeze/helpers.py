@@ -6,8 +6,8 @@ import json
 from sqlalchemy.orm import Session
 
 from omoide import infra, constants
+from omoide import search_engine
 from omoide.database import models
-from omoide.migration_engine.classes import class_statistics
 
 
 def build_helpers(session: Session, stdout: infra.STDOut) -> int:
@@ -23,9 +23,9 @@ def calculate_statistics(session: Session, stdout: infra.STDOut) -> int:
     stdout.print('\tCalculating statistics')
     new_values = 0
 
-    all_stats = class_statistics.Statistics()
+    all_stats = search_engine.Statistics()
     for theme in session.query(models.Theme).all():
-        theme_stats = class_statistics.Statistics()
+        theme_stats = search_engine.Statistics()
         for group in theme.groups:
             for meta in group.metas:
                 theme_stats.add(

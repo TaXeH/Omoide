@@ -35,8 +35,8 @@ def main():
     # with suppress(SystemExit):
     #     omoide_(['sync'])
 
-    # with suppress(SystemExit):
-    #     omoide_(['freeze'])
+    with suppress(SystemExit):
+        omoide_(['freeze'])
 
     with suppress(SystemExit):
         filesystem = infra.Filesystem()
