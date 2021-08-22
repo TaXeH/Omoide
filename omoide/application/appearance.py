@@ -26,4 +26,7 @@ def extract_active_themes(raw_themes: str) -> Optional[List[str]]:
     else:
         active_themes = None
 
+    if active_themes == ['']:
+        active_themes = None
+
     return active_themes

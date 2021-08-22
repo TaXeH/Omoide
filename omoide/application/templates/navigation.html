@@ -4,6 +4,9 @@
     <link type="text/css"
           href="{{ url_for('static', filename='navigation.css') }}"
           rel="stylesheet">
+    <script>
+        let visibility = JSON.parse('{{ visibility_json|safe }}')
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -13,49 +16,51 @@
             <h3>Narrow search to selected categories</h3>
         </div>
 
-        <br>
+        <div class="nav-button-block">
+            <a class="nav-button"
+               onclick="selectAllThemes()">Select all themes</a>
+            <a class="nav-button"
+               onclick="dropAllThemes()">Drop all themes</a>
+            <span>|</span>
+            <a class="nav-button"
+               onclick="applyFiltering()">Apply filtering</a>
+        </div>
 
-{#        <form method="POST">#}
-{#            <table class="nav-table">#}
-{#                {%- for row in table %}#}
-{#                    <tr>#}
-{#                        {%- for cell in row %}#}
-{#                            {%- if cell.kind == 'horizontal_line' %}#}
-{#                                <td>─</td>#}
-{#                            {%- elif cell.kind == 'vertical_line' %}#}
-{#                                <td>│</td>#}
-{#                            {%- elif cell.kind == 'triplet_bottom' %}#}
-{#                                <td>┬</td>#}
-{#                            {%- elif cell.kind == 'triplet_right' %}#}
-{#                                <td>├</td>#}
-{#                            {%- elif cell.kind == 'corner' %}#}
-{#                                <td>└</td>#}
-{#                            {%- elif cell.kind == 'text' %}#}
-{#                                <td>#}
-{#                                    {% set active_realm = ' nav-label-active' if highlight.get(cell.identifier) or all_realms_active else '' %}#}
-{#                                    {% set active = ' nav-label-active' if highlight.get(cell.identifier) or all_themes_active else '' %}#}
-{#                                    {%- if loop.index0 == 0 -%}#}
-{#                                        <button type="submit"#}
-{#                                                name="current_realm"#}
-{#                                                value="{{ cell.identifier }}"#}
-{#                                                class="nav-label {{ active_realm }}">{{ cell.label }}</button>#}
-{#                                    {% elif loop.index0 == 2 %}#}
-{#                                        <button type="submit"#}
-{#                                                name="current_theme"#}
-{#                                                value="{{ cell.identifier }}"#}
-{#                                                class="nav-label {{ active }}">{{ cell.label }}</button>#}
-{#                                    {% else %}#}
-{#                                        <a class="nav-label{{ active }}"#}
-{#                                           href="{{ url_for('search') + web_query.replace(q=cell.identifier) |string }}">{{ cell.label }}</a>#}
-{#                                    {%- endif -%}#}
-{#                                </td>#}
-{#                            {% else %}#}
-{#                                <td>&nbsp;</td>#}
-{#                            {% endif -%}#}
-{#                        {% endfor -%}#}
-{#                    </tr>#}
-{#                {%- endfor -%}#}
-{#            </table>#}
-{#        </form>#}
+        <hr>
+
+        {% for theme_uuid, theme in graph.items() %}
+            {% set active = not visibility or visibility.get(theme_uuid) %}
+            {% if active %}
+                {% set visibility_suffix = ' nav-chosen-theme' %}
+            {% else %}
+                {% set visibility_suffix = '' %}
+            {% endif %}
+            <div id="theme_{{ theme_uuid }}"
+                 class="nav-theme{{ visibility_suffix }}">
+                {% if active %}
+                    <a id="toggle_{{ theme_uuid }}"
+                       class="nav-button"
+                       onclick="toggleTheme('{{ theme_uuid }}')">Exclude</a>
+                {% else %}
+                    <a id="toggle_{{ theme_uuid }}"
+                       class="nav-button"
+                       onclick="toggleTheme('{{ theme_uuid }}')">Include</a>
+                {% endif %}
+                <a id="fold_{{ theme_uuid }}"
+                   class="nav-button"
+                   onclick="switchThemeFolding('{{ theme_uuid }}')">Unfold</a>
+                <span>|</span>
+                <a href="{{ url_for('search') + web_query.replace(q=theme_uuid)|string }}">{{ theme.label }}</a>
+            </div>
+            {% if theme.groups %}
+                <ol id="groups_{{ theme_uuid }}" class="nav-groups nav-hidden">
+                    {% for group_uuid, group in theme.groups.items() %}
+                        <li>
+                            <a href="{{ url_for('search') + web_query.replace(q=group_uuid)|string }}">{{ group.label }}</a>
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% endif %}
+        {% endfor %}
     </div>
 {% endblock %}

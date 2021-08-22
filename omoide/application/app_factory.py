@@ -64,17 +64,7 @@ def create_app(command: commands.RunserverCommand,
         active_themes = appearance.extract_active_themes(
             active_themes_string)
 
-        # if flask.request.method == 'POST':
-        #     web_query = logic.make_navigation_response_post(
-        #         maker=Session,
-        #         web_query=web_query,
-        #         form=flask.request.form,
-        #         current_realm=current_realm,
-        #         abort_callback=flask.abort,
-        #     )
-        #     return flask.redirect(flask.url_for('navigation') + str(web_query))
-
-        context = logic.make_navigation_response_get(
+        context = logic.make_navigation_response(
             maker=Session,
             web_query=web_query,
             active_themes=active_themes,

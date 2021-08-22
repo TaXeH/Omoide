@@ -100,3 +100,16 @@ def _common_getter(session: Session, uuid: str, collection: Dict[str, str],
         return value
 
     return constants.UNKNOWN
+
+
+def get_graph(session: Session) -> dict:
+    """Load navigation graph from db."""
+    raw_graph = session.query(models.Helper) \
+        .where(models.Helper.key == 'graph').first()
+
+    if raw_graph:
+        graph = ujson.loads(raw_graph.value)
+    else:
+        graph = {}
+
+    return graph

@@ -1,51 +1,50 @@
-.nav-table {
-    /* table with navigation graph */
-    margin: auto;
-    max-width: 1000px;
-    width: 100%;
+.nav-button-block {
     text-align: center;
 }
 
-.nav-table tr:nth-child(even) {
-    /* table with navigation graph: spacer row */
-    overflow-y: hidden;
-    max-height: 5px;
-}
-
-.nav-table td:nth-child(even) {
-    /* table with navigation graph: spacer column */
-    width: 5%;
-    min-width: 5px;
-    max-width: 15px;
-}
-
-.nav-table td:nth-child(odd) {
-    /* table with navigation graph: content column */
-    width: 30%;
-    min-width: 150px;
-    max-width: 500px;
-}
-
-.nav-label {
-    /* single button label inside navigation graph table */
-    margin: 5px;
-    border: none;
-    color: white;
+.nav-theme {
     background-color: var(--pale_blue);
-    padding: 5px;
+    border-radius: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding: 0.5em;
+}
+
+.nav-groups {
+    background-color: var(--darky);
+    border-radius: 5px;
+    padding: 0.5em;
+}
+
+.nav-groups > li {
+    margin-left: 1em;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.nav-button {
     text-align: center;
+    padding: 5px;
+    display: inline-block;
     text-decoration: none;
+    color: var(--just_white);
+    border: 2px solid var(--grayish);
+    border-radius: 5px;
+}
+
+.nav-button:hover {
+    color: var(--darky);
+    cursor: pointer;
+}
+
+.nav-chosen-theme {
+    background-color: #96257b;
+}
+
+.nav-hidden {
+    display: none;
+}
+
+.nav-visible {
     display: block;
-    font-size: 14px;
-    width: 100%;
-}
-
-.nav-label-active {
-    /* currently active buttons on navigation graph */
-    background-color: var(--bright_blue);
-}
-
-.nav-label:hover {
-    /* hovering above specific button in navigation graph */
-    background-color: #9e47f1;
 }
