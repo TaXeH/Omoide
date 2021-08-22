@@ -28,8 +28,6 @@ def create_app(command: commands.RunserverCommand,
         search_index = database.get_index(_session)
 
     version = f'Version: {constants.VERSION}'
-    title = 'Omoide'
-    injection = ''  # FIXME
 
     @app.route('/')
     def index():
@@ -40,9 +38,9 @@ def create_app(command: commands.RunserverCommand,
     def common_names():
         """Populate context with common names."""
         return {
-            'title': title,
+            'title': 'Omoide',
             'note': version,
-            'injection': injection,
+            'injection': command.injection,
             'byte_count_to_text': utils.byte_count_to_text,
             'sep_digits': utils.sep_digits,
             'web_query': '',
