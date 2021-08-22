@@ -14,7 +14,7 @@ def build_helpers(session: Session, stdout: infra.STDOut) -> int:
     """Create fast lookup tables."""
     new_values = 0
     new_values += calculate_statistics(session, stdout)
-    new_values += construct_entities_graph(session, stdout)
+    new_values += construct_navigation_info(session, stdout)
     return new_values
 
 
@@ -53,31 +53,27 @@ def calculate_statistics(session: Session, stdout: infra.STDOut) -> int:
     return new_values
 
 
-def construct_entities_graph(session: Session, stdout: infra.STDOut) -> int:
+def construct_navigation_info(session: Session, stdout: infra.STDOut) -> int:
     """Build graph of available realms/themes."""
     stdout.print('\tConstructing graph')
-    # TODO - we're ignoring the fact that
-    #  server can have private realms for now
-    # graph = {}
-    # for realm in session.query(models.Realm).all():
-    #     sub_graph = {}
-    #     for theme in realm.themes:
-    #         sub_graph[theme.uuid] = {
-    #             'label': theme.label,
-    #             'elements': {x.uuid: {'label': x.label} for x in theme.groups}
-    #         }
-    #
-    #     graph[realm.uuid] = {
-    #         'label': realm.label,
-    #         'elements': sub_graph
-    #     }
-    #
-    # new_helper = models.Helper(
-    #     key='graph',
-    #     value=json.dumps(graph, ensure_ascii=False)
-    # )
-    #
-    # session.add(new_helper)
-    # session.commit()
+
+    graph = {}
+    for theme in session.query(models.Theme).order_by('label').all():
+        graph[theme.uuid] = {
+            'label': theme.label,
+            'groups': {},
+        }
+        for group in theme.groups:
+            graph[theme.uuid]['groups'][group.uuid] = {
+                'label': group.label
+            }
+
+    new_helper = models.Helper(
+        key='graph',
+        value=json.dumps(graph, ensure_ascii=False)
+    )
+
+    session.add(new_helper)
+    session.commit()
 
     return 1
