@@ -77,7 +77,7 @@ class SyncCommand(FilesRelatedCommand):
 
 @dataclass
 class FreezeCommand(FilesRelatedCommand):
-    """Create static database."""
+    """Create static app_database."""
     name: str = 'freeze'
 
 
@@ -90,12 +90,13 @@ class ShowTreeCommand(FilesRelatedCommand):
 @dataclass
 class RunserverCommand(BaseCommand):
     """Start web application."""
-    host: str
-    port: int
-    reload: bool
-    static: bool
-    content_folder: str
-    database_folder: str
-    templates_folder: str
-    static_folder: str
+    host: str = ''
+    port: int = 0
+    reload: bool = False
+    static: bool = False
+    content_folder: str = '.'
+    database_folder: str = '.'
+    templates_folder: str = '.'
+    static_folder: str = '.'
+    injection: str = ''
     name: str = 'runserver'

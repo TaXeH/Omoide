@@ -6,10 +6,11 @@ from typing import Dict, Any, Callable, List, Optional
 
 from sqlalchemy.orm import sessionmaker
 
+import omoide.application.database
+import omoide.database.operations
 from omoide import constants
 from omoide import search_engine
 from omoide.application import appearance
-from omoide.application import cache
 from omoide.application import database
 from omoide.application import search
 from omoide.search_engine import find
@@ -30,8 +31,9 @@ def make_search_response(maker: sessionmaker, web_query: search.WebQuery,
 
         if len(active_themes) == 1:
             current_theme = active_themes[0]
-            with database.session_scope(maker) as session:
-                theme_name = cache.get_theme_name(session, current_theme)
+            with omoide.database.operations.session_scope(maker) as session:
+                theme_name = omoide.application.database.get_theme_name(
+                    session, current_theme)
             placeholder = 'Searching on theme {}'.format(repr(theme_name))
         elif len(active_themes) > 1:
             placeholder = 'Searching on {}-x themes'.format(len(active_themes))
@@ -79,7 +81,7 @@ def make_navigation_response_get(maker: sessionmaker,
                                  active_themes: Optional[List[str]],
                                  ) -> Dict[str, Any]:
     """Create context for navigation request (GET)."""
-    # with database.session_scope(maker) as session:
+    # with app_database.session_scope(maker) as session:
     #     graph = cache.get_graph(session)
     #
     # user_query = web_query.get('q')
@@ -105,7 +107,7 @@ def make_preview_response(maker: sessionmaker,
                           uuid: str,
                           abort_callback: Callable) -> Dict[str, Any]:
     """Create context for preview request."""
-    with database.session_scope(maker) as session:
+    with omoide.database.operations.session_scope(maker) as session:
         meta = database.get_meta(session, uuid) or abort_callback(404)
 
         all_tags = {

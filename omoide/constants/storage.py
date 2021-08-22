@@ -8,7 +8,7 @@ import os as _os
 SOURCES_FOLDER_NAME = 'sources'
 STORAGE_FOLDER_NAME = 'storage'
 CONTENT_FOLDER_NAME = 'content'
-DATABASE_FOLDER_NAME = 'database'
+DATABASE_FOLDER_NAME = 'app_database'
 
 MEDIA_CONTENT_FOLDER_NAME = 'content'
 MEDIA_PREVIEW_FOLDER_NAME = 'preview'
@@ -38,7 +38,7 @@ COMPRESS_TO = [
     THUMBNAIL_SIZE,
 ]
 
-# database constants
+# app_database constants
 MAX_LEN = 255
 UUID_LEN = 38
 REVISION_LEN = 40

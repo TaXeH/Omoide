@@ -22,7 +22,7 @@ Possible call variants:
     To synchronize databases:
         python -m omoide sync --branch=all --leaf=all
 
-    To create final static database:
+    To create final static app_database:
         python -m omoide freeze
 
     To launch development server:
@@ -106,7 +106,7 @@ def cli():
 
 
 @cli.command(name='runserver',
-             help='Run development or production web server ')
+             help='Run development web server ')
 @click.option('--host',
               default=constants.DEFAULT_SERVER_HOST,
               help='Host to run web server on')
