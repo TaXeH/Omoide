@@ -27,8 +27,10 @@ class Theme(common.BaseModel):
     label = sa.Column(sa.String(length=constants.MAX_LEN), nullable=False)
 
     # relations
-    groups = relationship('Group', back_populates='theme')
-    tags = relationship('TagTheme', back_populates='theme')
+    groups = relationship('Group', back_populates='theme',
+                          order_by='Group.label')
+    tags = relationship('TagTheme', back_populates='theme',
+                        order_by='TagTheme.value')
 
 
 class Group(common.BaseModel):
@@ -72,8 +74,10 @@ class Group(common.BaseModel):
 
     # relations
     theme = relationship('Theme', back_populates='groups')
-    metas = relationship('Meta', back_populates='group')
-    tags = relationship('TagGroup', back_populates='group')
+    metas = relationship('Meta', back_populates='group',
+                         order_by='Meta.ordering')
+    tags = relationship('TagGroup', back_populates='group',
+                        order_by='TagGroup.value')
 
 
 class Meta(common.BaseModel):
@@ -147,4 +151,5 @@ class Meta(common.BaseModel):
 
     # relations
     group = relationship('Group', back_populates='metas')
-    tags = relationship('TagMeta', back_populates='meta')
+    tags = relationship('TagMeta', back_populates='meta',
+                        order_by='TagMeta.value')
