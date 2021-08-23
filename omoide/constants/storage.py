@@ -38,7 +38,7 @@ COMPRESS_TO = [
     THUMBNAIL_SIZE,
 ]
 
-# app_database constants
+# database constants
 MAX_LEN = 255
 UUID_LEN = 38
 REVISION_LEN = 40

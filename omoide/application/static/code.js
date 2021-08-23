@@ -56,6 +56,7 @@ function applyFiltering() {
 }
 
 function selectAllThemes() {
+    // set all themes as active
     Object.keys(visibility).forEach(v => visibility[v] = true)
 
     for (const theme_uuid of Object.keys(visibility)) {
@@ -71,6 +72,7 @@ function selectAllThemes() {
 }
 
 function dropAllThemes() {
+    // unselect all themes
     Object.keys(visibility).forEach(v => visibility[v] = false)
 
     for (const theme_uuid of Object.keys(visibility)) {
@@ -83,5 +85,19 @@ function dropAllThemes() {
 
         element.classList.remove('nav-chosen-theme');
         button.text = 'Include'
+    }
+}
+
+function explainSearchResults() {
+    // toggle explanation block
+    let element = document.getElementById('explain')
+
+    if (!element)
+        return
+
+    if (element.style.display === 'none' || !element.style.display) {
+        element.style.display = 'grid'
+    } else {
+        element.style.display = 'none'
     }
 }

@@ -55,11 +55,11 @@ class Query:
         cls = type(self)
 
         if attribute == 'and_':
-            operator = constants.KW_AND
+            operator = 'and'
         elif attribute == 'or_':
-            operator = constants.KW_OR
+            operator = 'or'
         else:
-            operator = constants.KW_NOT
+            operator = 'not'
 
         sequence = list(self.sequence) + [(operator, x) for x in new_values]
 

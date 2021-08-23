@@ -62,7 +62,13 @@ class QueryBuilder(Generic[QueryType]):
 
         for operator, word in group_to_size(parts):
             self.update_sets(operator, word, sets)
-            sequence.append((operator, word))
+            if operator == constants.KW_AND:
+                _operator = 'and'
+            elif operator == constants.KW_OR:
+                _operator = 'or'
+            else:
+                _operator = 'not'
+            sequence.append((_operator, word))
 
         return self.target_type(and_=set(sets['and_']),
                                 or_=set(sets['or_']),

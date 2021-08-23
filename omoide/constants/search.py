@@ -3,6 +3,8 @@
 """Constant values.
 """
 # search engine
+import re
+
 ALL_THEMES = 'all_themes'
 NO_GROUP = 'no_group'
 UNKNOWN = 'unknown'
@@ -28,6 +30,8 @@ KW_AND = '+'
 KW_OR = '|'
 KW_NOT = '-'
 
-OPERATORS = {KW_AND,
-             KW_OR,
-             KW_NOT}
+OPERATORS = {KW_AND, KW_OR, KW_NOT}
+
+STRICT_THEME_UUID_PATTERN = re.compile(
+    '^t_[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$'
+)

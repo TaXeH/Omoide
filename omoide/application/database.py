@@ -2,7 +2,7 @@
 """Database tools used specifically by the Application.
 """
 from collections import defaultdict
-from typing import Optional, List, Dict, Type, Union
+from typing import Optional, Dict, Type, Union, Any, Set
 
 import ujson
 from sqlalchemy.orm import Session
@@ -40,7 +40,8 @@ def get_index(session: Session) -> search_engine.Index:
     return index
 
 
-def get_statistic(session: Session, active_themes: Optional[List[str]]
+def get_statistic(session: Session,
+                  active_themes: Optional[Set[str]]
                   ) -> search_engine.Statistics:
     """Load statistics for given targets from db.
 
@@ -49,12 +50,12 @@ def get_statistic(session: Session, active_themes: Optional[List[str]]
     if active_themes is None:
         keys = ['stats__all_themes']
     else:
-        keys = [f'stats__{x}' for x in active_themes]  # FIXME
+        keys = [f'stats__{x}' for x in active_themes]
 
     statistic = search_engine.Statistics()
     for key in keys:
-        item = session.query(models.Helper).where(
-            models.Helper.key == key).first()
+        item = session.query(models.Helper) \
+            .where(models.Helper.key == key).first()
 
         if item is not None:
             local_statistic = search_engine.Statistics.from_dict(
@@ -67,6 +68,7 @@ def get_statistic(session: Session, active_themes: Optional[List[str]]
 
 _THEME_NAMES_CACHE: Dict[str, str] = {}
 _GROUP_NAMES_CACHE: Dict[str, str] = {}
+_GRAPH_CACHE: Optional[Dict[str, Any]] = None
 
 
 def get_theme_name(session: Session, theme_uuid: str) -> str:
@@ -104,6 +106,11 @@ def _common_getter(session: Session, uuid: str, collection: Dict[str, str],
 
 def get_graph(session: Session) -> dict:
     """Load navigation graph from db."""
+    global _GRAPH_CACHE
+
+    if _GRAPH_CACHE is not None:
+        return _GRAPH_CACHE
+
     raw_graph = session.query(models.Helper) \
         .where(models.Helper.key == 'graph').first()
 
@@ -111,5 +118,7 @@ def get_graph(session: Session) -> dict:
         graph = ujson.loads(raw_graph.value)
     else:
         graph = {}
+
+    _GRAPH_CACHE = graph
 
     return graph

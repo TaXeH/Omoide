@@ -1,16 +1,17 @@
 # -*- coding: utf-8 -*-
 """Application.
 """
+from functools import partial
 
 import flask
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
+import omoide.application.logic
 import omoide.database.operations
 from omoide import commands, constants, utils
 from omoide import search_engine
 from omoide.application import database, logic
-from omoide.application import appearance
 from omoide.application import search as search_
 
 
@@ -44,6 +45,7 @@ def create_app(command: commands.RunserverCommand,
             'byte_count_to_text': utils.byte_count_to_text,
             'sep_digits': utils.sep_digits,
             'web_query': '',
+            'search_report': [],
         }
 
     @app.errorhandler(404)
@@ -59,17 +61,7 @@ def create_app(command: commands.RunserverCommand,
     def navigation():
         """Show selection fields for realm/theme."""
         web_query = search_.WebQuery.from_request(flask.request.args)
-
-        active_themes_string = web_query.get('active_themes')
-        active_themes = appearance.extract_active_themes(
-            active_themes_string)
-
-        context = logic.make_navigation_response(
-            maker=Session,
-            web_query=web_query,
-            active_themes=active_themes,
-        )
-
+        context = logic.make_navigation_response(Session, web_query)
         return flask.render_template('navigation.html', **context)
 
     @app.route('/search', methods=['GET', 'POST'])
@@ -81,47 +73,29 @@ def create_app(command: commands.RunserverCommand,
             web_query['q'] = flask.request.form.get('query', '')
             return flask.redirect(flask.url_for('search') + str(web_query))
 
-        context = logic.make_search_response(
-            maker=Session,
-            web_query=web_query,
-            query_builder=query_builder,
-            index=search_index,
-        )
+        context = logic.make_search_response(maker=Session,
+                                             web_query=web_query,
+                                             query_builder=query_builder,
+                                             index=search_index)
 
         return flask.render_template('search.html', **context)
 
     @app.route('/preview/<uuid>')
     def preview(uuid: str):
         """Show description for a single record."""
+        not_found = partial(flask.abort, 404)
         web_query = search_.WebQuery.from_request(flask.request.args)
-        context = logic.make_preview_response(
-            maker=Session,
-            web_query=web_query,
-            uuid=uuid,
-            abort_callback=flask.abort,
-        )
+        context = logic.make_preview_response(maker=Session,
+                                              web_query=web_query,
+                                              uuid=uuid,
+                                              abort_callback=not_found)
         return flask.render_template('preview.html', **context)
 
     @app.route('/tags')
     def tags():
         """Show available tags."""
         web_query = search_.WebQuery.from_request(flask.request.args)
-        user_query = web_query.get('q')
-
-        active_themes_string = web_query.get('active_themes',
-                                             constants.ALL_THEMES)
-        active_themes = appearance.extract_active_themes(
-            active_themes_string)
-
-        with omoide.database.operations.session_scope(Session) as session:
-            statistic = database.get_statistic(session, active_themes)
-
-        context = {
-            'web_query': web_query,
-            'user_query': user_query,
-            'statistic': statistic,
-        }
-
+        context = logic.make_tags_response(Session, web_query)
         return flask.render_template('tags.html', **context)
 
     if command.static:

@@ -4,29 +4,70 @@
 """
 import random
 import time
-from typing import List, Tuple
+from itertools import chain
+from typing import List, Tuple, Set, Optional
 
+from omoide import search_engine
 from omoide import utils
-from omoide.search_engine.class_index import ShallowMeta, Index
-from omoide.search_engine.class_query import Query
 
 
-def random_records(index: Index, amount: int) -> List[ShallowMeta]:
+def random_records(index: search_engine.Index,
+                   active_themes: Optional[Set[str]],
+                   amount: int
+                   ) -> Tuple[List[search_engine.ShallowMeta], List[str]]:
     """Select random X records from index."""
-    # note that size of the index in some cases might be smaller
-    # than amount and random.sample will throw and exception
-    adequate_amount = min(amount, len(index))
-    chosen_records = random.sample(index.all_metas, adequate_amount)
-    return chosen_records
+    target_uuids = index.all_uuids
+
+    total = utils.sep_digits(len(target_uuids))
+    report = [f'Found {total} records in index.']
+
+    if active_themes is not None:
+        themes_start = time.perf_counter()
+        total_themes = utils.sep_digits(len(active_themes))
+        temporary_or_ = set()
+        for theme_uuid in active_themes:
+            with_theme = index.get_by_tag(theme_uuid)
+            if with_theme:
+                temporary_or_ = temporary_or_.union(with_theme)
+
+        if temporary_or_:
+            target_uuids = target_uuids.intersection(temporary_or_)
+
+        total = utils.sep_digits(len(target_uuids))
+        duration = time.perf_counter() - themes_start
+        report.append(f'Got {total} records on {total_themes} '
+                      f'themes in {duration:0.4f} sec.')
+
+        # note that size of the index might be smaller than
+        # amount and random.sample will throw and exception
+        shuffling_start = time.perf_counter()
+        adequate_amount = min(amount, len(target_uuids))
+        chosen_uuids = random.sample(tuple(target_uuids), adequate_amount)
+        chosen_records = [index.by_uuid[x] for x in chosen_uuids]
+
+        duration = time.perf_counter() - shuffling_start
+        report.append(f'Complete shuffling in {duration:0.4f} sec.')
+
+    else:
+        shuffling_start = time.perf_counter()
+        adequate_amount = min(amount, len(index))
+        chosen_records = random.sample(index.all_metas, adequate_amount)
+
+        duration = time.perf_counter() - shuffling_start
+        report.append(f'Complete shuffling in {duration:0.4f} sec.')
+
+    return chosen_records, report
 
 
-def specific_records(query: Query, index: Index) \
-        -> Tuple[List[ShallowMeta], List[str]]:
+def specific_records(query: search_engine.Query,
+                     index: search_engine.Index,
+                     active_themes: Set[str]) \
+        -> Tuple[List[search_engine.ShallowMeta], List[str]]:
     """Return all records, that match to a given query."""
     target_uuids = index.all_uuids
 
     total = utils.sep_digits(len(target_uuids))
-    report = [f'Found {total} records in index']
+    report = [f'Found {total} records in index.']
 
     # OR ----------------------------------------------------------------------
 
@@ -55,7 +96,7 @@ def specific_records(query: Query, index: Index) \
 
     if query.and_:
         and_start = time.perf_counter()
-        for tag in query.and_:
+        for tag in chain(query.and_, active_themes):
             start = time.perf_counter()
             with_tag = index.get_by_tag(tag)
             target_uuids = target_uuids.intersection(with_tag)
@@ -91,9 +132,9 @@ def specific_records(query: Query, index: Index) \
     # -------------------------------------------------------------------------
 
     sort_start = time.perf_counter()
-    chosen_meta = [index.by_uuid[x] for x in target_uuids]
-    chosen_meta.sort(key=lambda meta: meta.number)
+    chosen_records = [index.by_uuid[x] for x in target_uuids]
+    chosen_records.sort(key=lambda meta: meta.number)
     duration = time.perf_counter() - sort_start
     report.append(f'Complete sorting in {duration:0.4f} sec.')
 
-    return chosen_meta, report
+    return chosen_records, report

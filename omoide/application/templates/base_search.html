@@ -23,7 +23,7 @@
     <form method="post"
           action="{{ url_for('search') + web_query|string }}"
           onsubmit="alterPlus();">
-        <div class="query_container">
+        <div class="query-container">
 
             <a href="{{ url_for('search') }}"
                title="Use it to clear search query"
@@ -50,9 +50,19 @@
                class="button">Navigation</a>
 
             <span></span>
-            <span class="note">{{ note }}</span>
+
+            <span class="note small-text">{{ note }}</span>
+
+            {% if search_report %}
+                <a class="small-button small-text"
+                   onclick="explainSearchResults()">Explain</a>
+            {% endif %}
+
         </div>
     </form>
+
+    {% block upper_body %}{% endblock %}
+
 </div>
 
 <hr>
