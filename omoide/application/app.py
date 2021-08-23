@@ -11,14 +11,14 @@ root = filesystem.absolute('.')
 injection_path = filesystem.join(root, constants.INJECTION_FILE_NAME)
 
 try:
-    injection = filesystem.read_file(injection_path)
+    INJECTION = filesystem.read_file(injection_path)
 except FileNotFoundError:
-    injection = ''
+    INJECTION = ''
 
 command = commands.RunserverCommand(
     reload=False,
     static=False,
-    injection=injection,
+    injection=INJECTION,
     database_folder=filesystem.join(root, constants.DATABASE_FOLDER_NAME),
     content_folder=filesystem.join(root, constants.CONTENT_FOLDER_NAME),
     templates_folder=filesystem.join(root, constants.TEMPLATES_FOLDER_NAME),

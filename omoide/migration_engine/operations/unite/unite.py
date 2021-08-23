@@ -13,8 +13,16 @@ from omoide import constants
 from omoide import infra
 from omoide.migration_engine import classes
 from omoide.migration_engine import entities
-from omoide.migration_engine.operations import unite
+from omoide.migration_engine.operations.unite import identity
+from omoide.migration_engine.operations.unite import preprocessing
 from omoide.migration_engine.operations.unite import raw_entities
+from omoide.migration_engine.operations.unite.class_identity_master import (
+    IdentityMaster
+)
+from omoide.migration_engine.operations.unite.class_router import Router
+from omoide.migration_engine.operations.unite.class_uuid_master import (
+    UUIDMaster
+)
 
 
 def act(command: commands.UniteCommand,
@@ -22,12 +30,12 @@ def act(command: commands.UniteCommand,
         stdout: infra.STDOut) -> int:
     """Process source files.
     """
-    router = unite.Router()
-    identity_master = unite.IdentityMaster()
-    uuid_master = unite.UUIDMaster()
+    router = Router()
+    identity_master = IdentityMaster()
+    uuid_master = UUIDMaster()
     renderer = classes.Renderer()
 
-    unite.identity.gather_existing_identities(
+    identity.gather_existing_identities(
         storage_folder=command.storage_folder,
         router=router,
         identity_master=identity_master,
@@ -71,9 +79,9 @@ def act(command: commands.UniteCommand,
 
 # pylint: disable=too-many-locals
 def make_unit_in_leaf(command: commands.UniteCommand, branch: str, leaf: str,
-                      leaf_folder: str, router: unite.Router,
-                      identity_master: unite.IdentityMaster,
-                      uuid_master: unite.UUIDMaster,
+                      leaf_folder: str, router: Router,
+                      identity_master: IdentityMaster,
+                      uuid_master: UUIDMaster,
                       renderer: classes.Renderer,
                       filesystem: infra.Filesystem,
                       stdout: infra.STDOut) -> Optional[str]:
@@ -115,16 +123,16 @@ def make_unit_in_leaf(command: commands.UniteCommand, branch: str, leaf: str,
 def make_unit(branch: str,
               leaf: str,
               leaf_folder: str,
-              router: unite.Router,
-              identity_master: unite.IdentityMaster,
-              uuid_master: unite.UUIDMaster,
+              router: Router,
+              identity_master: IdentityMaster,
+              uuid_master: UUIDMaster,
               filesystem: infra.Filesystem,
               renderer: classes.Renderer,
               stdout: infra.STDOut) -> entities.Unit:
     """Combine all updates in big JSON file."""
     source_path = filesystem.join(leaf_folder, constants.SOURCE_FILE_NAME)
     source_raw_text = filesystem.read_file(source_path)
-    source_text = unite.preprocessing.preprocess_source(
+    source_text = preprocessing.preprocess_source(
         text=source_raw_text,
         branch=branch,
         leaf=leaf,
@@ -135,13 +143,13 @@ def make_unit(branch: str,
     source = instantiate_source(source_dict, stdout)
 
     unit = entities.Unit()
-    unite.preprocessing.do_themes(source, unit, router)
-    unite.preprocessing.do_groups(source, unit, router,
-                                  uuid_master, filesystem,
-                                  leaf_folder, renderer)
-    unite.preprocessing.do_synonyms(source, unit)
-    unite.preprocessing.do_no_group_metas(source, unit, router, uuid_master,
-                                          filesystem, leaf_folder, renderer)
+    preprocessing.do_themes(source, unit, router)
+    preprocessing.do_groups(source, unit, router,
+                            uuid_master, filesystem,
+                            leaf_folder, renderer)
+    preprocessing.do_synonyms(source, unit)
+    preprocessing.do_no_group_metas(source, unit, router, uuid_master,
+                                    filesystem, leaf_folder, renderer)
 
     return unit
 

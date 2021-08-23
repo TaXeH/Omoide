@@ -205,8 +205,6 @@ def preprocess_group_meta_pack(unit: entities.Unit,
     uuids = [uuid_master.generate_uuid_meta() for _ in range(len(filenames))]
     uuids.sort()
 
-    total = len(uuids)
-
     for i, ((name, ext), uuid) in enumerate(zip(filenames, uuids), start=1):
         file_path = filesystem.join(full_path, f'{name}.{ext}')
         media_info = renderer.analyze(file_path, ext)

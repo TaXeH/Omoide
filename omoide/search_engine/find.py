@@ -11,6 +11,7 @@ from omoide import search_engine
 from omoide import utils
 
 
+# pylint: disable=too-many-locals
 def random_records(index: search_engine.Index,
                    active_themes: Optional[Set[str]],
                    amount: int
@@ -59,6 +60,7 @@ def random_records(index: search_engine.Index,
     return chosen_records, report
 
 
+# pylint: disable=too-many-locals
 def specific_records(query: search_engine.Query,
                      index: search_engine.Index,
                      active_themes: Set[str]) \

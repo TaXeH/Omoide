@@ -8,6 +8,7 @@ import pytest
 
 @pytest.fixture
 def unite_with_cache_folder_structure():
+    """Template for folders."""
     return {
         'source_1': [
             'migration_1',
@@ -22,6 +23,7 @@ def unite_with_cache_folder_structure():
 
 @pytest.fixture
 def unite_with_cache_sources():
+    """Template for source files."""
     return {
         ('source_1', 'migration_1'): {
             'themes': [
@@ -97,6 +99,7 @@ def unite_with_cache_sources():
 
 @pytest.fixture
 def unite_with_cache_caches():
+    """Template for cache files."""
     return {
         ('source_1', 'migration_1'): {
             'variables': {
@@ -134,6 +137,7 @@ def unite_with_cache_caches():
 
 @pytest.fixture
 def unite_with_cache_media_files():
+    """Template for pseudo images files."""
     return {
         ('source_1', 'migration_1', 'probe', 'some'): [
             'file1.test',
