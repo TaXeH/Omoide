@@ -7,43 +7,34 @@ function alterPlus() {
 
 function toggleTheme(theme_uuid) {
     // include or exclude theme from search
-    let button = document.getElementById('toggle_' + theme_uuid)
     let element = document.getElementById('theme_' + theme_uuid)
 
-    if (!button || !element) {
+    if (!element) {
         alert('Failed to get theme element')
         return
     }
 
     let is_visible = visibility[theme_uuid]
-
     element.classList.toggle('nav-chosen-theme');
-
-    if (is_visible) {
-        button.text = 'Include'
-        visibility[theme_uuid] = false
-    } else {
-        button.text = 'Exclude'
-        visibility[theme_uuid] = true
-    }
+    visibility[theme_uuid] = !is_visible;
 }
 
 function switchThemeFolding(theme_uuid) {
     // show or hide list of groups for this theme
-    let button = document.getElementById('fold_' + theme_uuid)
+    let image = document.getElementById('fold_' + theme_uuid)
     let element = document.getElementById('groups_' + theme_uuid)
 
-    if (!button || !element) {
+    if (!element) {
         // theme can have no groups
         return
     }
 
-    if (button.text === 'Fold') {
-        button.text = 'Unfold'
-        element.style.display = 'none'
-    } else {
-        button.text = 'Fold'
+    if (element.style.display === 'none' || !element.style.display) {
+        image.src = "../static/collapse-arrow.svg";
         element.style.display = 'block'
+    } else {
+        image.src = "../static/expand-arrow.svg";
+        element.style.display = 'none'
     }
 }
 
@@ -52,39 +43,24 @@ function applyFiltering() {
     let searchParams = new URLSearchParams(window.location.search);
     let keys = Object.keys(visibility).filter(k => visibility[k])
     searchParams.set("active_themes", keys.join(','));
-    window.location.href = '/search?' + searchParams.toString();
+    window.location.href = "/search?" + searchParams.toString();
 }
 
-function selectAllThemes() {
-    // set all themes as active
-    Object.keys(visibility).forEach(v => visibility[v] = true)
+function toggleAllThemes(checked) {
+    // set all themes as active/inactive
+    Object.keys(visibility).forEach(v => visibility[v] = !checked)
 
     for (const theme_uuid of Object.keys(visibility)) {
-        let button = document.getElementById('toggle_' + theme_uuid)
-        let element = document.getElementById('theme_' + theme_uuid)
+        let element = document.getElementById('toggle_' + theme_uuid)
+        let checkmark = document.getElementById('checkmark_' + theme_uuid)
 
-        if (!button || !element) {
-            continue
-        }
-        element.classList.add('nav-chosen-theme');
-        button.text = 'Exclude'
-    }
-}
-
-function dropAllThemes() {
-    // unselect all themes
-    Object.keys(visibility).forEach(v => visibility[v] = false)
-
-    for (const theme_uuid of Object.keys(visibility)) {
-        let button = document.getElementById('toggle_' + theme_uuid)
-        let element = document.getElementById('theme_' + theme_uuid)
-
-        if (!button || !element) {
+        if (!element || !checkmark) {
             continue
         }
 
-        element.classList.remove('nav-chosen-theme');
-        button.text = 'Include'
+        if (checked !== element.checked) {
+            checkmark.click();
+        }
     }
 }
 

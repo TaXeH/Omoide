@@ -18,12 +18,13 @@
 
         <div class="nav-button-block">
             <a class="nav-button"
-               onclick="selectAllThemes()">Select all themes</a>
+               onclick="toggleAllThemes(true)">Select all</a>
+
+            <a class="nav-button nav-apply-button"
+               onclick="applyFiltering()">Search selected</a>
+
             <a class="nav-button"
-               onclick="dropAllThemes()">Drop all themes</a>
-            <span>|</span>
-            <a class="nav-button"
-               onclick="applyFiltering()">Apply filtering</a>
+               onclick="toggleAllThemes(false)">Ignore all</a>
         </div>
 
         <hr>
@@ -35,32 +36,51 @@
             {% else %}
                 {% set visibility_suffix = '' %}
             {% endif %}
-            <div id="theme_{{ theme_uuid }}"
-                 class="nav-theme{{ visibility_suffix }}">
-                {% if active %}
-                    <a id="toggle_{{ theme_uuid }}"
-                       class="nav-button"
-                       onclick="toggleTheme('{{ theme_uuid }}')">Exclude</a>
-                {% else %}
-                    <a id="toggle_{{ theme_uuid }}"
-                       class="nav-button"
-                       onclick="toggleTheme('{{ theme_uuid }}')">Include</a>
+
+            <table class="nav-table">
+                <tr>
+                    <td>
+                        <label class="checkbox-container">
+                            <input id="toggle_{{ theme_uuid }}"
+                                    type="checkbox"
+                                   class="custom-checkbox"
+                                   {{ 'checked' if active else '' }}>
+                            <span class="checkmark"
+                                  id="checkmark_{{ theme_uuid }}"
+                                  onclick="toggleTheme('{{ theme_uuid }}')"></span>
+                        </label>
+                    </td>
+                    <td>
+                        <div id="theme_{{ theme_uuid }}"
+                             class="nav-theme{{ visibility_suffix }}">
+
+                            <a href="{{ url_for('search') + web_query.replace(q=theme_uuid)|string }}">{{ theme.label }}</a>
+
+                            <img src="{{ url_for('static', filename='expand-arrow.svg') }}"
+                                 id="fold_{{ theme_uuid }}"
+                                 class="nav-icon"
+                                 onclick="switchThemeFolding('{{ theme_uuid }}')"
+                                 alt="Hide or show groups of this theme"/>
+                        </div>
+                    </td>
+                </tr>
+                {% if theme.groups %}
+                    <tr>
+                        <td></td>
+                        <td>
+                            <ol id="groups_{{ theme_uuid }}"
+                                class="nav-groups nav-hidden">
+                                {% for group_uuid, group in theme.groups.items() %}
+                                    <li>
+                                        <a href="{{ url_for('search') + web_query.replace(q=group_uuid)|string }}">{{ group.label }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ol>
+                        </td>
+                    </tr>
                 {% endif %}
-                <a id="fold_{{ theme_uuid }}"
-                   class="nav-button"
-                   onclick="switchThemeFolding('{{ theme_uuid }}')">Unfold</a>
-                <span>|</span>
-                <a href="{{ url_for('search') + web_query.replace(q=theme_uuid)|string }}">{{ theme.label }}</a>
-            </div>
-            {% if theme.groups %}
-                <ol id="groups_{{ theme_uuid }}" class="nav-groups nav-hidden">
-                    {% for group_uuid, group in theme.groups.items() %}
-                        <li>
-                            <a href="{{ url_for('search') + web_query.replace(q=group_uuid)|string }}">{{ group.label }}</a>
-                        </li>
-                    {% endfor %}
-                </ol>
-            {% endif %}
+            </table>
+
         {% endfor %}
     </div>
 {% endblock %}

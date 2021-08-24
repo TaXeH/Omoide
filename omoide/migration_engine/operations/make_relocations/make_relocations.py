@@ -68,15 +68,30 @@ def make_relocations_for_one_meta(command: commands.MakeRelocationsCommand,
     """Gather all required resources for relocation information."""
     _, _, theme, group, _ = meta.path_to_content.split('/')
 
-    operations = [
-        classes.Operation(
-            width=meta.width,
-            height=meta.height,
-            folder_to=filesystem.join(command.content_folder,
-                                      constants.MEDIA_CONTENT_FOLDER_NAME,
-                                      theme, group),
-            operation_type='copy',
-        ),
+    if meta.original_extension == 'jpg':
+        operations = [
+            classes.Operation(
+                width=meta.width,
+                height=meta.height,
+                folder_to=filesystem.join(command.content_folder,
+                                          constants.MEDIA_CONTENT_FOLDER_NAME,
+                                          theme, group),
+                operation_type='copy',
+            )
+        ]
+    else:
+        operations = [
+            classes.Operation(
+                width=meta.width,
+                height=meta.height,
+                folder_to=filesystem.join(command.content_folder,
+                                          constants.MEDIA_CONTENT_FOLDER_NAME,
+                                          theme, group),
+                operation_type='scale',
+            )
+        ]
+
+    operations += [
         classes.Operation(
             width=constants.PREVIEW_SIZE[0],
             height=constants.PREVIEW_SIZE[1],

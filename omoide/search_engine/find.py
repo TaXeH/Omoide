@@ -4,7 +4,6 @@
 """
 import random
 import time
-from itertools import chain
 from typing import List, Tuple, Set, Optional
 
 from omoide import search_engine
@@ -36,7 +35,7 @@ def random_records(index: search_engine.Index,
 
         total = utils.sep_digits(len(target_uuids))
         duration = time.perf_counter() - themes_start
-        report.append(f'Got {total} records on {total_themes} '
+        report.append(f'Found {total} records on {total_themes} '
                       f'themes in {duration:0.4f} sec.')
 
         # note that size of the index might be smaller than
@@ -67,9 +66,25 @@ def specific_records(query: search_engine.Query,
         -> Tuple[List[search_engine.ShallowMeta], List[str]]:
     """Return all records, that match to a given query."""
     target_uuids = index.all_uuids
-
     total = utils.sep_digits(len(target_uuids))
     report = [f'Found {total} records in index.']
+
+    if active_themes is not None:
+        themes_start = time.perf_counter()
+        total_themes = utils.sep_digits(len(active_themes))
+        temporary_or_ = set()
+        for theme_uuid in active_themes:
+            with_theme = index.get_by_tag(theme_uuid)
+            if with_theme:
+                temporary_or_ = temporary_or_.union(with_theme)
+
+        if temporary_or_:
+            target_uuids = target_uuids.intersection(temporary_or_)
+
+        total = utils.sep_digits(len(target_uuids))
+        duration = time.perf_counter() - themes_start
+        report.append(f'Found {total} records on {total_themes} '
+                      f'themes in {duration:0.4f} sec.')
 
     # OR ----------------------------------------------------------------------
 
@@ -98,7 +113,7 @@ def specific_records(query: search_engine.Query,
 
     if query.and_:
         and_start = time.perf_counter()
-        for tag in chain(query.and_, active_themes):
+        for tag in query.and_:
             start = time.perf_counter()
             with_tag = index.get_by_tag(tag)
             target_uuids = target_uuids.intersection(with_tag)
@@ -110,7 +125,9 @@ def specific_records(query: search_engine.Query,
                                                              duration))
         total = utils.sep_digits(len(target_uuids))
         duration = time.perf_counter() - and_start
-        report.append(f'Got {total} records after AND in {duration:0.4f} sec.')
+        report.append(
+            f'Found {total} records after AND in {duration:0.4f} sec.'
+        )
 
     # NOT ---------------------------------------------------------------------
 
@@ -129,7 +146,9 @@ def specific_records(query: search_engine.Query,
                                                                  duration))
         total = utils.sep_digits(len(target_uuids))
         duration = time.perf_counter() - not_start
-        report.append(f'Got {total} records after NOT in {duration:0.4f} sec.')
+        report.append(
+            f'Found {total} records after NOT in {duration:0.4f} sec.'
+        )
 
     # -------------------------------------------------------------------------
 

@@ -58,7 +58,7 @@ def act(command: commands.SyncCommand,
             folder=branch_folder,
             filename=constants.BRANCH_DB_FILE_NAME,
             filesystem=filesystem,
-            echo=True,
+            echo=False,
         )
         if needs_schema:
             operations.create_scheme(branch_db)
