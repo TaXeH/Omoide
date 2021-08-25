@@ -1,22 +1,38 @@
-function alterPlus() {
-    // rewrite + symbol in query into %2B
+function goSearch(form) {
+    // rewrite + symbol in query into %2B and update parameters
     let element = document.getElementById("query_element");
     element.value = element.value.replaceAll("\+", "%2B")
     element.value = element.value.replaceAll(/\s+/g, " ")
+
+    let searchParams = new URLSearchParams(window.location.search);
+    form.action = "/search?" + searchParams.toString();
 }
 
 function toggleTheme(theme_uuid) {
     // include or exclude theme from search
-    let element = document.getElementById('theme_' + theme_uuid)
+    let element = document.getElementById('toggle_' + theme_uuid)
+    let theme = document.getElementById('theme_' + theme_uuid)
 
     if (!element) {
-        alert('Failed to get theme element')
+        console.log('Could not find toggle element toggle_' + theme_uuid)
         return
     }
 
-    let is_visible = visibility[theme_uuid]
-    element.classList.toggle('nav-chosen-theme');
-    visibility[theme_uuid] = !is_visible;
+    if (!theme) {
+        console.log('Failed to get theme element theme_' + theme_uuid)
+        return
+    }
+
+    visibility[theme_uuid] = !visibility[theme_uuid]
+
+    if (visibility[theme_uuid]) {
+        theme.classList.add('nav-chosen-theme')
+        element.checked = false
+    } else {
+        theme.classList.remove('nav-chosen-theme')
+        element.checked = true
+    }
+    applyFiltering()
 }
 
 function switchThemeFolding(theme_uuid) {
@@ -39,27 +55,51 @@ function switchThemeFolding(theme_uuid) {
 }
 
 function applyFiltering() {
-    // got to search page with new query
+    // alter active_themes parameter
     let searchParams = new URLSearchParams(window.location.search);
     let keys = Object.keys(visibility).filter(k => visibility[k])
-    searchParams.set("active_themes", keys.join(','));
-    window.location.href = "/search?" + searchParams.toString();
+
+    if (keys.length === 0) {
+        searchParams.set("active_themes", "no_themes");
+    } else if (keys.length === Object.keys(visibility).length) {
+        searchParams.set("active_themes", "all_themes");
+    } else {
+        searchParams.set("active_themes", keys.join('%2C'));
+    }
+
+    let newUrl = "/navigation?" + searchParams.toString();
+    window.history.pushState({path: newUrl}, '', newUrl);
 }
 
 function toggleAllThemes(checked) {
     // set all themes as active/inactive
-    Object.keys(visibility).forEach(v => visibility[v] = !checked)
+    Object.keys(visibility).forEach(v => visibility[v] = checked)
+    updateAllThemes()
+    applyFiltering()
+}
 
-    for (const theme_uuid of Object.keys(visibility)) {
+function updateAllThemes() {
+    // sync visible theme states with visibility map
+    for (const [theme_uuid, isVisible] of Object.entries(visibility)) {
         let element = document.getElementById('toggle_' + theme_uuid)
-        let checkmark = document.getElementById('checkmark_' + theme_uuid)
+        let theme = document.getElementById('theme_' + theme_uuid)
 
-        if (!element || !checkmark) {
+        if (!element) {
+            console.log('Could not find toggle element toggle_' + theme_uuid)
             continue
         }
 
-        if (checked !== element.checked) {
-            checkmark.click();
+        if (!theme) {
+            console.log('Could not find theme element theme_' + theme_uuid)
+            continue
+        }
+
+        if (isVisible) {
+            theme.classList.add('nav-chosen-theme')
+            element.checked = true
+        } else {
+            theme.classList.remove('nav-chosen-theme')
+            element.checked = false
         }
     }
 }

@@ -166,6 +166,7 @@ def get_placeholder_for_search(session: Session,
 
 def extract_active_themes(raw_themes: str, graph: dict) -> Optional[Set[str]]:
     """Safely parse and extract theme uuids."""
+    print(repr(raw_themes))
     if raw_themes != constants.ALL_THEMES:
         active_themes = set()
         candidates = [x.strip() for x in raw_themes.split(',')]

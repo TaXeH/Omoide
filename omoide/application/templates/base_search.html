@@ -21,8 +21,7 @@
 <body>
 <div>
     <form method="post"
-          action="{{ url_for('search') + web_query|string }}"
-          onsubmit="alterPlus();">
+          onsubmit="goSearch(this);">
         <div class="query-container">
 
             <a href="{{ url_for('search') }}"
@@ -38,7 +37,8 @@
                        placeholder="{{ placeholder }}" autofocus/>
             </label>
 
-            <input type="submit"
+            <input id="searchButton"
+                   type="submit"
                    class="button"
                    name="search"
                    value="Search" autofocus/>
