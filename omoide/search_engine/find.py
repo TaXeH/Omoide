@@ -11,6 +11,8 @@ from omoide import utils
 
 
 # pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 def random_records(index: search_engine.Index,
                    active_themes: Optional[Set[str]],
                    amount: int
@@ -60,6 +62,8 @@ def random_records(index: search_engine.Index,
 
 
 # pylint: disable=too-many-locals
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 def specific_records(query: search_engine.Query,
                      index: search_engine.Index,
                      active_themes: Set[str]) \
