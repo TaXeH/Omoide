@@ -10,6 +10,12 @@
 
 {% block body %}
 
+    <div class="pages">
+        <a class="active-page"
+           href="{{ url_for('search') + web_query.replace(q=meta.group.uuid)|string }}">Go
+            to group</a>
+    </div>
+
     {{ preview_pagination(paginator, web_query, next, previous) }}
 
     <div class="preview-content limited-width">
@@ -37,8 +43,6 @@
     </div>
 
     {{ preview_pagination(paginator, web_query, next, previous) }}
-
-    <br>
 
     <div class="preview-content limited-width">
         <table class="preview-table">

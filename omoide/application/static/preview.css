@@ -27,7 +27,10 @@
 }
 
 .preview-swipe {
-    width: 100%;
+    min-width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 td, th {
