@@ -11,7 +11,8 @@ from omoide import constants
 from omoide import search_engine
 from omoide import utils
 from omoide.application import database as app_database
-from omoide.application import search
+from omoide.application.class_paginator import Paginator
+from omoide.application.class_web_query import WebQuery
 from omoide.database import operations
 from omoide.search_engine import find
 
@@ -19,7 +20,7 @@ _GRAPH_CACHE: Optional[Dict[str, Any]] = None
 
 
 # pylint: disable=too-many-locals
-def make_search_response(maker: sessionmaker, web_query: search.WebQuery,
+def make_search_response(maker: sessionmaker, web_query: WebQuery,
                          query_builder: search_engine.QueryBuilder,
                          index: search_engine.Index) -> Dict[str, Any]:
     """Create context for search request."""
@@ -52,7 +53,7 @@ def make_search_response(maker: sessionmaker, web_query: search.WebQuery,
                 amount=constants.ITEMS_PER_PAGE,
             )
 
-    paginator = search.Paginator(
+    paginator = Paginator(
         sequence=uuids,
         current_page=current_page,
         items_per_page=constants.ITEMS_PER_PAGE,
@@ -73,7 +74,7 @@ def make_search_response(maker: sessionmaker, web_query: search.WebQuery,
     return context
 
 
-def make_navigation_response(maker: sessionmaker, web_query: search.WebQuery,
+def make_navigation_response(maker: sessionmaker, web_query: WebQuery,
                              ) -> Dict[str, Any]:
     """Create context for navigation request (GET)."""
     with operations.session_scope(maker) as session:
@@ -98,7 +99,7 @@ def make_navigation_response(maker: sessionmaker, web_query: search.WebQuery,
 
 
 def make_preview_response(maker: sessionmaker,
-                          web_query: search.WebQuery,
+                          web_query: WebQuery,
                           uuid: str,
                           abort_callback: Callable) -> Dict[str, Any]:
     """Create context for preview request."""
@@ -122,7 +123,7 @@ def make_preview_response(maker: sessionmaker,
 
 
 def make_tags_response(maker: sessionmaker,
-                       web_query: search.WebQuery) -> Dict[str, Any]:
+                       web_query: WebQuery) -> Dict[str, Any]:
     """Create context for tags request."""
     with operations.session_scope(maker) as session:
         graph = app_database.get_graph(session)

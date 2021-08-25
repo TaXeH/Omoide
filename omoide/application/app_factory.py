@@ -12,7 +12,7 @@ import omoide.database.operations
 from omoide import commands, constants, utils
 from omoide import search_engine
 from omoide.application import database, logic
-from omoide.application import search as search_
+from omoide.application.class_web_query import WebQuery
 
 
 # pylint: disable=too-many-locals
@@ -60,14 +60,14 @@ def create_app(command: commands.RunserverCommand,
     @app.route('/navigation')
     def navigation():
         """Show selection fields for realm/theme."""
-        web_query = search_.WebQuery.from_request(flask.request.args)
+        web_query = WebQuery.from_request(flask.request.args)
         context = logic.make_navigation_response(Session, web_query)
         return flask.render_template('navigation.html', **context)
 
     @app.route('/search', methods=['GET', 'POST'])
     def search():
         """Main page of the application."""
-        web_query = search_.WebQuery.from_request(flask.request.args)
+        web_query = WebQuery.from_request(flask.request.args)
 
         if flask.request.method == 'POST':
             web_query['q'] = flask.request.form.get('query', '')
@@ -84,7 +84,7 @@ def create_app(command: commands.RunserverCommand,
     def preview(uuid: str):
         """Show description for a single record."""
         not_found = partial(flask.abort, 404)
-        web_query = search_.WebQuery.from_request(flask.request.args)
+        web_query = WebQuery.from_request(flask.request.args)
         context = logic.make_preview_response(maker=Session,
                                               web_query=web_query,
                                               uuid=uuid,
@@ -94,7 +94,7 @@ def create_app(command: commands.RunserverCommand,
     @app.route('/tags')
     def tags():
         """Show available tags."""
-        web_query = search_.WebQuery.from_request(flask.request.args)
+        web_query = WebQuery.from_request(flask.request.args)
         context = logic.make_tags_response(Session, web_query)
         return flask.render_template('tags.html', **context)
 
