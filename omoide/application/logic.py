@@ -2,7 +2,7 @@
 """Business logic of the service.
 """
 import time
-from typing import Dict, Any, Callable, Optional, Set
+from typing import Dict, Any, Callable, Optional, Set, List, Tuple
 
 import ujson
 from sqlalchemy.orm import sessionmaker, Session
@@ -13,7 +13,7 @@ from omoide import utils
 from omoide.application import database as app_database
 from omoide.application.class_paginator import Paginator
 from omoide.application.class_web_query import WebQuery
-from omoide.database import operations
+from omoide.database import operations, models
 from omoide.search_engine import find
 
 _GRAPH_CACHE: Optional[Dict[str, Any]] = None
@@ -105,6 +105,8 @@ def make_preview_response(maker: sessionmaker,
     """Create context for preview request."""
     with operations.session_scope(maker) as session:
         meta = app_database.get_meta(session, uuid) or abort_callback()
+        uuids = _get_group_uuids(meta)
+        _next, _previous, paginator = _build_paginator(uuids, meta.uuid)
 
         all_tags = {
             *[x.value for x in meta.group.theme.tags],
@@ -116,10 +118,46 @@ def make_preview_response(maker: sessionmaker,
     context = {
         'web_query': web_query,
         'user_query': web_query.get('q'),
+        'paginator': paginator,
+        'next': _next,
+        'previous': _previous,
         'meta': meta,
         'tags': sorted(all_tags),
     }
     return context
+
+
+def _get_group_uuids(meta: models.Meta) -> List[str]:
+    """Gather all uuids in this group."""
+    if meta.group.route == constants.NO_GROUP:
+        return []
+
+    return [x.uuid for x in meta.group.metas]
+
+
+def _build_paginator(group_uuids: List[str], current_uuid: str) \
+        -> Tuple[Optional[str], Optional[str], Paginator]:
+    """Create Paginator instance that will help browsing group."""
+    current_page = 0
+    _next = None
+    _previous = None
+    for i, each_uuid in enumerate(group_uuids, start=1):
+        if each_uuid == current_uuid:
+            current_page = i
+
+            if i > 1:
+                _previous = group_uuids[i - 2]
+
+            if i < len(group_uuids):
+                _next = group_uuids[i]
+
+            break
+
+    paginator = Paginator(group_uuids,
+                          current_page=current_page,
+                          items_per_page=1)
+
+    return _next, _previous, paginator
 
 
 def make_tags_response(maker: sessionmaker,
@@ -167,10 +205,12 @@ def get_placeholder_for_search(session: Session,
 
 def extract_active_themes(raw_themes: str, graph: dict) -> Optional[Set[str]]:
     """Safely parse and extract theme uuids."""
-    print(repr(raw_themes))
     if raw_themes != constants.ALL_THEMES:
         active_themes = set()
-        candidates = [x.strip() for x in raw_themes.split(',')]
+        candidates = [
+            x.strip()
+            for x in constants.THEMES_SEPARATION.split(raw_themes)
+        ]
 
         for candidate in candidates:
             if is_correct_theme_uuid(candidate):

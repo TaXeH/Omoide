@@ -1,5 +1,6 @@
 {% extends "base_search.html" %}
 {% from "macros.html" import if_not_empty %}
+{% from "macros.html" import preview_pagination %}
 
 {% block head %}
     <link type="text/css"
@@ -8,22 +9,13 @@
 {% endblock %}
 
 {% block body %}
-    {#    <script>#}
-    {#        function copy(text) {#}
-    {#            let input = document.createElement('input');#}
-    {#            input.setAttribute('value', text);#}
-    {#            document.body.appendChild(input);#}
-    {#            input.select();#}
-    {#            let result = document.execCommand('copy');#}
-    {#            document.body.removeChild(input);#}
-    {#            return result;#}
-    {#        }#}
-    {#    </script>#}
+
+    {{ preview_pagination(paginator, web_query, next, previous) }}
 
     <div class="preview-content limited-width">
 
-        {% if meta.previous %}
-            <a href="/preview/{{ meta.previous }}"
+        {% if previous %}
+            <a href="/preview/{{ previous }}"
                class="button preview-swipe">Previous</a>
         {% else %}
             <a class="preview-swipe">&nbsp;</a>
@@ -36,13 +28,15 @@
             </a>
         </div>
 
-        {% if meta.next %}
-            <a href="/preview/{{ meta.next }}"
+        {% if next %}
+            <a href="/preview/{{ next }}"
                class="button preview-swipe">Next</a>
         {% else %}
             <a class="preview-swipe">&nbsp;</a>
         {% endif %}
     </div>
+
+    {{ preview_pagination(paginator, web_query, next, previous) }}
 
     <br>
 

@@ -3,7 +3,7 @@
 """Helper class created to handle pagination.
 """
 import math
-from typing import Sequence, Generator, Dict, Union
+from typing import Sequence, Generator, Dict, Union, Any
 
 
 class Paginator:
@@ -54,6 +54,16 @@ class Paginator:
         return self._current_page
 
     @property
+    def first_value(self) -> Any:
+        """Return contents of the first sequence element."""
+        return self._sequence[0]
+
+    @property
+    def last_value(self) -> Any:
+        """Return contents of the last sequence element."""
+        return self._sequence[-1]
+
+    @property
     def next_page_number(self) -> int:
         """Return next page number."""
         if self._current_page < self.num_pages:
@@ -95,6 +105,7 @@ class Paginator:
     def _iterate_short(self) \
             -> Generator[Dict[str, Union[int, bool]], None, None]:
         """Iterate over all page numbers.
+
         Version, where all pages are displayed.
         """
         for i in range(1, self.num_pages + 1):
@@ -102,18 +113,26 @@ class Paginator:
                 'is_dummy': False,
                 'is_current': i == self._current_page,
                 'number': i,
+                'value': self._sequence[i - 1],
             }
 
     def _iterate_long(self) \
             -> Generator[Dict[str, Union[int, bool]], None, None]:
         """Iterate over grouped page numbers.
+
         Version, where some pages are hidden and dummy pages inserted.
         """
 
         def _generate(_gen):
-            return [{'is_dummy': False,
-                     'is_current': x == self._current_page,
-                     'number': x} for x in _gen]
+            return [
+                {
+                    'is_dummy': False,
+                    'is_current': x == self._current_page,
+                    'number': x,
+                    'value': self._sequence[x - 1],
+                }
+                for x in _gen
+            ]
 
         position = self.current_page
 
@@ -130,19 +149,23 @@ class Paginator:
         if self.current_page > self._pages_in_block // 2 + 1:
             yield {'is_dummy': False,
                    'is_current': self.current_page == 1,
-                   'number': 1}
+                   'number': 1,
+                   'value': self._sequence[0]}
 
             yield {'is_dummy': True,
                    'is_current': False,
-                   'number': -1}
+                   'number': -1,
+                   'value': ''}
 
         yield from pages
 
         if self.current_page + self._pages_in_block // 2 < self.num_pages:
             yield {'is_dummy': True,
                    'is_current': False,
-                   'number': -1}
+                   'number': -1,
+                   'value': ''}
 
             yield {'is_dummy': False,
                    'is_current': self.current_page == self.num_pages,
-                   'number': self.num_pages}
+                   'number': self.num_pages,
+                   'value': self._sequence[self.num_pages - 1]}

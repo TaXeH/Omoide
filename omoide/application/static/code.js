@@ -69,6 +69,9 @@ function applyFiltering() {
 
     let newUrl = "/navigation?" + searchParams.toString();
     window.history.pushState({path: newUrl}, '', newUrl);
+
+    let tagsButton = document.getElementById('tagsButton')
+    tagsButton.href = "/tags?" + searchParams.toString();
 }
 
 function toggleAllThemes(checked) {
@@ -117,3 +120,14 @@ function explainSearchResults() {
         element.style.display = 'none'
     }
 }
+
+// function copy(text) {
+//     // copy given text to buffer
+//     let input = document.createElement('input');
+//     input.setAttribute('value', text);
+//     document.body.appendChild(input);
+//     input.select();
+//     let result = document.execCommand('copy');
+//     document.body.removeChild(input);
+//     return result;
+// }

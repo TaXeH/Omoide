@@ -35,3 +35,5 @@ OPERATORS = {KW_AND, KW_OR, KW_NOT}
 STRICT_THEME_UUID_PATTERN = re.compile(
     '^t_[0-9a-z]{8}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{4}-[0-9a-z]{12}$'
 )
+
+THEMES_SEPARATION = re.compile(r',|%2C')
