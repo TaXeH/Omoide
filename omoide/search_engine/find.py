@@ -102,7 +102,7 @@ def specific_records(query: search_engine.Query,
                 temporary_or_ = temporary_or_.union(with_tag)
                 duration = time.perf_counter() - start
                 total = utils.sep_digits(len(with_tag))
-                report.append('Found {} records '
+                report.append('> Found {} records '
                               'by tag {} in {:0.4f} sec.'.format(total,
                                                                  repr(tag),
                                                                  duration))
@@ -111,7 +111,9 @@ def specific_records(query: search_engine.Query,
 
         total = utils.sep_digits(len(target_uuids))
         duration = time.perf_counter() - or_start
-        report.append(f'Got {total} records after OR in {duration:0.4f} sec.')
+        report.append(
+            f'Found {total} records after OR in {duration:0.4f} sec.'
+        )
 
     # AND ---------------------------------------------------------------------
 
@@ -123,7 +125,7 @@ def specific_records(query: search_engine.Query,
             target_uuids = target_uuids.intersection(with_tag)
             duration = time.perf_counter() - start
             total = utils.sep_digits(len(with_tag))
-            report.append('Found {} records '
+            report.append('> Found {} records '
                           'by tag {} in {:0.4f} sec.'.format(total,
                                                              repr(tag),
                                                              duration))
@@ -144,7 +146,7 @@ def specific_records(query: search_engine.Query,
                 target_uuids -= with_tag
                 duration = time.perf_counter() - start
                 total = utils.sep_digits(len(with_tag))
-                report.append('Found {} records '
+                report.append('> Found {} records '
                               'by tag {} in {:0.4f} sec.'.format(total,
                                                                  repr(tag),
                                                                  duration))

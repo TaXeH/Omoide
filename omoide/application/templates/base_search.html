@@ -44,10 +44,10 @@
                    value="Search" autofocus/>
 
             <a id="tagsButton"
-               href="{{ url_for('tags') + web_query|string }}"
+               href="{{ url_for('tags') + web_query|string|safe }}"
                class="button">Tags</a>
 
-            <a href="{{ url_for('navigation') + web_query|string }}"
+            <a href="{{ url_for('navigation') + web_query|string|safe }}"
                class="button">Navigation</a>
 
             <span></span>

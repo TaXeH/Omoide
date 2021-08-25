@@ -25,7 +25,12 @@ class WebQuery:
         for key, value in self.kwargs.items():
             components.append(f'{key}={value}')
 
-        return '?' + '&'.join(components)
+        string = '?' + '&'.join(components)
+        string = string.replace(' ', '%20')
+        string = string.replace(',', '%2C')
+        string = string.replace('+', '%2B')
+
+        return string
 
     def __setitem__(self, key: str, value: str) -> None:
         """Change one of the kwargs."""
