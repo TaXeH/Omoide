@@ -73,7 +73,7 @@ def specific_records(query: search_engine.Query,
     total = utils.sep_digits(len(target_uuids))
     report = [f'Found {total} records in index.']
 
-    if active_themes is not None:
+    if active_themes is not None and active_themes:
         themes_start = time.perf_counter()
         total_themes = utils.sep_digits(len(active_themes))
         temporary_or_ = set()
