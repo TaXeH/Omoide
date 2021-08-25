@@ -7,6 +7,7 @@ import flask
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
+import omoide.constants.project
 import omoide.database.operations
 from omoide import commands, constants, utils
 from omoide import search_engine
