@@ -1,8 +1,8 @@
 .query-container {
     margin: 10px;
     display: grid;
-    grid-template-columns: 1fr 5fr 1fr 1fr 1fr;
-    grid-column-gap: 20px;
+    grid-template-columns: 1fr 5fr 1fr 1fr 1fr 0.3fr;
+    grid-column-gap: 1em;
 }
 
 .explain-container {
@@ -63,4 +63,15 @@ img {
 
 .envelope-container img {
     min-height: 384px;
+}
+
+.feedback-block {
+    text-align: center;
+}
+
+.feedback {
+    margin: 10px;
+    width: 100%;
+    max-width: 800px;
+    font-size: 16pt;
 }

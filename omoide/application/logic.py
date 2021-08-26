@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Business logic of the service.
 """
+import datetime
+import json
 import time
 from typing import Dict, Any, Callable, Optional, Set, List, Tuple
 
@@ -233,3 +235,25 @@ def is_correct_theme_uuid(uuid: str) -> bool:
     if len(uuid) != constants.UUID_LEN:
         return False
     return constants.STRICT_THEME_UUID_PATTERN.match(uuid)
+
+
+def save_feedback(folder: str, name: str, feedback: str) -> None:
+    """Save user feedback.
+
+    Temporary way, this design is terrible.
+    """
+    moment = datetime.datetime.now()
+
+    payload = {
+        'moment': str(moment),
+        'name': str(name)[:constants.MAX_TEXT_INPUT_SIZE],
+        'feedback': str(feedback)[:constants.MAX_TEXT_INPUT_SIZE],
+    }
+    text = json.dumps(payload, ensure_ascii=False)
+    path = f'{folder}/feedback.txt'
+
+    try:
+        with open(path, mode='a', encoding='utf-8') as file:
+            file.write(text + '\n')
+    except Exception as exc:
+        print(f'Failed to save feedback because of: {exc}')

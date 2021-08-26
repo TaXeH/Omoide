@@ -50,6 +50,9 @@
             <a href="{{ url_for('navigation') + web_query|string|safe }}"
                class="button">Navigation</a>
 
+            <a href="{{ url_for('feedback') + web_query|string|safe }}"
+               class="button" title="Send feedback">@</a>
+
             <span></span>
 
             <span class="note small-text">{{ note }}</span>

@@ -98,6 +98,26 @@ def create_app(command: commands.RunserverCommand,
         context = logic.make_tags_response(Session, web_query)
         return flask.render_template('tags.html', **context)
 
+    @app.route('/feedback', methods=['GET', 'POST'])
+    def feedback():
+        """Show feedback form."""
+        greet = False
+        web_query = WebQuery.from_request(flask.request.args)
+        user_query = web_query.get('q')
+
+        if flask.request.method == 'POST':
+            name = flask.request.form.get('name', '')
+            _feedback = flask.request.form.get('feedback', '')
+            logic.save_feedback(command.database_folder, name, _feedback)
+            greet = True
+
+        context = {
+            'greet': greet,
+            'web_query': web_query,
+            'user_query': user_query,
+        }
+        return flask.render_template('feedback.html', **context)
+
     if command.static:
         @app.route('/content/<path:filename>')
         def serve_content(filename: str):
