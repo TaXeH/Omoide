@@ -3,7 +3,7 @@
 """Fully processed user search request.
 """
 from itertools import chain
-from typing import Collection, Dict, List, FrozenSet, Literal, Tuple
+from typing import Collection, Dict, List, FrozenSet, Tuple
 
 from omoide import constants
 
@@ -48,7 +48,7 @@ class Query:
         return self._append_generic(*new_values, attribute='not_')
 
     def _append_generic(self, *new_values: str,
-                        attribute: Literal['and_', 'or_', 'not_']) -> 'Query':
+                        attribute: str) -> 'Query':
         """Add some values to the and_ field."""
         values = self.as_dict()
         values[attribute] += list(new_values)

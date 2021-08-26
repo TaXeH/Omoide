@@ -31,7 +31,7 @@
             <div>
                 <div class="envelope">
                     <a href="{{ url_for('preview', uuid=meta.uuid) + web_query|string }}">
-                        <img src="{{ url_for('serve_content', filename=meta.path_to_thumbnail) }}"
+                        <img src="/content{{ meta.path_to_thumbnail }}"
                              alt=""/>
                     </a>
                 </div>

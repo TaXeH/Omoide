@@ -7,7 +7,7 @@ from omoide.application import app_factory
 from omoide.database import operations
 
 filesystem = infra.Filesystem()
-root = filesystem.absolute('.')
+root = filesystem.absolute('/media/pi/FLASH/omoide')
 injection_path = filesystem.join(root, constants.INJECTION_FILE_NAME)
 
 try:
@@ -21,7 +21,7 @@ command = commands.RunserverCommand(
     injection=INJECTION,
     database_folder=filesystem.join(root, constants.DATABASE_FOLDER_NAME),
     content_folder=filesystem.join(root, constants.CONTENT_FOLDER_NAME),
-    templates_folder=filesystem.join(root, constants.TEMPLATES_FOLDER_NAME),
+    templates_folder='/home/pi/Omoide/omoide/application/templates',
 )
 
 engine = operations.create_read_only_database(

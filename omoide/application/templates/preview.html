@@ -28,8 +28,8 @@
         {% endif %}
 
         <div>
-            <a href="{{ url_for('serve_content', filename=meta.path_to_content) }}">
-                <img src="{{ url_for('serve_content', filename=meta.path_to_preview) }}"
+            <a href="{{ meta.path_to_content }}">
+                <img src="{{ meta.path_to_preview }}"
                      alt="Click here for full resolution"/>
             </a>
         </div>

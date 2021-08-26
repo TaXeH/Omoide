@@ -3,28 +3,29 @@
 """Object that handles image analyzing and conversion.
 """
 import os
-from typing import TypedDict, Optional, Callable
+from typing import Optional, Callable
+# from typing import TypedDict, Optional, Callable
 
 from PIL import Image
 
 __all__ = [
     'Renderer',
-    'MediaInfo',
+    # 'MediaInfo',
 ]
 
 
-class MediaInfo(TypedDict):
-    """Container for media information."""
-    width: int
-    height: int
-    resolution: float
-    size: int
-    type: str
-    signature: str
-    signature_type: str
+# class MediaInfo(TypedDict):
+#     """Container for media information."""
+#     width: int
+#     height: int
+#     resolution: float
+#     size: int
+#     type: str
+#     signature: str
+#     signature_type: str
 
 
-def analyze_static_image(path: str) -> MediaInfo:
+def analyze_static_image(path: str):
     """Get parameters of a static image (not gif)."""
     image = Image.open(path)
     width, height = image.size
@@ -43,7 +44,7 @@ def analyze_static_image(path: str) -> MediaInfo:
     return media_info
 
 
-def analyze_test(path: str) -> MediaInfo:
+def analyze_test(path: str):
     """Used for testing, returns dummy info."""
     media_info = {
         'width': 0,
@@ -57,7 +58,7 @@ def analyze_test(path: str) -> MediaInfo:
     return media_info
 
 
-def get_analyze_tool(extension: str) -> Optional[Callable[[str], MediaInfo]]:
+def get_analyze_tool(extension: str) -> Optional[Callable[[str], dict]]:
     """Return callable that can analyze this kind of files.
     """
     return {
@@ -80,7 +81,7 @@ class Renderer:
         return get_analyze_tool(extension) is not None
 
     @staticmethod
-    def analyze(path: str, extension: str) -> MediaInfo:
+    def analyze(path: str, extension: str):
         """Gather media information about the file."""
         tool = get_analyze_tool(extension)
 
