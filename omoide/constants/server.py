@@ -5,7 +5,7 @@
 import os as _os
 
 DEFAULT_SERVER_HOST = '0.0.0.0'
-DEFAULT_SERVER_PORT = 8000
+DEFAULT_SERVER_PORT = 8080
 
 # files and folders
 TEMPLATES_FOLDER_NAME = 'templates'
